@@ -22,6 +22,12 @@ namespace CounterTexFront.Controllers
             return View();
         }
 
+        public ActionResult Registro()
+        {
+            return View();
+        }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model)

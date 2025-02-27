@@ -9,7 +9,7 @@ namespace CounterTexFront.Models
 {
     public class LoginViewModel
     {
-        [DisplayName("Nombre de Usuario")]
+        [DisplayName("Usuario")]
         [Required(ErrorMessage = "El campo {0} es requerido", AllowEmptyStrings = false)]
         [EmailAddress]
         public string UserName { get; set; }

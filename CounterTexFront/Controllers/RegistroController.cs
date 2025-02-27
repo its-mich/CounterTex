@@ -16,6 +16,12 @@ namespace CounterTexFront.Controllers
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
+        public ActionResult Registro()
+        {
+            return View();
+        }
+
+
         public async Task<ActionResult> Index()
         {
             List<Registro> registros = new List<Registro>();
