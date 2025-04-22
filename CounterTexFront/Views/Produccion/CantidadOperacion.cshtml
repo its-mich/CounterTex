@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "CantidadOperacion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "CantidadOperacion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .formulario {
+        width: 40%;
+        margin: 80px auto;
+        padding: 30px;
+        background: #fff;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        border-radius: 15px;
+    }
+
+        .formulario h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .formulario input[type="text"],
+        .formulario input[type="number"],
+        .formulario select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .formulario button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+            .formulario button:hover {
+                background-color: #0056b3;
+            }
+</style>
+
+<div class="formulario">
+    <h2>Ingresar Cantidad de Operación</h2>
+
+    <form method="post" action="#">
+        <label for="tipoOperacion">Tipo de operación:</label>
+        <select id="tipoOperacion" name="tipoOperacion">
+            <option value="">Seleccione</option>
+            <option value="1">Corte</option>
+            <option value="2">Costura</option>
+            <option value="3">Acabado</option>
+        </select>
+
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" id="cantidad" name="cantidad" min="1" required />
+
+        <button type="submit">Guardar</button>
+    </form>
+</div>
+

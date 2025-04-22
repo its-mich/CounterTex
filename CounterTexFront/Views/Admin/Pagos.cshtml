@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Pagos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .pagos-container {
+        max-width: 950px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0px 0px 12px rgba(0,0,0,0.1);
+    }
+
+        .pagos-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+
+    .acciones {
+        text-align: right;
+        margin-bottom: 15px;
+    }
+
+        .acciones button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            .acciones button:hover {
+                background-color: #218838;
+            }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #f8f8f8;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    thead {
+        background-color: #343a40;
+        color: white;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+        background-color: #e9ecef;
+    }
+</style>
+
+<div class="pagos-container">
+    <h2>Historial de Pagos</h2>
+
+    <div class="acciones">
+        <button onclick="alert('Función de pago programado')">Registrar Pago</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Empleado</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Método</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Carlos Martínez</td>
+                <td>2025-04-10</td>
+                <td>$1.200.000</td>
+                <td>Transferencia</td>
+            </tr>
+            <tr>
+                <td>Laura Pérez</td>
+                <td>2025-04-10</td>
+                <td>$1.500.000</td>
+                <td>Efectivo</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

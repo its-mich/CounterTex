@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "Editar Perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .perfil-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #fefefe;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+        .perfil-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #007bff;
+        }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+    .btn-guardar {
+        width: 100%;
+        padding: 12px;
+        background-color: #28a745;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+        .btn-guardar:hover {
+            background-color: #218838;
+        }
+</style>
+
+<div class="perfil-container">
+    <h2>Editar Perfil</h2>
+
+    <form method="post" id="formEditarPerfil">
+        <div class="form-group">
+            <label for="nombre">Nombres:</label>
+            <input type="text" id="nombre" name="nombre" required />
+        </div>
+
+        <div class="form-group">
+            <label for="apellido">Apellidos:</label>
+            <input type="text" id="apellido" name="apellido" required />
+        </div>
+
+        <div class="form-group">
+            <label for="correo">Correo:</label>
+            <input type="email" id="correo" name="correo" required />
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono" required />
+        </div>
+
+        <button type="submit" class="btn-guardar">Guardar Cambios</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("formEditarPerfil").addEventListener("submit", function(e) {
+        e.preventDefault();
+        alert("Perfil actualizado correctamente.");
+        // Aquí iría la lógica para enviar los datos al servidor
+    });
+</script>

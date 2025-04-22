@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Gastos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .gastos-container {
+        max-width: 900px;
+        margin: 50px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+        .gastos-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #dc3545;
+        }
+
+    .acciones {
+        text-align: right;
+        margin-bottom: 15px;
+    }
+
+        .acciones button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            background-color: #28a745;
+            cursor: pointer;
+        }
+
+            .acciones button:hover {
+                background-color: #218838;
+            }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #f8f8f8;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+        table thead {
+            background-color: #343a40;
+            color: white;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tr:hover {
+            background-color: #ececec;
+        }
+</style>
+
+<div class="gastos-container">
+    <h2>Registro de Gastos</h2>
+
+    <div class="acciones">
+        <button onclick="alert('Función de agregar gasto pendiente')">Agregar Gasto</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>Responsable</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>2025-04-01</td>
+                <td>Compra de telas</td>
+                <td>$500.000</td>
+                <td>Laura Pérez</td>
+            </tr>
+            <tr>
+                <td>2025-04-05</td>
+                <td>Mantenimiento de máquinas</td>
+                <td>$300.000</td>
+                <td>Carlos Martínez</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

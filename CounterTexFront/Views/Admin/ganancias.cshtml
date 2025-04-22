@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Ganancias";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .ganancias-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #f4f4f4;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+        .ganancias-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+    .ganancias-box {
+        background-color: #28a745;
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        font-size: 1.8em;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .resumen {
+        margin-top: 30px;
+    }
+
+        .resumen h4 {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .resumen p {
+            font-size: 1.1em;
+        }
+</style>
+
+<div class="ganancias-container">
+    <h2>Ganancias del Mes</h2>
+
+    <div class="ganancias-box">
+        $8.200.000
+    </div>
+
+    <div class="resumen">
+        <h4>Resumen:</h4>
+        <p><strong>Producción Total:</strong> 3.000 prendas</p>
+        <p><strong>Ingresos Brutos:</strong> $10.000.000</p>
+        <p><strong>Gastos Totales:</strong> $1.800.000</p>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+﻿@model CounterTexFront.Models.viewmodels.MetaViewModel
+
+@{
+    ViewBag.Title = "Meta por Corte";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="meta-container">
+    <h2>Meta Por Corte</h2>
+
+    <div class="meta-box">
+        <p><b>Producción Real del Día:</b></p>
+        <p class="meta-value">92 Prendas</p>
+    </div>
+
+    <div class="meta-detalle">
+        <p><strong>Meta del Corte:</strong> 1000 prendas</p>
+        <p><strong>Faltantes:</strong> 80 prendas</p>
+        <p><strong>Fecha:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
+    </div>
+</div>
+
+<h2>Registrar Meta de Corte</h2>
+
+<!-- ✅ AQUÍ COMIENZA EL FORMULARIO -->
+@using (Html.BeginForm("MetaPorCorte", "Empleado", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Fecha)
+        @Html.TextBoxFor(m => m.Fecha, new { @class = "form-control", type = "date" })
+        @Html.ValidationMessageFor(m => m.Fecha)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.MetaCorte)
+        @Html.TextBoxFor(m => m.MetaCorte, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.MetaCorte)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ProduccionReal)
+        @Html.TextBoxFor(m => m.ProduccionReal, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ProduccionReal)
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Meta</button>
+}

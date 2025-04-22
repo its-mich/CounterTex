@@ -5,11 +5,15 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
+
 namespace CounterTexFront.Controllers
 {
-    public class HomeController : Controller
+    public class ChatController : Controller
     {
-        public ActionResult Index() => View();
+        // GET: Chat
+        public ActionResult ChatInterno()
+        {
+            return View();
+        }
     }
-
 }

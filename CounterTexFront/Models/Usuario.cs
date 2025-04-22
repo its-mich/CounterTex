@@ -1,26 +1,45 @@
-﻿using CounterTexFront.Models;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
 
 namespace CounterTexFront.Models
 {
-    public class Usuarios
-    {
-        [Key]
-        public int IdUsuario { get; set; }
+	public class Usuario
+	{
 
-        [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
-        [Display(Name = "Nombre de Usuario")]
-        public string NombreUsuario { get; set; }
+        public int Id { get; set; }
 
-        [Required(ErrorMessage = "El correo es obligatorio.")]
-        [EmailAddress(ErrorMessage = "Ingrese un correo electrónico válido.")]
-        [Display(Name = "Correo Electrónico")]
+        [Required]
+        [StringLength(100)]
+        public string Nombres { get; set; }
+
+        [StringLength(100)]
+        public string Apellidos { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string Documento { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [StringLength(100)]
         public string Correo { get; set; }
 
-        [Required(ErrorMessage = "La contraseña es obligatoria.")]
+        [Required]
         [DataType(DataType.Password)]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener entre 6 y 100 caracteres.")]
-        [Display(Name = "Contraseña")]
-        public string Clave { get; set; }
+        [StringLength(255)]
+        public string Contraseña { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string Rol { get; set; }
+
+        [Range(0, 100)]
+        public int Edad { get; set; }
+
+        [StringLength(20)]
+        public string Telefono { get; set; }
     }
 }

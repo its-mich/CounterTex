@@ -34,20 +34,25 @@
                             </svg>
                         </a>
                         <ul class="dropdown-menu">
-                            @{ if (User.Identity.IsAuthenticated)
+                            @{
+                                if (Session["Nombre"] != null)
                                 {
-                                    <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                                        <ul class="navbar-nav flex-grow-1">
-                                            <li>@Html.ActionLink("Personas", "Index", "Personas", new { area = "" }, new { @class = "nav-link" })</li>
-                                        </ul>
-                                    </div>
+                                    <li>
+                                        <span class="dropdown-item disabled">Hola, @Session["Nombre"]</span>
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Cerrar sesión", "Logout", "Cuenta", null, new { @class = "dropdown-item" })
+                                    </li>
                                 }
                                 else
                                 {
-                                    @Html.Action("LoginPartial", "Home")
+                                    <li>@Html.ActionLink("Registrarse", "Registro", "Cuenta", null, new { @class = "dropdown-item" })</li>
+                                    <li>@Html.ActionLink("Iniciar sesión", "Login", "Cuenta", null, new { @class = "dropdown-item" })</li>
                                 }
                             }
                         </ul>
+
+
                     </li>
                 </ul>
             </div>

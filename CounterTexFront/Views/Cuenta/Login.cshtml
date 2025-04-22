@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "Iniciar Sesión";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .login-container {
+        max-width: 500px;
+        margin: 60px auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #007bff;
+        }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+
+    .form-check {
+        margin-top: 10px;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+        .btn-login:hover {
+            background-color: #0056b3;
+        }
+
+    .links {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+        .links a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+            .links a:hover {
+                text-decoration: underline;
+            }
+</style>
+
+<div class="login-container">
+    <h2>Ingreso Usuarios Registrados</h2>
+
+    <form method="post" id="formLogin">
+        <div class="form-group">
+            <label for="usuario">Correo o Usuario:</label>
+            <input type="text" id="usuario" name="usuario" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="contraseña">Contraseña:</label>
+            <input type="password" id="contraseña" name="contraseña" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="rol">Rol:</label>
+            <select id="rol" name="rol" class="form-control" required>
+                <option value="Administrador">Administrador</option>
+                <option value="Operario">Empleado</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-login">Ingresar</button>
+
+        <div class="links">
+            <p>¿No tiene una cuenta? <a href="/Cuenta/Registro">Registrar</a></p>
+            <p><a href="/Cuenta/RecuperarContraseña">¿Olvidó su contraseña?</a></p>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById("formLogin").addEventListener("submit", function(e) {
+        e.preventDefault();
+        alert("Inicio de sesión simulado. Aquí deberías validar credenciales.");
+    });
+</script>

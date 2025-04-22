@@ -1,0 +1,35 @@
+﻿@model CounterTexFront.Models.viewmodels.HorarioViewModel
+
+@{
+    ViewBag.Title = "Control de Horarios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Registrar Horario</h2>
+
+@using (Html.BeginForm("ControlHorarios", "Empleado", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Fecha)
+        @Html.TextBoxFor(m => m.Fecha, new { @class = "form-control", type = "date" })
+        @Html.ValidationMessageFor(m => m.Fecha)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.HoraEntrada)
+        @Html.TextBoxFor(m => m.HoraEntrada, new { @class = "form-control", type = "time" })
+        @Html.ValidationMessageFor(m => m.HoraEntrada)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.HoraSalida)
+        @Html.TextBoxFor(m => m.HoraSalida, new { @class = "form-control", type = "time" })
+        @Html.ValidationMessageFor(m => m.HoraSalida)
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar Horario</button>
+}
+    
