@@ -147,6 +147,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdministradorController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\CantidadOperacionController.cs" />
     <Compile Include="Controllers\EmpleadoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="Models\PerfilEmpleado.cs" />
     <Compile Include="Models\Proveedor.cs" />
     <Compile Include="Models\Registro.cs" />
+    <Compile Include="Models\RegistroViewModel.cs" />
     <Compile Include="Models\Satelite.cs" />
     <Compile Include="Models\Tokens.cs" />
     <Compile Include="Models\Usuario.cs" />
@@ -239,6 +241,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Views\Administrador\" />
     <Folder Include="Views\Auth\" />
+    <Folder Include="Views\CantidadOperacion\" />
     <Folder Include="Views\Empleado\" />
     <Folder Include="Views\Proveedor\" />
     <Folder Include="Views\Satelite\" />
