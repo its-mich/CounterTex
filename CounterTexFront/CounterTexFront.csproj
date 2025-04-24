@@ -148,6 +148,8 @@
     <Compile Include="Controllers\AdministradorController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CantidadOperacionController.cs" />
+    <Compile Include="Controllers\ControlHorariosController.cs" />
+    <Compile Include="Controllers\ControlPagosController.cs" />
     <Compile Include="Controllers\EmpleadoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -236,6 +238,8 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\Welcome.cshtml" />
     <Content Include="Views\Registro\Registro.cshtml" />
+    <Content Include="Views\ControlHorarios\ControlHorarios.cshtml" />
+    <Content Include="Views\ControlPagos\ControlPagos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
