@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CounterTex - Inicia sesión</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     @Scripts.Render("~/bundles/jquery")
@@ -62,34 +62,39 @@
                 background-color: #0056b3;
             }
 
-        .btn-google {
-            background-color: #db4437;
-            border: none;
-            color: white;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-            width: 100%;
+        .alert-custom {
+            background-color: #fdecea;
+            border: 1px solid #f5c6cb;
+            color: #dc3545;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
         }
 
-            .btn-google:hover {
-                background-color: #c23321;
-            }
+        .text-danger {
+            color: #dc3545;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="login-card">
-            <img src="~/images/logo1.png" alt="Logo" class="logo">
+            <img src="~/images/logo1.png" alt="Logo" class="logo" />
             <h3 class="mb-4">Iniciar sesión en CounterTex</h3>
 
-            @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id = "loginForm" }))
+            @if (ViewBag.ErrorLogin != null)
+            {
+                <div class="alert-custom text-center">
+                    <strong>Error:</strong> @ViewBag.ErrorLogin
+                </div>
+            }
+
+            @using (Html.BeginForm("Login", "Login", FormMethod.Post, new { id = "loginForm" }))
             {
                 @Html.AntiForgeryToken()
 
                 <div class="form-group">
-                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Usuario o correo electrónico", required = "required" })
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Correo electrónico", required = "required" })
                     @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
                 </div>
 
@@ -98,8 +103,7 @@
                     @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                 </div>
 
-                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                <button type="button" class="btn btn-google" onclick="window.location.href='/Auth/GoogleLogin'">Continuar con Google</button>
+                <button type="submit" class="btn btn-primary" id="btnLogin">Iniciar Sesión</button>
 
                 <p class="mt-3">¿No tienes una cuenta? <a href="@Url.Action("Registro", "Registro")" class="register-link">Regístrate</a></p>
                 <p><a href="@Url.Action("Recuperar", "Auth")" class="forgot-password">¿Olvidaste tu contraseña?</a></p>
