@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using CounterTexFront.Models;
-using Newtonsoft.Json;
-using System.Web.Security;
-using System.Net.Http;
-using System.Text;
 using System.Configuration;
-using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
@@ -19,22 +10,41 @@ namespace CounterTexFront.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            var rol = Session["UserRole"] as string;
+
+            if (!string.IsNullOrEmpty(rol))
+            {
+                switch (rol)
+                {
+                    case "Administrador":
+                        return RedirectToAction("Index", "PerfilAdministrador");
+
+                    case "Proveedor":
+                        return RedirectToAction("Index", "PerfilProveedor");
+
+                    case "Empleado":
+                        return RedirectToAction("Index", "PerfilEmpleado");
+
+                    default:
+                        break; // Puedes redirigir a un error o mostrar vista genérica
+                }
+            }
+
+            return View(); // Vista por defecto para usuarios no autenticados
         }
 
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
-
             return View();
         }
+
         public ActionResult LoginPartial()
         {
             return PartialView("_LoginPartial");

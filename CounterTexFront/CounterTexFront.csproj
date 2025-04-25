@@ -145,17 +145,27 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdministradorController.cs" />
+    <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\CantidadOperacionController.cs" />
+    <Compile Include="Controllers\ControlHorariosController.cs" />
+    <Compile Include="Controllers\ControlPagosController.cs" />
+    <Compile Include="Controllers\EmpleadoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\ProveedorController.cs" />
+    <Compile Include="Controllers\RegistroController.cs" />
+    <Compile Include="Controllers\SateliteController.cs" />
+    <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Login.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\PerfilAdministrador.cs" />
     <Compile Include="Models\PerfilEmpleado.cs" />
     <Compile Include="Models\Proveedor.cs" />
     <Compile Include="Models\Registro.cs" />
+    <Compile Include="Models\RegistroViewModel.cs" />
     <Compile Include="Models\Satelite.cs" />
     <Compile Include="Models\Tokens.cs" />
     <Compile Include="Models\Usuario.cs" />
@@ -188,8 +198,11 @@
     <Content Include="images\fondo incio metas.jpg" />
     <Content Include="images\fondo.jpg" />
     <Content Include="images\google.png" />
+    <Content Include="images\img1.jpg" />
+    <Content Include="images\img3.png" />
     <Content Include="images\Instagram.png" />
     <Content Include="images\logo1.jpg" />
+    <Content Include="images\logo1.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -224,9 +237,19 @@
     <Content Include="Views\Login\Login.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\Welcome.cshtml" />
+    <Content Include="Views\Registro\Registro.cshtml" />
+    <Content Include="Views\ControlHorarios\ControlHorarios.cshtml" />
+    <Content Include="Views\ControlPagos\ControlPagos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Administrador\" />
+    <Folder Include="Views\Auth\" />
+    <Folder Include="Views\CantidadOperacion\" />
+    <Folder Include="Views\Empleado\" />
+    <Folder Include="Views\Proveedor\" />
+    <Folder Include="Views\Satelite\" />
+    <Folder Include="Views\Usuarios\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
