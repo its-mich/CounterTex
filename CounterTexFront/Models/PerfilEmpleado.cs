@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CounterTexFront.Models
 {
-    public class PerfilEmpleadoViewModel
+    public class PerfilEmpleado
     {
         [Key]
         public int IdEmpleado { get; set; }

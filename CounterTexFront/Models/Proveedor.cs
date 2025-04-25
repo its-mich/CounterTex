@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CounterTexFront.Models
 {
-    public class ProveedorViewModel
+    public class Proveedor
     {
         [Key]
         public int IdProveedor { get; set; }
