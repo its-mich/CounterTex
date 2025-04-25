@@ -19,7 +19,7 @@ namespace CounterTexFront.Controllers
         // Acción para obtener la lista de administradores
         public async Task<ActionResult> Index()
         {
-            List<PerfilAdministradorViewModel> administradores = new List<PerfilAdministradorViewModel>();
+            List<PerfilAdministrador> administradores = new List<PerfilAdministrador>();
             try
             {
                 using (var client = new HttpClient())
@@ -30,7 +30,7 @@ namespace CounterTexFront.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var jsonResponse = await response.Content.ReadAsStringAsync();
-                        administradores = JsonConvert.DeserializeObject<List<PerfilAdministradorViewModel>>(jsonResponse);
+                        administradores = JsonConvert.DeserializeObject<List<PerfilAdministrador>>(jsonResponse);
                     }
                     else
                     {
@@ -48,7 +48,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(PerfilAdministradorViewModel model)
+        public async Task<ActionResult> Create(PerfilAdministrador model)
         {
             if (!ModelState.IsValid)
                 return View("Administrador", model); // Cambio aquí para la vista "Administrador"
@@ -81,7 +81,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(PerfilAdministradorViewModel model)
+        public async Task<ActionResult> Edit(PerfilAdministrador model)
         {
             if (!ModelState.IsValid)
                 return View("Administrador", model); // Cambio aquí para la vista "Administrador"

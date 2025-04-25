@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 
 namespace CounterTexFront.Models
 {
-    public class TokensViewModel
+    public class Tokens
     {
+        [Key]
 
-        [Required(ErrorMessage = "El token es obligatorio.")]
-        [Display(Name = "Valor del Token")]
         public string TokenValue { get; set; }
+
         public string Rol { get; set; }
+
     }
 }

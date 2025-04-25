@@ -18,7 +18,7 @@ namespace CounterTexFront.Controllers
 
         public async Task<ActionResult> Index()
         {
-            List<SateliteViewModel> satelites = new List<SateliteViewModel>();
+            List<Satelite> satelites = new List<Satelite>();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
@@ -26,7 +26,7 @@ namespace CounterTexFront.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    satelites = JsonConvert.DeserializeObject<List<SateliteViewModel>>(jsonResponse);
+                    satelites = JsonConvert.DeserializeObject<List<Satelite>>(jsonResponse);
                 }
             }
             return View(satelites);
@@ -34,7 +34,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(SateliteViewModel model)
+        public async Task<ActionResult> Create(Satelite model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -52,7 +52,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(SateliteViewModel model)
+        public async Task<ActionResult> Edit(Satelite model)
         {
             if (!ModelState.IsValid)
                 return View(model);

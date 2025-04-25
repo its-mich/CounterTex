@@ -18,7 +18,7 @@ namespace CounterTexFront.Controllers
 
         public async Task<ActionResult> Index()
         {
-            List<PerfilEmpleadoViewModel> empleados = new List<PerfilEmpleadoViewModel>();
+            List<PerfilEmpleado> empleados = new List<PerfilEmpleado>();
             try
             {
                 using (var client = new HttpClient())
@@ -29,7 +29,7 @@ namespace CounterTexFront.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var jsonResponse = await response.Content.ReadAsStringAsync();
-                        empleados = JsonConvert.DeserializeObject<List<PerfilEmpleadoViewModel>>(jsonResponse);
+                        empleados = JsonConvert.DeserializeObject<List<PerfilEmpleado>>(jsonResponse);
                     }
                     else
                     {
@@ -47,7 +47,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(PerfilEmpleadoViewModel model)
+        public async Task<ActionResult> Create(PerfilEmpleado model)
         {
             if (!ModelState.IsValid)
                 return View("Empleado", model); // Cambio aquí para la vista "Empleado"
@@ -80,7 +80,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(PerfilEmpleadoViewModel model)
+        public async Task<ActionResult> Edit(PerfilEmpleado model)
         {
             if (!ModelState.IsValid)
                 return View("Empleado", model); // Cambio aquí para la vista "Empleado"
