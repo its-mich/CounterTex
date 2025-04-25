@@ -5,7 +5,7 @@ using CounterTexFront.Models;
 
 namespace CounterTexFront.Models
 {
-    public class Satelite//de la nasa
+    public class SateliteViewModel//de la nasa
     {
         [Key]
         public int SateliteId { get; set; }
