@@ -3,11 +3,9 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
@@ -20,7 +18,6 @@ namespace CounterTexFront.Controllers
         {
             return View();
         }
-
 
         public async Task<ActionResult> Index()
         {
@@ -43,17 +40,52 @@ namespace CounterTexFront.Controllers
         public async Task<ActionResult> Create(RegistroViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
-
-            using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(apiUrl);
-                string json = JsonConvert.SerializeObject(model);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                await client.PostAsync("api/Registro/PostRegistro", content);
+                // Si el modelo no es válido, mostramos un mensaje de error
+                ModelState.AddModelError("", "Por favor verifica los campos del formulario.");
+                return View(model);
             }
 
-            return RedirectToAction("Index");
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    // Serializamos el modelo a JSON
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Enviar la solicitud POST
+                    HttpResponseMessage response = await client.PostAsync("api/Auth/Registro", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Si la respuesta es exitosa, mostramos un mensaje de éxito
+                        ViewBag.Message = "¡Registro exitoso! Ahora puedes iniciar sesión.";
+                    }
+                    else
+                    {
+                        // Si la respuesta no es exitosa, mostramos el mensaje de error
+                        var errorResponse = await response.Content.ReadAsStringAsync();
+                        ViewBag.Message = "Error al registrar el usuario: " + errorResponse;
+                    }
+                }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                // Manejo de excepciones de conexión
+                ViewBag.Message = "Error de conexión con el servidor: " + httpEx.Message;
+            }
+            catch (Exception ex)
+            {
+                // Captura de errores inesperados
+                ViewBag.Message = "Error inesperado: " + ex.Message;
+            }
+
+            // Devolvemos la vista con el mensaje (sin redirección)
+            return View(model);
         }
 
         [HttpPost]

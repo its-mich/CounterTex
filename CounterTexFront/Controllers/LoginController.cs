@@ -41,7 +41,7 @@ namespace CounterTexFront.Controllers
                 if (Res.IsSuccessStatusCode)
                 {
                     var res = await Res.Content.ReadAsStringAsync();
-                    var token = JsonConvert.DeserializeObject<TokensViewModel>(res);
+                    var token = JsonConvert.DeserializeObject<Tokens>(res);
                     CookieUpdate(model);
                     Session["BearerToken"] = token.TokenValue;
                     return RedirectToAction("Index", "Home");

@@ -18,7 +18,7 @@ namespace CounterTexFront.Controllers
 
         public async Task<ActionResult> Index()
         {
-            List<ProveedorViewModel> proveedores = new List<ProveedorViewModel>();
+            List<Proveedor> proveedores = new List<Proveedor>();
             try
             {
                 using (var client = new HttpClient())
@@ -29,7 +29,7 @@ namespace CounterTexFront.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var jsonResponse = await response.Content.ReadAsStringAsync();
-                        proveedores = JsonConvert.DeserializeObject<List<ProveedorViewModel>>(jsonResponse);
+                        proveedores = JsonConvert.DeserializeObject<List<Proveedor>>(jsonResponse);
                     }
                     else
                     {
@@ -47,7 +47,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(ProveedorViewModel model)
+        public async Task<ActionResult> Create(Proveedor model)
         {
             if (!ModelState.IsValid)
                 return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
@@ -80,7 +80,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(ProveedorViewModel model)
+        public async Task<ActionResult> Edit(Proveedor model)
         {
             if (!ModelState.IsValid)
                 return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
