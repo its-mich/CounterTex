@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 
 namespace CounterTexFront.Controllers
 {
@@ -19,66 +18,123 @@ namespace CounterTexFront.Controllers
 
         public async Task<ActionResult> Index()
         {
-            List<PerfilEmpleado> empleados = new List<PerfilEmpleado>();
-            using (var client = new HttpClient())
+            List<PerfilEmpleadoViewModel> empleados = new List<PerfilEmpleadoViewModel>();
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                HttpResponseMessage response = await client.GetAsync("api/Empleado/GetEmpleado");
-                if (response.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    empleados = JsonConvert.DeserializeObject<List<PerfilEmpleado>>(jsonResponse);
+                    client.BaseAddress = new Uri(apiUrl);
+                    HttpResponseMessage response = await client.GetAsync("api/Empleado/GetEmpleado");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonResponse = await response.Content.ReadAsStringAsync();
+                        empleados = JsonConvert.DeserializeObject<List<PerfilEmpleadoViewModel>>(jsonResponse);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error al obtener los datos de empleados.");
+                    }
                 }
             }
-            return View(empleados);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al conectarse con el servidor: " + ex.Message);
+            }
+
+            return View("Empleado", empleados); // Cambio aquí para la vista "Empleado"
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(PerfilEmpleado model)
+        public async Task<ActionResult> Create(PerfilEmpleadoViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View("Empleado", model); // Cambio aquí para la vista "Empleado"
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                string json = JsonConvert.SerializeObject(model);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                await client.PostAsync("api/Empleado/PostEmpleado", content);
-            }
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            return RedirectToAction("Index");
+                    HttpResponseMessage response = await client.PostAsync("api/Empleado/PostEmpleado", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        ModelState.AddModelError("", "No se pudo crear el empleado. Inténtalo nuevamente.");
+                        return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+                    }
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al crear el empleado: " + ex.Message);
+                return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(PerfilEmpleado model)
+        public async Task<ActionResult> Edit(PerfilEmpleadoViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View("Empleado", model); // Cambio aquí para la vista "Empleado"
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                string json = JsonConvert.SerializeObject(model);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                await client.PutAsync("api/Empleado/PutEmpleado", content);
-            }
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            return RedirectToAction("Index");
+                    HttpResponseMessage response = await client.PutAsync("api/Empleado/PutEmpleado", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        ModelState.AddModelError("", "No se pudo editar el empleado. Inténtalo nuevamente.");
+                        return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+                    }
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al editar el empleado: " + ex.Message);
+                return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
         {
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                await client.DeleteAsync($"api/Empleado/DeleteEmpleado/{id}");
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    HttpResponseMessage response = await client.DeleteAsync($"api/Empleado/DeleteEmpleado/{id}");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        ModelState.AddModelError("", "No se pudo eliminar el empleado. Inténtalo nuevamente.");
+                    }
+                }
+
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al eliminar el empleado: " + ex.Message);
+                return RedirectToAction("Index");
+            }
         }
     }
 }

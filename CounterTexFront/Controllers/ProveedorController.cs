@@ -1,5 +1,5 @@
-﻿using CounterTexFront.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using CounterTexFront.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -18,66 +18,123 @@ namespace CounterTexFront.Controllers
 
         public async Task<ActionResult> Index()
         {
-            List<Proveedor> proveedores = new List<Proveedor>();
-            using (var client = new HttpClient())
+            List<ProveedorViewModel> proveedores = new List<ProveedorViewModel>();
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                HttpResponseMessage response = await client.GetAsync("api/Proveedor/GetProveedor");
-                if (response.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    proveedores = JsonConvert.DeserializeObject<List<Proveedor>>(jsonResponse);
+                    client.BaseAddress = new Uri(apiUrl);
+                    HttpResponseMessage response = await client.GetAsync("api/Proveedor/GetProveedor");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonResponse = await response.Content.ReadAsStringAsync();
+                        proveedores = JsonConvert.DeserializeObject<List<ProveedorViewModel>>(jsonResponse);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error al obtener los datos de proveedores.");
+                    }
                 }
             }
-            return View(proveedores);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al conectarse con el servidor: " + ex.Message);
+            }
+
+            return View("Proveedor", proveedores); // Cambio aquí para la vista "Proveedor"
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Proveedor model)
+        public async Task<ActionResult> Create(ProveedorViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                string json = JsonConvert.SerializeObject(model);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                await client.PostAsync("api/Proveedor/PostProveedor", content);
-            }
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            return RedirectToAction("Index");
+                    HttpResponseMessage response = await client.PostAsync("api/Proveedor/PostProveedor", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        ModelState.AddModelError("", "No se pudo crear el proveedor. Inténtalo nuevamente.");
+                        return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+                    }
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al crear el proveedor: " + ex.Message);
+                return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(Proveedor model)
+        public async Task<ActionResult> Edit(ProveedorViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                string json = JsonConvert.SerializeObject(model);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                await client.PutAsync("api/Proveedor/PutProveedor", content);
-            }
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            return RedirectToAction("Index");
+                    HttpResponseMessage response = await client.PutAsync("api/Proveedor/PutProveedor", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        ModelState.AddModelError("", "No se pudo editar el proveedor. Inténtalo nuevamente.");
+                        return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+                    }
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al editar el proveedor: " + ex.Message);
+                return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
         {
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                await client.DeleteAsync($"api/Proveedor/DeleteProveedor/{id}");
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    HttpResponseMessage response = await client.DeleteAsync($"api/Proveedor/DeleteProveedor/{id}");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        ModelState.AddModelError("", "No se pudo eliminar el proveedor. Inténtalo nuevamente.");
+                    }
+                }
+
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al eliminar el proveedor: " + ex.Message);
+                return RedirectToAction("Index");
+            }
         }
     }
 }

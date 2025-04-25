@@ -24,7 +24,7 @@ namespace CounterTexFront.Controllers
 
         public async Task<ActionResult> Index()
         {
-            List<Registro> registros = new List<Registro>();
+            List<RegistroViewModel> registros = new List<RegistroViewModel>();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
@@ -32,7 +32,7 @@ namespace CounterTexFront.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    registros = JsonConvert.DeserializeObject<List<Registro>>(jsonResponse);
+                    registros = JsonConvert.DeserializeObject<List<RegistroViewModel>>(jsonResponse);
                 }
             }
             return View(registros);
@@ -40,7 +40,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Registro model)
+        public async Task<ActionResult> Create(RegistroViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -58,7 +58,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(Registro model)
+        public async Task<ActionResult> Edit(RegistroViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);

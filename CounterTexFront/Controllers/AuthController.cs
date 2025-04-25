@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using System.Diagnostics;
 
 namespace CounterTexFront.Controllers
 {
@@ -48,15 +49,51 @@ namespace CounterTexFront.Controllers
                 if (Res.IsSuccessStatusCode)
                 {
                     var res = await Res.Content.ReadAsStringAsync();
-                    Tokens token = JsonConvert.DeserializeObject<Tokens>(res);
-                    Session["BearerToken"] = token.TokenValue;
+                    TokensViewModel token = JsonConvert.DeserializeObject<TokensViewModel>(res);
 
-                    return RedirectToAction("Index", "Home");
+                    // Depuración para verificar el rol y token
+                    Debug.WriteLine("Token: " + token.TokenValue);  // Verifica que el token esté presente
+                    Debug.WriteLine("Rol: " + token.Rol);  // Verifica que el rol esté presente
+
+                    if (string.IsNullOrEmpty(token.Rol))
+                    {
+                        ModelState.AddModelError("", "El rol del usuario no está asignado correctamente.");
+                        return View(model);
+                    }
+
+                    // Asignar el rol a la sesión
+                    Session["BearerToken"] = token.TokenValue;
+                    Session["UserRole"] = token.Rol;
+
+                    // Verificación en el valor de rol antes de redirigir
+                    Debug.WriteLine("Session UserRole: " + Session["UserRole"]); // Verifica el rol almacenado en la sesión
+
+                    // Forzar la redirección en función del rol
+                    if (token.Rol == "Administrador")
+                    {
+                        Debug.WriteLine("Redirigiendo a PerfilAdministrador...");
+                        return RedirectToAction("Index", "Administrador");
+                    }
+                    else if (token.Rol == "Proveedor")
+                    {
+                        Debug.WriteLine("Redirigiendo a PerfilProveedor...");
+                        return RedirectToAction("Index", "Proveedor");
+                    }
+                    else if (token.Rol == "Empleado")
+                    {
+                        Debug.WriteLine("Redirigiendo a PerfilEmpleado...");
+                        return RedirectToAction("Index", "Empleado");
+                    }
+                    else
+                    {
+                        // Si el rol no es ninguno de los anteriores, redirige a Home
+                        Debug.WriteLine("Redirigiendo a Home por rol desconocido...");
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 else
                 {
-                    var errorResponse = await Res.Content.ReadAsStringAsync();
-                    ModelState.AddModelError("", "Error al iniciar sesión: " + errorResponse);
+                    ModelState.AddModelError("", "Error al iniciar sesión. Verifica tus credenciales.");
                     return View(model);
                 }
             }
@@ -98,9 +135,10 @@ namespace CounterTexFront.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            Session.RemoveAll();
+            Session.Clear();
+            Session.Abandon();
             FormsAuthentication.SignOut();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Welcome", "Home");
         }
     }
 }
