@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CounterTexFront.Models
 {
-    public class PerfilAdministrador
+    public class PerfilAdministradorViewModel
     {
         [Key] //llave primaria
         public int IdAdministrador { get; set; }
