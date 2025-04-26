@@ -167,14 +167,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\LoginViewModel.cs" />
-    <Compile Include="Models\PerfilAdministrador.cs" />
-    <Compile Include="Models\PerfilEmpleado.cs" />
-    <Compile Include="Models\Proveedor.cs" />
-    <Compile Include="Models\Registro.cs" />
+    <Compile Include="Models\PerfilAdministradorViewModel.cs" />
+    <Compile Include="Models\PerfilEmpleadoViewModel.cs" />
+    <Compile Include="Models\ProveedorViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
-    <Compile Include="Models\Satelite.cs" />
+    <Compile Include="Models\SateliteViewModel.cs" />
     <Compile Include="Models\Tokens.cs" />
-    <Compile Include="Models\Usuario.cs" />
+    <Compile Include="Models\UsuarioViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +203,7 @@
     <Content Include="images\fondo incio metas.jpg" />
     <Content Include="images\fondo.jpg" />
     <Content Include="images\google.png" />
+    <Content Include="images\logoredondo.png" />
     <Content Include="images\img1.jpg" />
     <Content Include="images\img3.png" />
     <Content Include="images\Instagram.png" />

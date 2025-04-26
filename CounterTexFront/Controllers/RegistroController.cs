@@ -34,7 +34,37 @@ namespace CounterTexFront.Controllers
             }
             return View(registros);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Registro(RegistroViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Por favor verifica los campos del formulario.");
+                return View(model);
+            }
 
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Clear();
+
+                string json = JsonConvert.SerializeObject(model);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage Res = await client.PostAsync("api/Auth/Registro", content);
+
+                if (Res.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Login", "Auth");
+                }
+                else
+                {
+                    var errorResponse = await Res.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", "Error al registrar el usuario: " + errorResponse);
+                    return View(model);
+                }
+            }
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(RegistroViewModel model)
