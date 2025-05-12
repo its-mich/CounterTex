@@ -96,7 +96,12 @@
         <a href="@Url.Action("ControlHorarios", "Control")" style="font-size: 15px">Control de horarios</a>
         <a href="@Url.Action("ProduccionMensual", "Control")" style="font-size: 15px">Producción Mensual</a>
         <a href="@Url.Action("ControlPrendas", "Control")" style="font-size: 15px">Control de Prendas</a>
-        <a href="@Url.Action("Contacto", "Control")" style="font-size: 15px">Control de Pagos</a>
+
+        <a href="@Url.Action("detalleprendaempleado", "Control")" style="font-size: 15px">Control de Pagos</a>
+
+        @*<a href="@Url.Action("Contacto", "Control")" style="font-size: 15px">Control de Pagos</a>*@
+        <a href="@Url.Action("ControlPagos", "Control")" style="font-size: 15px">Control de Pagos</a>
+
 
         @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
         {

@@ -1,0 +1,806 @@
+﻿
+@{
+    ViewBag.Title = "revision";
+}
+
+<h2>revision</h2>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CounterTex - Revisión</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+    :root {
+      --primary-color: #6a11cb;
+      --secondary-color: #2575fc;
+      --accent-color: #ff4d8d;
+      --dark-color: #2c3e50;
+      --light-color: #f8f9fa;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fb;
+      color: var(--dark-color);
+    }
+
+    /* Sidebar Premium */
+    .admin-sidebar {
+      background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: white;
+      min-height: 100vh;
+      width: 280px;
+      position: fixed;
+      box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .admin-sidebar .sidebar-header {
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-sidebar .profile-info {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-sidebar .profile-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 15px;
+    }
+
+    .admin-sidebar .nav-menu {
+      padding: 20px 0;
+    }
+
+    .admin-sidebar .nav-item {
+      margin-bottom: 5px;
+    }
+
+    .admin-sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 12px 25px;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+
+    .admin-sidebar .nav-link:hover,
+    .admin-sidebar .nav-link.active {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--accent-color);
+      text-decoration: none;
+    }
+
+    .admin-sidebar .nav-link i {
+      margin-right: 10px;
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .admin-sidebar .nav-link .badge {
+      margin-left: auto;
+      background-color: var(--accent-color);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 280px;
+      padding: 30px;
+      transition: all 0.3s;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .admin-header h2 {
+      font-weight: 600;
+      color: var(--dark-color);
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .admin-header h2 i {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box {
+      position: relative;
+      margin-right: 15px;
+    }
+
+    .search-box input {
+      padding: 10px 15px 10px 40px;
+      border-radius: 30px;
+      border: 1px solid #e0e0e0;
+      width: 250px;
+      transition: all 0.3s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-menu img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    /* Dashboard Cards */
+    .dashboard-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+      border: none;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .card-icon.primary {
+      background: rgba(106, 17, 203, 0.1);
+      color: var(--primary-color);
+    }
+
+    .card-icon.success {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success-color);
+    }
+
+    .card-icon.warning {
+      background: rgba(255, 193, 7, 0.1);
+      color: var(--warning-color);
+    }
+
+    .card-icon.danger {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger-color);
+    }
+
+    .card-value {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .card-label {
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    /* Production Form */
+    .production-form {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+    }
+
+    .form-section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+    }
+
+    .form-section-title i {
+      margin-right: 10px;
+    }
+
+    .form-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .form-tab {
+      padding: 10px 20px;
+      margin-right: 5px;
+      border-radius: 5px 5px 0 0;
+      background: #f8f9fa;
+      color: #6c757d;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .form-tab:hover,
+    .form-tab.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .floating-label {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .floating-label label {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      color: #6c757d;
+      transition: all 0.3s;
+      pointer-events: none;
+      background: white;
+      padding: 0 5px;
+    }
+
+    .floating-label .form-control:focus + label,
+    .floating-label .form-control:not(:placeholder-shown) + label,
+    .floating-label .form-select:focus + label,
+    .floating-label .form-select:not(:placeholder-shown) + label {
+      top: -10px;
+      left: 10px;
+      font-size: 0.8rem;
+      color: var(--primary-color);
+    }
+
+    .form-control, .form-select {
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      transition: all 0.3s;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+    }
+
+    .btn-submit {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      border: none;
+      padding: 12px 25px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+      background-size: 200% auto;
+    }
+
+    .btn-submit:hover {
+      background-position: right center;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    }
+
+    /* Production Table */
+    .production-table {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .table thead th {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      font-weight: 500;
+    }
+
+    .table tbody tr {
+      transition: all 0.3s;
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(106, 17, 203, 0.05);
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-completed {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success-color);
+    }
+
+    .status-pending {
+      background: rgba(255, 193, 7, 0.1);
+      color: var(--warning-color);
+    }
+
+    .status-cancelled {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger-color);
+    }
+
+    .action-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 3px;
+      transition: all 0.3s;
+    }
+
+    .action-btn.edit {
+      background: rgba(13, 110, 253, 0.1);
+      color: #0d6efd;
+    }
+
+    .action-btn.delete {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger-color);
+    }
+
+    .action-btn.view {
+      background: rgba(25, 135, 84, 0.1);
+      color: var(--success-color);
+    }
+
+    .action-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Responsive */
+     (max-width: 992px) {
+      .admin-sidebar {
+        width: 80px;
+        overflow: hidden;
+      }
+
+      .admin-sidebar .profile-info,
+      .admin-sidebar .nav-link span {
+        display: none;
+      }
+
+      .admin-sidebar .nav-link {
+        justify-content: center;
+        padding: 12px 0;
+      }
+
+      .admin-sidebar .nav-link i {
+        margin-right: 0;
+        font-size: 1.3rem;
+      }
+
+      .main-content {
+        margin-left: 80px;
+      }
+
+      .search-box input {
+        width: 180px;
+      }
+    }
+
+     (max-width: 768px) {
+      .search-box {
+        display: none;
+      }
+
+      .dashboard-card {
+        margin-bottom: 15px;
+      }
+    }
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <h4 class="text-center mb-0">CounterTex</h4>
+        </div>
+
+        <div class="profile-info">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Admin" class="profile-img">
+            <h5 class="mb-1">Admin Master</h5>
+            <p class="text-muted small mb-0">Administrador Principal</p>
+        </div>
+
+        <div class="nav-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="produccion diaria.html" class="nav-link active">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>Producción Diaria</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="control horarios.html" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        <span>Control de Horarios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="control-prendas.html" class="nav-link">
+                        <i class="fas fa-tshirt"></i>
+                        <span>Control de Prendas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="control-pagos.html" class="nav-link">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Control de Pagos</span>
+                        <span class="badge rounded-pill bg-danger">3</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="chat-interno.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat Interno</span>
+                        <span class="badge rounded-pill bg-success">5</span>
+                    </a>
+                <li class="nav-item">
+                    <a href="revision.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>revision de prendas</span>
+                        <span class="badge rounded-pill bg-success">5</span>
+                    </a>
+                <li class="nav-item">
+                    <a href="detalles de prenda.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>detalle de prenda</span>
+                        <span class="badge rounded-pill bg-success">5</span>
+                    </a>
+                <li class="nav-item">
+                    <a href="asignacion.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>asignacion de prenda</span>
+                        <span class="badge rounded-pill bg-success">5</span>
+                    </a>
+                </li>
+                </li>
+                <li class="nav-item">
+                    <a href="log in.html" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 main-content">
+        <h2 class="mb-4">Revisión de Prendas</h2>
+
+        <!-- Contadores -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card card-counter">
+                    <div class="card-body">
+                        <h5 class="card-title">Por Revisar</h5>
+                        <h3 class="card-text" id="contadorPorRevisar">24</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-counter">
+                    <div class="card-body">
+                        <h5 class="card-title">Aprobadas</h5>
+                        <h3 class="card-text" id="contadorAprobadas">156</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-counter">
+                    <div class="card-body">
+                        <h5 class="card-title">Rechazadas</h5>
+                        <h3 class="card-text" id="contadorRechazadas">12</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-counter">
+                    <div class="card-body">
+                        <h5 class="card-title">Total</h5>
+                        <h3 class="card-text" id="contadorTotal">192</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Filtrar Prendas</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="tipoPrenda" class="form-label">Tipo de Prenda</label>
+                        <select class="form-select" id="tipoPrenda">
+                            <option selected>Todas</option>
+                            <option>Médico</option>
+                            <option>Operación</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="estadoRevision" class="form-label">Estado Revisión</label>
+                        <select class="form-select" id="estadoRevision">
+                            <option selected>Todos</option>
+                            <option>Por Revisar</option>
+                            <option>Aprobado</option>
+                            <option>Rechazado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="operador" class="form-label">Operador</label>
+                        <select class="form-select" id="operador">
+                            <option selected>Todos</option>
+                            <option>Operador 1</option>
+                            <option>Operador 2</option>
+                            <option>Operador 3</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" id="btnFiltrar">Filtrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Prendas -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="tablaPrendas">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Operador</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Datos se llenarán con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Revisión -->
+        <div class="modal fade" id="modalRevision" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Revisar Prenda <span id="modalPrendaId"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formRevision">
+                            <div class="mb-3">
+                                <label class="form-label">Tipo:</label>
+                                <p class="form-control-static" id="modalTipo"></p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Descripción:</label>
+                                <p class="form-control-static" id="modalDescripcion"></p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Operador:</label>
+                                <p class="form-control-static" id="modalOperador"></p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="resultadoRevision" class="form-label">Resultado:</label>
+                                <select class="form-select" id="resultadoRevision" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Aprobado">Aprobado</option>
+                                    <option value="Rechazado">Rechazado</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comentariosRevision" class="form-label">Comentarios:</label>
+                                <textarea class="form-control" id="comentariosRevision" rows="3" required></textarea>
+                            </div>
+                            <input type="hidden" id="prendaIdRevision">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btnConfirmarRevision">Guardar Revisión</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Datos de ejemplo
+        const prendasRevision = [
+            { id: 1001, tipo: "Médico", descripcion: "Bata quirúrgica", operador: "Operador 1", estado: "Por Revisar" },
+            { id: 1002, tipo: "Operación", descripcion: "Guantes latex", operador: "Operador 2", estado: "Por Revisar" },
+            { id: 1003, tipo: "Médico", descripcion: "Mascarilla N95", operador: "Operador 3", estado: "Aprobado" },
+            { id: 1004, tipo: "Operación", descripcion: "Gorro quirúrgico", operador: "Operador 1", estado: "Rechazado", comentario: "Costura defectuosa" }
+        ];
+
+        // Inicializar tabla
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabla = document.getElementById('tablaPrendas').getElementsByTagName('tbody')[0];
+            actualizarTabla(tabla, prendasRevision);
+            actualizarContadores(prendasRevision);
+
+            // Evento para el botón de filtrar
+            document.getElementById('btnFiltrar').addEventListener('click', function() {
+                const tipo = document.getElementById('tipoPrenda').value;
+                const estado = document.getElementById('estadoRevision').value;
+                const operador = document.getElementById('operador').value;
+
+                const filtradas = prendasRevision.filter(p =>
+                    (tipo === 'Todas' || p.tipo === tipo) &&
+                    (estado === 'Todos' || p.estado === estado) &&
+                    (operador === 'Todos' || p.operador === operador)
+                );
+
+                actualizarTabla(tabla, filtradas);
+            });
+
+            // Modal de revisión
+            const modalRevision = new bootstrap.Modal(document.getElementById('modalRevision'));
+
+            // Evento para abrir modal de revisión
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-revisar')) {
+                    const id = e.target.getAttribute('data-id');
+                    const prenda = prendasRevision.find(p => p.id == id);
+
+                    if (prenda) {
+                        document.getElementById('prendaIdRevision').value = id;
+                        document.getElementById('modalPrendaId').textContent = id;
+                        document.getElementById('modalTipo').textContent = prenda.tipo;
+                        document.getElementById('modalDescripcion').textContent = prenda.descripcion;
+                        document.getElementById('modalOperador').textContent = prenda.operador;
+
+                        // Resetear formulario
+                        document.getElementById('resultadoRevision').value = '';
+                        document.getElementById('comentariosRevision').value = '';
+
+                        modalRevision.show();
+                    }
+                }
+            });
+
+            // Confirmar revisión
+            document.getElementById('btnConfirmarRevision').addEventListener('click', function() {
+                const id = document.getElementById('prendaIdRevision').value;
+                const resultado = document.getElementById('resultadoRevision').value;
+                const comentarios = document.getElementById('comentariosRevision').value;
+
+                if (!resultado || !comentarios) {
+                    alert('Complete todos los campos');
+                    return;
+                }
+
+                // Actualizar estado en los datos
+                const prenda = prendasRevision.find(p => p.id == id);
+                if (prenda) {
+                    prenda.estado = resultado;
+                    prenda.comentario = comentarios;
+                    actualizarTabla(tabla, prendasRevision);
+                    actualizarContadores(prendasRevision);
+                    modalRevision.hide();
+                    alert(`Prenda ${id} marcada como ${resultado}`);
+                }
+            });
+        });
+
+        function actualizarTabla(tabla, datos) {
+            tabla.innerHTML = '';
+            datos.forEach(prenda => {
+                const row = tabla.insertRow();
+                row.innerHTML = `
+                    <td>${prenda.id}</td>
+                    <td>${prenda.tipo}</td>
+                    <td>${prenda.descripcion}</td>
+                    <td>${prenda.operador}</td>
+                    <td><span class="badge ${getBadgeClassRevision(prenda.estado)} status-badge">${prenda.estado}</span></td>
+                    <td>
+                        ${prenda.estado === 'Por Revisar' ?
+                            `<button class="btn btn-sm btn-primary btn-revisar" data-id="${prenda.id}">Revisar</button>` :
+                            `<button class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="${prenda.comentario || 'Sin comentarios'}">Ver Detalles</button>`}
+                    </td>
+                `;
+            });
+
+            // Inicializar tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+
+        function actualizarContadores(datos) {
+            const porRevisar = datos.filter(p => p.estado === 'Por Revisar').length;
+            const aprobadas = datos.filter(p => p.estado === 'Aprobado').length;
+            const rechazadas = datos.filter(p => p.estado === 'Rechazado').length;
+
+            document.getElementById('contadorPorRevisar').textContent = porRevisar;
+            document.getElementById('contadorAprobadas').textContent = aprobadas;
+            document.getElementById('contadorRechazadas').textContent = rechazadas;
+            document.getElementById('contadorTotal').textContent = datos.length;
+        }
+
+        function getBadgeClassRevision(estado) {
+            switch(estado) {
+                case 'Por Revisar': return 'bg-warning text-dark';
+                case 'Aprobado': return 'bg-success';
+                case 'Rechazado': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -14,9 +14,25 @@ namespace CounterTexFront.Controllers
             return View();
         }
 
-        public ActionResult Create()
+        public ActionResult ControlHorarios()
         {
             return View();
         }
+
+
+
+        //[HttpPost]
+        //public ActionResult Create(CounterTexFront.Models.HorarioViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        // Aquí podrías guardar los datos si tuvieras base de datos
+        //        TempData["Mensaje"] = "Horario guardado correctamente.";
+        //        return RedirectToAction("Index"); // Redirige al listado (u otra vista)
+        //    }
+
+        //    return View(model); // Si hay errores, vuelve al formulario
+        //}
+
     }
 }

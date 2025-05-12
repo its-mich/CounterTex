@@ -1,0 +1,894 @@
+﻿
+@model CounterTexFront.Models.  ControlPrendasEmpleadoViewModel
+
+@{
+    ViewBag.Title = "ControlPrendasEmpleado";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ControlPrendasEmpleado</h2>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Prendas - CounterTex</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --accent-color: #ff4d8d;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark-color);
+            padding-left: 280px;
+        }
+
+        .admin-sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            min-height: 100vh;
+            width: 280px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+            padding-left: 50px;
+        }
+
+        /* Estilos del sidebar y otros igual que en tu ejemplo */
+        /* ... (mantener todos los estilos del sidebar igual) ... */
+
+        /* Estilos específicos para Control de Prendas */
+        .garment-card {
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .garment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .garment-img {
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .garment-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-in-production {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+        }
+
+        .status-rejected {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        .garment-actions {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .stats-card {
+            border-radius: 10px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .stats-card i {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .stats-card.total {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        }
+
+        .stats-card.in-production {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+        }
+
+        .stats-card.completed {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .stats-card.rejected {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+        }
+        body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7fb;
+      color: var(--dark-color);
+    }
+
+    /* Sidebar Premium */
+    .admin-sidebar {
+      background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: white;
+      min-height: 100vh;
+      width: 280px;
+      position: fixed;
+      box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .admin-sidebar .sidebar-header {
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-sidebar .profile-info {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-sidebar .profile-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 15px;
+    }
+
+    .admin-sidebar .nav-menu {
+      padding: 20px 0;
+    }
+
+    .admin-sidebar .nav-item {
+      margin-bottom: 5px;
+    }
+
+    .admin-sidebar .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 12px 25px;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+
+    .admin-sidebar .nav-link:hover,
+    .admin-sidebar .nav-link.active {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--accent-color);
+      text-decoration: none;
+    }
+
+    .admin-sidebar .nav-link i {
+      margin-right: 10px;
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .admin-sidebar .nav-link .badge {
+      margin-left: auto;
+      background-color: var(--accent-color);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 280px;
+      padding: 30px;
+      transition: all 0.3s;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .admin-header h2 {
+      font-weight: 600;
+      color: var(--dark-color);
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .admin-header h2 i {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box {
+      position: relative;
+      margin-right: 15px;
+    }
+
+    .search-box input {
+      padding: 10px 15px 10px 40px;
+      border-radius: 30px;
+      border: 1px solid #e0e0e0;
+      width: 250px;
+      transition: all 0.3s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-menu img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    /* Dashboard Cards */
+    .dashboard-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+      border: none;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .card-icon.primary {
+      background: rgba(106, 17, 203, 0.1);
+      color: var(--primary-color);
+    }
+
+    .card-icon.success {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success-color);
+    }
+
+    .card-icon.warning {
+      background: rgba(255, 193, 7, 0.1);
+      color: var(--warning-color);
+    }
+
+    .card-icon.danger {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger-color);
+    }
+
+    .card-value {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .card-label {
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    /* Production Form */
+    .production-form {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+    }
+
+    .form-section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+    }
+
+    .form-section-title i {
+      margin-right: 10px;
+    }
+
+    .form-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .form-tab {
+      padding: 10px 20px;
+      margin-right: 5px;
+      border-radius: 5px 5px 0 0;
+      background: #f8f9fa;
+      color: #6c757d;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .form-tab:hover,
+    .form-tab.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .floating-label {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .floating-label label {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      color: #6c757d;
+      transition: all 0.3s;
+      pointer-events: none;
+      background: white;
+      padding: 0 5px;
+    }
+
+    .floating-label .form-control:focus + label,
+    .floating-label .form-control:not(:placeholder-shown) + label,
+    .floating-label .form-select:focus + label,
+    .floating-label .form-select:not(:placeholder-shown) + label {
+      top: -10px;
+      left: 10px;
+      font-size: 0.8rem;
+      color: var(--primary-color);
+    }
+
+    .form-control, .form-select {
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      transition: all 0.3s;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+    }
+
+    .btn-submit {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      border: none;
+      padding: 12px 25px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+      background-size: 200% auto;
+    }
+
+    .btn-submit:hover {
+      background-position: right center;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    }
+
+    /* Production Table */
+    .production-table {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .table thead th {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      font-weight: 500;
+    }
+
+    .table tbody tr {
+      transition: all 0.3s;
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(106, 17, 203, 0.05);
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-completed {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success-color);
+    }
+
+    .status-pending {
+      background: rgba(255, 193, 7, 0.1);
+      color: var(--warning-color);
+    }
+
+    .status-cancelled {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger-color);
+    }
+
+    .action-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 3px;
+      transition: all 0.3s;
+    }
+
+    .action-btn.edit {
+      background: rgba(13, 110, 253, 0.1);
+      color: #0d6efd;
+    }
+
+    .action-btn.delete {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger-color);
+    }
+
+    .action-btn.view {
+      background: rgba(25, 135, 84, 0.1);
+      color: var(--success-color);
+    }
+
+    .action-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Responsive */
+     (max-width: 992px) {
+      .admin-sidebar {
+        width: 80px;
+        overflow: hidden;
+      }
+
+      .admin-sidebar .profile-info,
+      .admin-sidebar .nav-link span {
+        display: none;
+      }
+
+      .admin-sidebar .nav-link {
+        justify-content: center;
+        padding: 12px 0;
+      }
+
+      .admin-sidebar .nav-link i {
+        margin-right: 0;
+        font-size: 1.3rem;
+      }
+
+      .main-content {
+        margin-left: 80px;
+      }
+
+      .search-box input {
+        width: 180px;
+      }
+    }
+
+     (max-width: 768px) {
+      .search-box {
+        display: none;
+      }
+
+      .dashboard-card {
+        margin-bottom: 15px;
+      }
+    }
+    </style>
+</head>
+<body>
+  
+
+
+    <!-- Contenido principal -->
+    <div class="main-container">
+        <h2 class="mb-4"><i class="fas fa-tshirt me-2"></i>Control de Prendas</h2>
+
+        <!-- Estadísticas rápidas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card total">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">Total Prendas</h5>
+                            <h2 class="mb-0">1,248</h2>
+                        </div>
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card in-production">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">En Producción</h5>
+                            <h2 class="mb-0">342</h2>
+                        </div>
+                        <i class="fas fa-cog"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card completed">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">Completadas</h5>
+                            <h2 class="mb-0">856</h2>
+                        </div>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card rejected">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">Rechazadas</h5>
+                            <h2 class="mb-0">50</h2>
+                        </div>
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filter-section">
+            <h4 class="mb-4"><i class="fas fa-filter me-2"></i>Filtrar Prendas</h4>
+            <form id="filterForm">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="garmentType" class="form-label">Tipo de Prenda</label>
+                        <select class="form-select" id="garmentType">
+                            <option value="">Todos</option>
+                            <option value="camisa">Camisa</option>
+                            <option value="pantalon">Pantalón</option>
+                            <option value="vestido">Vestido</option>
+                            <option value="chaqueta">Chaqueta</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="garmentStatus" class="form-label">Estado</label>
+                        <select class="form-select" id="garmentStatus">
+                            <option value="">Todos</option>
+                            <option value="available">Disponible</option>
+                            <option value="production">En Producción</option>
+                            <option value="completed">Completado</option>
+                            <option value="rejected">Rechazado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="fromDate" class="form-label">Desde</label>
+                        <input type="date" class="form-control" id="fromDate">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="toDate" class="form-label">Hasta</label>
+                        <input type="date" class="form-control" id="toDate">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-9 mb-3">
+                        <label for="searchQuery" class="form-label">Buscar</label>
+                        <input type="text" class="form-control" id="searchQuery" placeholder="Buscar por modelo, folio, etc.">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2 w-100">
+                            <i class="fas fa-search me-2"></i>Filtrar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Listado de prendas -->
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card garment-card">
+                    <img src="https://via.placeholder.com/300x200?text=Camisa+M" class="card-img-top garment-img" alt="Camisa M">
+                    <span class="garment-status status-available">Disponible</span>
+                    <div class="card-body">
+                        <h5 class="card-title">Camisa M</h5>
+                        <p class="card-text text-muted">Modelo: CT-2023-001</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="badge bg-light text-dark">#PR-10025</span>
+                            <span class="text-muted">15/05/2023</span>
+                        </div>
+                    </div>
+                    <div class="card-footer garment-actions">
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card garment-card">
+                    <img src="https://via.placeholder.com/300x200?text=Pantalón+L" class="card-img-top garment-img" alt="Pantalón L">
+                    <span class="garment-status status-in-production">En Producción</span>
+                    <div class="card-body">
+                        <h5 class="card-title">Pantalón L</h5>
+                        <p class="card-text text-muted">Modelo: CT-2023-042</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="badge bg-light text-dark">#PR-10024</span>
+                            <span class="text-muted">15/05/2023</span>
+                        </div>
+                    </div>
+                    <div class="card-footer garment-actions">
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card garment-card">
+                    <img src="https://via.placeholder.com/300x200?text=Vestido+S" class="card-img-top garment-img" alt="Vestido S">
+                    <span class="garment-status status-rejected">Rechazado</span>
+                    <div class="card-body">
+                        <h5 class="card-title">Vestido S</h5>
+                        <p class="card-text text-muted">Modelo: CT-2023-015</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="badge bg-light text-dark">#PR-10023</span>
+                            <span class="text-muted">14/05/2023</span>
+                        </div>
+                    </div>
+                    <div class="card-footer garment-actions">
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Más prendas... -->
+        </div>
+
+        <!-- Paginación -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Siguiente</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Botón para agregar nueva prenda -->
+        <div class="text-center mt-4">
+            <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addGarmentModal">
+                <i class="fas fa-plus me-2"></i>Agregar Nueva Prenda
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para agregar nueva prenda -->
+    <div class="modal fade" id="addGarmentModal" tabindex="-1" aria-labelledby="addGarmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="addGarmentModalLabel">Agregar Nueva Prenda</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addGarmentForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="newGarmentType" class="form-label">Tipo de Prenda</label>
+                                <select class="form-select" id="newGarmentType" required>
+                                    <option value="" selected disabled>Seleccionar tipo</option>
+                                    <option value="camisa">Camisa</option>
+                                    <option value="pantalon">Pantalón</option>
+                                    <option value="vestido">Vestido</option>
+                                    <option value="chaqueta">Chaqueta</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="newGarmentModel" class="form-label">Modelo</label>
+                                <input type="text" class="form-control" id="newGarmentModel" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="newGarmentColor" class="form-label">Color</label>
+                                <input type="text" class="form-control" id="newGarmentColor" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="newGarmentSize" class="form-label">Talla</label>
+                                <select class="form-select" id="newGarmentSize" required>
+                                    <option value="S">S</option>
+                                    <option value="M" selected>M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="newGarmentQuantity" class="form-label">Cantidad</label>
+                                <input type="number" class="form-control" id="newGarmentQuantity" min="1" value="1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="newGarmentDate" class="form-label">Fecha de Producción</label>
+                                <input type="date" class="form-control" id="newGarmentDate" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newGarmentNotes" class="form-label">Notas</label>
+                            <textarea class="form-control" id="newGarmentNotes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveNewGarment">Guardar Prenda</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Establecer fecha actual por defecto en el modal
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('newGarmentDate').valueAsDate = new Date();
+
+            // Manejar el envío del formulario
+            document.getElementById('saveNewGarment').addEventListener('click', function () {
+                const form = document.getElementById('addGarmentForm');
+                if (form.checkValidity()) {
+                    // Simular envío de datos
+                    alert('Prenda agregada correctamente');
+
+                    // Aquí iría el código AJAX para enviar los datos al servidor
+                    console.log('Datos de la prenda:', {
+                        type: document.getElementById('newGarmentType').value,
+                        model: document.getElementById('newGarmentModel').value,
+                        color: document.getElementById('newGarmentColor').value,
+                        size: document.getElementById('newGarmentSize').value,
+                        quantity: document.getElementById('newGarmentQuantity').value,
+                        date: document.getElementById('newGarmentDate').value,
+                        notes: document.getElementById('newGarmentNotes').value
+                    });
+
+                    // Cerrar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addGarmentModal'));
+                    modal.hide();
+
+                    // Limpiar formulario
+                    form.reset();
+                    document.getElementById('newGarmentDate').valueAsDate = new Date();
+                } else {
+                    form.reportValidity();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
