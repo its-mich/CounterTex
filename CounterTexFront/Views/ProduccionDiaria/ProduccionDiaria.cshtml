@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "Formulario Producción";
+    Layout = null;
+}
+
+@section Styles {
+    <style>
+        .form-wrapper {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .form-section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .btn-submit {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+            .btn-submit:hover {
+                background-color: #45a049;
+            }
+    </style>
+}
+
+<div class="form-wrapper">
+    <h2 class="form-section-title">Registrar Producción</h2>
+
+    @using (Html.BeginForm("GuardarProduccion", "Produccion", FormMethod.Post))
+    {
+        <div class="form-group">
+            <label for="Cantidad">Cantidad:</label>
+            <input type="number" id="Cantidad" name="Cantidad" required min="0" />
+        </div>
+
+        <div class="form-group">
+            <label for="TipoOperacion">Tipo de Operación:</label>
+            <select id="TipoOperacion" name="TipoOperacion" required>
+                <option value="">Seleccione una opción</option>
+                <option value="Soldadura">Soldadura</option>
+                <option value="Armado">Armado</option>
+                <option value="Pulido">Pulido</option>
+                <option value="Pintura">Pintura</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Empleado">Empleado:</label>
+            <select id="Empleado" name="Empleado" required>
+                <option value="">Seleccione un empleado</option>
+                <option value="Juan">Juan</option>
+                <option value="Ana">Ana</option>
+                <option value="Carlos">Carlos</option>
+                <option value="Lucía">Lucía</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Fecha">Fecha:</label>
+            <input type="date" id="Fecha" name="Fecha" required />
+        </div>
+
+        <button type="submit" class="btn-submit">Guardar</button>
+    }
+</div>
