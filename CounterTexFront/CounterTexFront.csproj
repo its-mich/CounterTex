@@ -160,6 +160,7 @@
     <Compile Include="Controllers\EmpleadoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\ProduccionDiariaController.cs" />
     <Compile Include="Controllers\ProveedorController.cs" />
     <Compile Include="Controllers\RegistroController.cs" />
     <Compile Include="Controllers\SateliteController.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\PerfilAdministradorViewModel.cs" />
     <Compile Include="Models\PerfilEmpleadoViewModel.cs" />
+    <Compile Include="Models\ProduccionDiariaViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
     <Compile Include="Models\SateliteViewModel.cs" />
@@ -252,6 +254,7 @@
     <Content Include="Views\ControlHorarios\Create.cshtml" />
     <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
     <Content Include="Views\Administrador\Index.cshtml" />
+    <Content Include="Views\ProduccionDiaria\ProduccionDiaria.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
