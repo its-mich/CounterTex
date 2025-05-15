@@ -1,0 +1,174 @@
+﻿@model CounterTexFront.Models.HorarioViewModel
+@{
+    Layout = ViewBag.Layout;
+}
+
+<h2 class="mb-4"><i class="fas fa-clock me-2"></i>Control de Horarios</h2>
+
+<!-- Estadísticas rápidas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Empleados</h5>
+                <p class="card-text display-6">48</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Presentes Hoy</h5>
+                <p class="card-text display-6">42</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Ausentes Hoy</h5>
+                <p class="card-text display-6">6</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Atrasados Hoy</h5>
+                <p class="card-text display-6">5</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Registros de Hoy -->
+<h4 class="mb-3"><i class="fas fa-list-check me-2"></i>Registros de Hoy</h4>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-start border-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Juan Pérez</h5>
+                <p class="card-subtitle text-muted">Operador de Máquina</p>
+                <p><strong>Entrada:</strong> 08:05 AM</p>
+                <span class="badge bg-danger">Tardanza: 5 min</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-start border-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">María García</h5>
+                <p class="card-subtitle text-muted">Supervisora</p>
+                <p><strong>Entrada:</strong> 07:55 AM</p>
+                <span class="badge bg-success">A tiempo</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-start border-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Carlos López</h5>
+                <p class="card-subtitle text-muted">Cortador</p>
+                <p><strong>Salida:</strong> 05:30 PM</p>
+                <span class="badge bg-primary">Salida temprano</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-start border-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Ana Martínez</h5>
+                <p class="card-subtitle text-muted">Costurera</p>
+                <p><strong>Descanso:</strong> 12:00 PM - 01:00 PM</p>
+                <span class="badge bg-info text-dark">Normal</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botón para nuevo registro -->
+<div class="text-center mt-4">
+    <button class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addTimeRecordModal">
+        <i class="fas fa-plus me-2"></i>Agregar Registro Manual
+    </button>
+</div>
+
+<!-- Modal de registro -->
+<div class="modal fade" id="addTimeRecordModal" tabindex="-1" aria-labelledby="addTimeRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Agregar Registro Manual</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formRegistroManual">
+                    <div class="mb-3">
+                        <label for="EmpleadoId" class="form-label">Empleado</label>
+                        <select class="form-select" id="EmpleadoId" name="EmpleadoId" required>
+                            <option disabled selected>Seleccionar empleado</option>
+                            @foreach (var emp in ViewBag.Empleados)
+                            {
+                                <option value="@emp.Id">@emp.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="TipoRegistro" class="form-label">Tipo de Registro</label>
+                        <select class="form-select" id="TipoRegistro" name="TipoRegistro" required>
+                            <option value="entrada">Entrada</option>
+                            <option value="salida">Salida</option>
+                            <option value="descanso">Descanso</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Hora" class="form-label">Hora</label>
+                        <input type="time" class="form-control" id="Hora" name="Hora" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Registro</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+@section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#formRegistroManual").submit(function (e) {
+                e.preventDefault();
+
+                const data = {
+                    EmpleadoId: parseInt($("#EmpleadoId").val()),
+                    Tipo: $("#TipoRegistro").val(),  // Cambiado a Tipo para que coincida
+                    Hora: $("#Hora").val(),
+                    Fecha: new Date().toISOString().substring(0, 10), // fecha actual en formato yyyy-MM-dd
+                    Observaciones: "" // puedes agregar input o dejar vacío
+                };
+
+                $.ajax({
+                    url: '@Url.Action("CrearRegistro", "ControlHorarios")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        if (response.exito) {
+                            alert(response.mensaje);
+                            $("#addTimeRecordModal").modal('hide');
+                            $("#formRegistroManual")[0].reset();
+                        } else {
+                            alert("Error: " + response.mensaje);
+                        }
+                    },
+                    error: function () {
+                        alert("Ocurrió un error al enviar los datos.");
+                    }
+                });
+            });
+        });
+    </script>
+}

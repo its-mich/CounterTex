@@ -153,6 +153,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdministradorController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CantidadOperacionController.cs" />
     <Compile Include="Controllers\ControlHorariosController.cs" />
     <Compile Include="Controllers\ControlPagosController.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\HorarioViewModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\PerfilAdministradorViewModel.cs" />
     <Compile Include="Models\PerfilEmpleadoViewModel.cs" />
@@ -236,7 +238,7 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_LayoutEmpleado.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -246,11 +248,15 @@
     <Content Include="Views\Registro\Registro.cshtml" />
     <Content Include="Views\ControlHorarios\ControlHorarios.cshtml" />
     <Content Include="Views\ControlPagos\ControlPagos.cshtml" />
+    <Content Include="Views\ControlHorarios\Index.cshtml" />
+    <Content Include="Views\ControlHorarios\Create.cshtml" />
+    <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Views\Administrador\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Administrador\" />
     <Folder Include="Views\Auth\" />
+    <Folder Include="Views\Base\" />
     <Folder Include="Views\CantidadOperacion\" />
     <Folder Include="Views\Empleado\" />
     <Folder Include="Views\Proveedor\" />

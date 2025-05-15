@@ -12,7 +12,7 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class UsuariosController : Controller
+    public class UsuariosController : BaseController
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 

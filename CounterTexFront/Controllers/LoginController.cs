@@ -11,7 +11,7 @@ using System.Web.Security;
 
 namespace CounterTexFront.Controllers
 {
-    public class LoginController : Controller
+    public class LoginController : BaseController
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 

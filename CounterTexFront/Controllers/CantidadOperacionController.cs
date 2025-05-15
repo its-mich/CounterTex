@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class CantidadOperacionController : Controller
+    public class CantidadOperacionController : BaseController
     {
         // GET: CantidadOperacion
         public ActionResult Index()

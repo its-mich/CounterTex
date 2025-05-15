@@ -1,0 +1,31 @@
+﻿@model CounterTexFront.Models.HorarioViewModel
+
+@using (Html.BeginForm("Create", "Horarios", FormMethod.Post))
+{
+    <div>
+        @Html.LabelFor(m => m.EmpleadoId)
+        @Html.TextBoxFor(m => m.EmpleadoId)
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.Tipo)
+        @Html.TextBoxFor(m => m.Tipo)
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.Hora)
+        @Html.TextBoxFor(m => m.Hora, "{0:hh\\:mm\\:ss}")
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.Fecha)
+        @Html.TextBoxFor(m => m.Fecha, "{0:yyyy-MM-ddTHH:mm}")
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.Observaciones)
+        @Html.TextBoxFor(m => m.Observaciones)
+    </div>
+
+    <button type="submit">Guardar</button>
+}

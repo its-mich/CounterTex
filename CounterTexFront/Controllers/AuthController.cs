@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace CounterTexFront.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController : BaseController
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 

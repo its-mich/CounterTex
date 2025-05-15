@@ -10,7 +10,7 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class RegistroController : Controller
+    public class RegistroController : BaseController
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 

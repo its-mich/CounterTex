@@ -12,7 +12,7 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class EmpleadoController : Controller
+    public class EmpleadoController : BaseController
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
@@ -42,7 +42,7 @@ namespace CounterTexFront.Controllers
                 ModelState.AddModelError("", "Error al conectarse con el servidor: " + ex.Message);
             }
 
-            return View("Empleado", empleados); // Cambio aquí para la vista "Empleado"
+            return View(empleados); // Cambio aquí para la vista "Empleado"
         }
 
         [HttpPost]
@@ -50,7 +50,7 @@ namespace CounterTexFront.Controllers
         public async Task<ActionResult> Create(PerfilEmpleadoViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+                return View(model); // Cambio aquí para la vista "Empleado"
 
             try
             {
@@ -65,7 +65,7 @@ namespace CounterTexFront.Controllers
                     if (!response.IsSuccessStatusCode)
                     {
                         ModelState.AddModelError("", "No se pudo crear el empleado. Inténtalo nuevamente.");
-                        return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+                        return View(model); // Cambio aquí para la vista "Empleado"
                     }
                 }
 
@@ -74,7 +74,7 @@ namespace CounterTexFront.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error al crear el empleado: " + ex.Message);
-                return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+                return View(model); // Cambio aquí para la vista "Empleado"
             }
         }
 
@@ -83,7 +83,7 @@ namespace CounterTexFront.Controllers
         public async Task<ActionResult> Edit(PerfilEmpleadoViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+                return View(model); // Cambio aquí para la vista "Empleado"
 
             try
             {
@@ -98,7 +98,7 @@ namespace CounterTexFront.Controllers
                     if (!response.IsSuccessStatusCode)
                     {
                         ModelState.AddModelError("", "No se pudo editar el empleado. Inténtalo nuevamente.");
-                        return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+                        return View(model); // Cambio aquí para la vista "Empleado"
                     }
                 }
 
@@ -107,7 +107,7 @@ namespace CounterTexFront.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error al editar el empleado: " + ex.Message);
-                return View("Empleado", model); // Cambio aquí para la vista "Empleado"
+                return View(model); // Cambio aquí para la vista "Empleado"
             }
         }
 

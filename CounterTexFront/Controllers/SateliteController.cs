@@ -12,7 +12,7 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class SateliteController : Controller
+    public class SateliteController : BaseController
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
