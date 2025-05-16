@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace CounterTexFront.Controllers
 {
@@ -26,6 +27,60 @@ namespace CounterTexFront.Controllers
         {
             return View();
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Registro(RegistroViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            if (model.Contraseña != model.ConfirmarContraseña)
+            {
+                ModelState.AddModelError("", "Las contraseñas no coinciden.");
+                return View(model);
+            }
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+
+                    var json = JsonConvert.SerializeObject(new
+                    {
+                        model.Nombres,
+                        model.Apellidos,
+                        model.Documento,
+                        model.Correo,
+                        Contraseña = model.Contraseña,
+                        Rol = model.Rol
+                    });
+
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync("api/Usuarios", content);
+
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TempData["MensajeRegistro"] = "Usuario registrado correctamente. Ahora puedes iniciar sesión.";
+                        return RedirectToAction("Login");
+                    }
+
+                    var error = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", $"Error al registrar: {error}");
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error en el servidor: " + ex.Message);
+                return View(model);
+            }
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -35,6 +90,29 @@ namespace CounterTexFront.Controllers
             {
                 ModelState.AddModelError("", "Por favor verifica los campos del formulario.");
                 return View(model);
+            }
+
+            // Validación del CAPTCHA
+            string recaptchaResponse = Request["g-recaptcha-response"];
+            string secretKey = "6LeXMz0rAAAAAFPzq4MtASqq6wpFXiim4ovZ-vSJ";
+
+            using (var httpClient = new HttpClient())
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+            new KeyValuePair<string, string>("secret", secretKey),
+            new KeyValuePair<string, string>("response", recaptchaResponse)
+        });
+
+                var captchaResult = await httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+                var captchaJson = await captchaResult.Content.ReadAsStringAsync();
+                dynamic captchaVerify = JsonConvert.DeserializeObject(captchaJson);
+
+                if (captchaVerify.success != true)
+                {
+                    ModelState.AddModelError("", "Por favor verifica que no eres un robot.");
+                    return View(model);
+                }
             }
 
             using (var client = new HttpClient())
@@ -93,7 +171,7 @@ namespace CounterTexFront.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Error al iniciar sesión. Verifica tus credenciales.");
+                    ModelState.AddModelError("", "Credenciales incorrectas. Nombre de usuario o contraseña no válidos");
                     return View(model);
                 }
             }

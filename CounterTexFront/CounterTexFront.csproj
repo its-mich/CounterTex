@@ -159,7 +159,6 @@
     <Compile Include="Controllers\ControlPagosController.cs" />
     <Compile Include="Controllers\EmpleadoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ProduccionDiariaController.cs" />
     <Compile Include="Controllers\ProveedorController.cs" />
     <Compile Include="Controllers\RegistroController.cs" />
@@ -205,7 +204,12 @@
     <Content Include="images\descarga111.jpg" />
     <Content Include="images\facebook.jpg" />
     <Content Include="images\fondo incio metas.jpg" />
+    <Content Include="images\fondo-login.jpg" />
     <Content Include="images\fondo.jpg" />
+    <Content Include="images\fondo1.jpg" />
+    <Content Include="images\fondo2.jpg" />
+    <Content Include="images\fondo3.jpg" />
+    <Content Include="images\fondo5.jpg" />
     <Content Include="images\google.png" />
     <Content Include="images\logoredondo.png" />
     <Content Include="images\img1.jpg" />
@@ -244,10 +248,10 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Login\Login.cshtml" />
+    <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\Welcome.cshtml" />
-    <Content Include="Views\Registro\Registro.cshtml" />
+    <Content Include="Views\Auth\Registro.cshtml" />
     <Content Include="Views\ControlHorarios\ControlHorarios.cshtml" />
     <Content Include="Views\ControlPagos\ControlPagos.cshtml" />
     <Content Include="Views\ControlHorarios\Index.cshtml" />
@@ -258,11 +262,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Auth\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\CantidadOperacion\" />
     <Folder Include="Views\Empleado\" />
+    <Folder Include="Views\Login\" />
     <Folder Include="Views\Proveedor\" />
+    <Folder Include="Views\Registro\" />
     <Folder Include="Views\Satelite\" />
     <Folder Include="Views\Usuarios\" />
   </ItemGroup>

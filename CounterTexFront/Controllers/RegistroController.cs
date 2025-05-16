@@ -14,7 +14,7 @@ namespace CounterTexFront.Controllers
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
-        public ActionResult Registro()
+        public ActionResult Login()
         {
             return View();
         }

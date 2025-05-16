@@ -24,10 +24,6 @@ namespace CounterTexFront.Controllers
             {
                 ViewBag.Layout = "~/Views/Shared/_LayoutProveedor.cshtml";
             }
-            else
-            {
-                ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
-            }
 
             base.OnActionExecuting(filterContext);
         }
