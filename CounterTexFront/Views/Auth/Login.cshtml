@@ -25,21 +25,65 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
 
-    <style>
+<style>
+
         body {
             margin: 0;
             padding: 0;
             font-family: 'Roboto', sans-serif;
-            background: url('/images/fondo3.jpg') no-repeat center center fixed;
-            background-size: cover;
+            color: #F2F2F2;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background-container .bg {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: fadeImages 24s infinite;
+        }
+
+        .background-container .bg1 {
+            background-image: url('../../images/fondo.jpg');
+            animation-delay: 0s;
+        }
+
+        .background-container .bg2 {
+            background-image: url('../../images/fondo-login.jpg');
+            animation-delay: 8s;
+        }
+
+        .background-container .bg3 {
+            background-image: url('../../images/fondo3.jpg');
+            animation-delay: 16s;
+        }
+
+        @@keyframes fadeImages {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            30% { opacity: 1; }
+            40% { opacity: 0; }
+            100% { opacity: 0; }
         }
 
         .login-card {
-            background: rgba(15, 23, 42, 0.9); /* fondo semi-transparente */
+            background: rgba(15, 23, 42, 0.7); /* fondo semi-transparente */
             border: 1px solid rgba(160, 204, 242, 0.3);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -146,59 +190,69 @@
             transform: scale(1.04); /* Aumenta la escala en un 5% - puedes ajustar este valor */
             transform-origin: center center; /* Asegura que la escala se aplique desde el centro */
         }
-    </style>
+</style>
 
 
 </head>
 <body>
-    <div class="login-card">
-        <img src="~/images/logoredondo.png" alt="Logo" class="logo" />
-        <h3>Iniciar sesión en CounterTex</h3>
-
-        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null)
-        {
-            foreach (var error in ViewData.ModelState[""].Errors)
-            {
-                <div class="custom-alert">
-                    <strong>Error:</strong><br />
-                    @error.ErrorMessage
-                </div>
-            }
-        }
-
-        @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id = "loginForm" }))
-        {
-            @Html.AntiForgeryToken()
-
-            <div class="form-group">
-                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Correo electrónico", required = "required" })
-                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Contraseña", required = "required" })
-                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-            </div>
-
-            <div class="form-group">
-                <div class="g-recaptcha" data-sitekey="6LeXMz0rAAAAAJEgtLdndZVKu7rEzuDvQs7OHXIE"></div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-
-            <p class="mt-3">¿No tienes una cuenta? <a href="@Url.Action("Registro", "Auth")" class="register-link">Regístrate</a></p>
-            <p><a href="@Url.Action("Recuperar", "Auth")" class="forgot-password">¿Olvidaste tu contraseña?</a></p>
-        }
+    <!-- Fondo animado -->
+    <div class="background-container">
+        <div class="bg bg1"></div>
+        <div class="bg bg2"></div>
+        <div class="bg bg3"></div>
     </div>
 
-    @if (!string.IsNullOrEmpty(Convert.ToString(TempData["MensajeRegistro"])))
-    {
-        var mensaje = HttpUtility.JavaScriptStringEncode(TempData["MensajeRegistro"].ToString());
-        <script type="text/javascript">
+    <div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+        <div class="login-card">
+            <a href="@Url.Action("Welcome", "Home")">
+                <img src="~/images/logoredondo.png" alt="Logo" class="logo" />
+            </a>
+            <h3>Iniciar sesión en CounterTex</h3>
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null)
+            {
+                foreach (var error in ViewData.ModelState[""].Errors)
+                {
+                    <div class="custom-alert">
+                        <strong>Error:</strong><br />
+                        @error.ErrorMessage
+                    </div>
+                }
+            }
+
+            @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id = "loginForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Correo electrónico", required = "required" })
+                    @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Contraseña", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    <div class="g-recaptcha" data-sitekey="6LeXMz0rAAAAAJEgtLdndZVKu7rEzuDvQs7OHXIE"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+
+                <p class="mt-3">¿No tienes una cuenta? <a href="@Url.Action("Registro", "Auth")" class="register-link">Regístrate</a></p>
+                <p><a href="@Url.Action("Recuperar", "Auth")" class="forgot-password">¿Olvidaste tu contraseña?</a></p>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(Convert.ToString(TempData["MensajeRegistro"])))
+        {
+            var mensaje = HttpUtility.JavaScriptStringEncode(TempData["MensajeRegistro"].ToString());
+            <script type="text/javascript">
         window.onload = function () {
             alert("@Html.Raw(mensaje)");
         };
-        </script>
-    }
+            </script>
+        }
 </body>
 </html>

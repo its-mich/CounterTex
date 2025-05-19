@@ -1,11 +1,15 @@
 ﻿@{
     Layout = ViewBag.Layout;
+    var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Administrador";
 }
 
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-            <h3 class="mb-4">Bienvenido al Panel Administrativo</h3>
+            <div class="navbar">
+                <span>Bienvenido, @(Session["NombreUsuario"] ?? "Invitado")</span>
+            </div>
+            <h3 class="mb-4">Bienvenido @(Session["NombreUsuario"] ?? "Invitado") al panel Administrativo</h3>
             <p class="lead">Desde aquí puedes gestionar la producción, los empleados, los pagos y más.</p>
         </div>
     </div>

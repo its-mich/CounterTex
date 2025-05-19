@@ -66,6 +66,6 @@ namespace CounterTexFront.Models
         [Display(Name = "ID de Usuario")]
         public int IdUsuario { get; set; }
 
-        public Usuarios Usuario { get; set; }
+        public UsuarioViewModel Usuario { get; set; }
     }
 }

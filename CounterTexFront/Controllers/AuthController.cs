@@ -94,7 +94,7 @@ namespace CounterTexFront.Controllers
 
             // Validación del CAPTCHA
             string recaptchaResponse = Request["g-recaptcha-response"];
-            string secretKey = "6LeXMz0rAAAAAFPzq4MtASqq6wpFXiim4ovZ-vSJ";
+            string secretKey = ConfigurationManager.AppSettings["RecaptchaSecretKey"];
 
             using (var httpClient = new HttpClient())
             {
@@ -127,46 +127,32 @@ namespace CounterTexFront.Controllers
                 if (Res.IsSuccessStatusCode)
                 {
                     var res = await Res.Content.ReadAsStringAsync();
-                    Tokens token = JsonConvert.DeserializeObject<Tokens>(res);
 
-                    // Depuración para verificar el rol y token
-                    Debug.WriteLine("Token: " + token.TokenValue);  // Verifica que el token esté presente
-                    Debug.WriteLine("Rol: " + token.Rol);  // Verifica que el rol esté presente
+                    // Deserializa toda la respuesta a un solo modelo
+                    var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(res);
 
-                    if (string.IsNullOrEmpty(token.Rol))
+                    if (loginResponse == null || string.IsNullOrEmpty(loginResponse.Rol))
                     {
                         ModelState.AddModelError("", "El rol del usuario no está asignado correctamente.");
                         return View(model);
                     }
 
-                    // Asignar el rol a la sesión
-                    Session["BearerToken"] = token.TokenValue;
-                    Session["UserRole"] = token.Rol;
+                    // Guarda datos en sesión
+                    Session["BearerToken"] = loginResponse.Token;
+                    Session["UserRole"] = loginResponse.Rol;
+                    Session["NombreUsuario"] = $"{loginResponse.Nombres} {loginResponse.Apellidos}".Trim();
 
-                    // Verificación en el valor de rol antes de redirigir
-                    Debug.WriteLine("Session UserRole: " + Session["UserRole"]); // Verifica el rol almacenado en la sesión
-
-                    // Forzar la redirección en función del rol
-                    if (token.Rol == "Administrador")
+                    // Redirecciona según rol
+                    switch (loginResponse.Rol)
                     {
-                        Debug.WriteLine("Redirigiendo a PerfilAdministrador...");
-                        return RedirectToAction("Index", "Administrador");
-                    }
-                    else if (token.Rol == "Proveedor")
-                    {
-                        Debug.WriteLine("Redirigiendo a PerfilProveedor...");
-                        return RedirectToAction("Index", "Proveedor");
-                    }
-                    else if (token.Rol == "Empleado")
-                    {
-                        Debug.WriteLine("Redirigiendo a PerfilEmpleado...");
-                        return RedirectToAction("Index", "Empleado");
-                    }
-                    else
-                    {
-                        // Si el rol no es ninguno de los anteriores, redirige a Home
-                        Debug.WriteLine("Redirigiendo a Home por rol desconocido...");
-                        return RedirectToAction("Index", "Home");
+                        case "Administrador":
+                            return RedirectToAction("Index", "Administrador");
+                        case "Proveedor":
+                            return RedirectToAction("Index", "Proveedor");
+                        case "Empleado":
+                            return RedirectToAction("Index", "Empleado");
+                        default:
+                            return RedirectToAction("Index", "Home");
                     }
                 }
                 else
