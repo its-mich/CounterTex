@@ -271,7 +271,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\Welcome.cshtml" />
     <Content Include="Views\Registro\Registro.cshtml" />
-    <Content Include="Views\ControlHorarios\ControlHorarios.cshtml" />
+    <Content Include="Views\ControlHorarios\Index.cshtml" />
     <Content Include="Views\ControlPagos\ControlPagos.cshtml" />
     <Content Include="Views\ControlPrendasEmpleado\ControlPrendasEmpleado.cshtml" />
     <Content Include="Views\DetallesdePrenda\DetallesdePrenda.cshtml" />
@@ -286,6 +286,7 @@
     <Content Include="Views\chatinternoempleado\chatinternoempleado.cshtml" />
     <Content Include="Views\AsignacionEmpleado\AsignacionEmpleado.cshtml" />
     <Content Include="Views\producciondiariaempleado\producciondiariaempleado.cshtml" />
+    <Content Include="Views\ControlPagos\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

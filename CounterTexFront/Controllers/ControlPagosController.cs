@@ -11,13 +11,13 @@ namespace CounterTexFront.Controllers
     {
 
 
-  
-        
-            public ActionResult Index()
-            {
-                return View();
-            }
-        
+
+
+        public ActionResult Index()
+        {
+            return View(); // Esto busca Views/ControlPagos/Index.cshtml
+        }
+
 
         //// GET: ControlPagos
         //public ActionResult Index()
@@ -47,10 +47,9 @@ namespace CounterTexFront.Controllers
         //}
 
 
-        //public ActionResult ControlPagos()
-        //{
-        //    var model = new ControlPagosViewModel();
-        //    return View(model);
-        //}
+        //    public ActionResult ControlPagos()
+        //    {
+        //        return View();
     }
+    //}
 }

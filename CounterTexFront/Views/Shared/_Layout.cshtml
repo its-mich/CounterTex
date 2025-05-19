@@ -92,16 +92,14 @@
 <body>
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <a href="@Url.Action("ProduccionDiaria", "Control")" style="font-size: 15px">Producción Diaria</a>
-        <a href="@Url.Action("ControlHorarios", "Control")" style="font-size: 15px">Control de horarios</a>
-        <a href="@Url.Action("ProduccionMensual", "Control")" style="font-size: 15px">Producción Mensual</a>
-        <a href="@Url.Action("ControlPrendas", "Control")" style="font-size: 15px">Control de Prendas</a>
-
-        <a href="@Url.Action("detalleprendaempleado", "Control")" style="font-size: 15px">Control de Pagos</a>
-
-        @*<a href="@Url.Action("Contacto", "Control")" style="font-size: 15px">Control de Pagos</a>*@
-        <a href="@Url.Action("ControlPagos", "Control")" style="font-size: 15px">Control de Pagos</a>
-
+        <a href="@Url.Action("Index", "ProduccionDiaria")" style="font-size: 15px">Producción Diaria</a>
+        <a href="@Url.Action("Index", "ControlHorarios")" style="font-size: 15px">Control de horarios</a>
+        <a href="@Url.Action("Index", "ProduccionMensual")" style="font-size: 15px">Producción Mensual</a>
+        <a href="@Url.Action("ControlPrendasEmpleado", "Controlprendasempleado")" style="font-size: 15px">Control de Prendas</a>
+        <a href="@Url.Action("Index", "Contacto")" style="font-size: 15px">Contacto</a>
+        <a href="@Url.Action("Index", "ControlPagos")" style="font-size: 15px">Control de Pagos</a>
+        <a href="@Url.Action("Index", "ControlPagos")">Control de Pagos</a>
+        <a href="@Url.Action("DetallesdePrenda", "DetallesdePrenda")" style="font-size: 15px">Detalles de Prenda</a>
 
         @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
         {
