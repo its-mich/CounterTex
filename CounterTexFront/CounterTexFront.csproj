@@ -251,7 +251,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
-    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\_LayoutProveedor.cshtml" />
     <Content Include="Views\Shared\Welcome.cshtml" />
     <Content Include="Views\Auth\Registro.cshtml" />
     <Content Include="Views\ControlHorarios\ControlHorarios.cshtml" />

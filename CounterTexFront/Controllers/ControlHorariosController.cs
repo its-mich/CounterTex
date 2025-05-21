@@ -32,14 +32,18 @@ namespace CounterTexFront.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
-                var response = await client.GetAsync("api/empleados");
+                var response = await client.GetAsync("api/usuarios");
 
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<PerfilEmpleadoViewModel>>(json);
+                    var usuarios = JsonConvert.DeserializeObject<List<PerfilEmpleadoViewModel>>(json);
+
+                    // Suponiendo que tienes un campo Tipo o Rol
+                    return usuarios.Where(u => u.Rol == "Empleado").ToList();
                 }
             }
+
 
             return new List<PerfilEmpleadoViewModel>();
         }
@@ -48,6 +52,35 @@ namespace CounterTexFront.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+        [HttpGet]
+        public async Task<JsonResult> ObtenerRegistrosHoy()
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    string fechaActual = DateTime.Today.ToString("yyyy-MM-dd");
+
+                    var response = await client.GetAsync($"api/horarios?fecha={fechaActual}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        var registros = JsonConvert.DeserializeObject<List<HorarioViewModel>>(json);
+                        return Json(registros, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new { exito = false, mensaje = "Error al obtener los registros." }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { exito = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpPost]

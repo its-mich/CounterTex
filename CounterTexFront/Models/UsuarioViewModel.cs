@@ -12,7 +12,7 @@ namespace CounterTexFront.Models
         [Display(Name = "Nombre de Usuario")]
         public string NombreUsuario { get; set; }
 
-        public int Rol { get; set; }
+        public string Rol { get; set; }
         public int TokenValue { get; set; }
 
         [Required(ErrorMessage = "El correo es obligatorio.")]

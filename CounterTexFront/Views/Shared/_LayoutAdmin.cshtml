@@ -123,11 +123,32 @@
             }
 
         footer {
-            margin-top: 50px;
-            text-align: center;
-            color: #aaa;
-            font-size: 14px;
+            background-color: rgba(15, 23, 42, 0.85);
+            padding: 20px 0;
+            font-size: 0.9rem;
+            color: #F2F2F2;
         }
+
+        .social-icon {
+            color: #A0CCF2;
+            font-size: 26px;
+            margin: 0 12px;
+            transition: transform 0.4s ease, color 0.4s ease;
+        }
+
+            .social-icon:hover {
+                transform: scale(1.4) rotate(10deg);
+                color: #ffffff;
+            }
+
+        a {
+            color: #A0CCF2;
+            text-decoration: none;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
 
         .card-dark {
             background-color: #2a2a3c;
@@ -239,9 +260,16 @@
 
         @RenderBody()
 
-        <footer>
-            &copy; @DateTime.Now.Year - CounterTex Admin
-        </footer>
+    <footer>
+        <div class="social-media text-center my-2">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-google"></i></a>
+            <a href="mailto:countertex@gmail.com" class="social-icon"><i class="fas fa-envelope"></i></a>
+            <br />
+            <a href="mailto:countertex@gmail.com" class="d-block mt-2">Contacto vía Email</a>
+        </div>
+    </footer>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

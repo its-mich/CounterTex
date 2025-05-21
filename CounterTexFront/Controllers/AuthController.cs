@@ -51,10 +51,9 @@ namespace CounterTexFront.Controllers
 
                     var json = JsonConvert.SerializeObject(new
                     {
-                        model.Nombres,
-                        model.Apellidos,
-                        model.Documento,
-                        model.Correo,
+                        Nombre = $"{model.Nombres} {model.Apellidos}", // <- este es el cambio importante
+                        Documento = model.Documento,
+                        Correo = model.Correo,
                         Contraseña = model.Contraseña,
                         Rol = model.Rol
                     });
@@ -77,7 +76,7 @@ namespace CounterTexFront.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error en el servidor: " + ex.Message);
+                ModelState.AddModelError("", "Error inesperado: " + ex.Message);
                 return View(model);
             }
         }
