@@ -1,41 +1,252 @@
-﻿﻿
-@{
+﻿@{
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Counter Tex</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body style="background-image: url('../../images/fondo.jpg'); background-size: cover; background-position: center;">
 
-    <div class="logo text-center my-4">
-        <img src="~/images/logo1.png"
-             alt="Counter Tex Logo"
-             class="img-fluid"
-             style="width: 180px" />
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Fuente Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif !important;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #F2F2F2;
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+            .background-container .bg {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+                background-size: cover;
+                background-position: center;
+                opacity: 0;
+                animation: fadeImages 24s infinite;
+            }
+
+            .background-container .bg1 {
+                background-image: url('../../images/fondo.jpg');
+                animation-delay: 0s;
+            }
+
+            .background-container .bg2 {
+                background-image: url('../../images/fondo-login.jpg');
+                animation-delay: 8s;
+            }
+
+            .background-container .bg3 {
+                background-image: url('../../images/fondo3.jpg');
+                animation-delay: 16s;
+            }
+
+        @@keyframes fadeImages {
+            0% {
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            40% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .main-content {
+            flex: 1;
+            text-align: center;
+            padding: 30px;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 180px;
+            margin-bottom: 20px;
+            animation: fadeIn 1.2s ease-out;
+            transition: filter 0.4s ease, transform 0.4s ease;
+        }
+
+            .logo img:hover {
+                filter: none;
+                transform: scale(1.05);
+            }
+
+        h1 {
+            font-weight: 700;
+            font-size: 3rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        h2 {
+            font-weight: 400;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        p.lead,
+        p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 15px auto;
+            line-height: 1.6;
+            animation: fadeInUp 1.4s ease-out;
+        }
+
+        .btn-primary {
+            background-color: #A0CCF2;
+            color: #404040;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+            .btn-primary:hover {
+                background-color: #6fb3e0;
+                transform: scale(1.05);
+            }
+
+        .btn-outline-secondary {
+            border: 2px solid #A0CCF2;
+            color: #F2F2F2;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+            .btn-outline-secondary:hover {
+                background-color: #A0CCF2;
+                color: #404040;
+                transform: scale(1.05);
+            }
+
+        footer {
+            background-color: rgba(15, 23, 42, 0.85);
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .social-icon {
+            color: #A0CCF2;
+            font-size: 26px;
+            margin: 0 12px;
+            transition: transform 0.4s ease, color 0.4s ease;
+        }
+
+            .social-icon:hover {
+                transform: scale(1.4) rotate(10deg);
+                color: #ffffff;
+            }
+
+        a {
+            color: #A0CCF2;
+            text-decoration: none;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Fondo animado -->
+    <div class="background-container">
+        <div class="bg bg1"></div>
+        <div class="bg bg2"></div>
+        <div class="bg bg3"></div>
     </div>
 
-    <div class="main-content text-center">
-        <h1 class="text-white">Counter Tex</h1>
-        <h2 class="text-white">Costuras precisas, Finanzas impecables</h2>
-        <p class="text-white">
-            Bienvenidos a CounterTex su página de confianza para gestionar el
-            control de producción y las finanzas de su empresa
+    <div class="logo text-center my-4">
+        <img src="~/images/logoredondo.png" alt="Counter Tex Logo" class="img-fluid" />
+    </div>
+
+    <div class="main-content">
+        <h1>Counter Tex</h1>
+        <h2>Costuras precisas, Finanzas impecables</h2>
+        <p class="lead mt-3">
+            Bienvenido a <strong>CounterTex</strong>, la plataforma inteligente diseñada especialmente para revolucionar la gestión en la industria textil.
+            Integramos control de producción, seguimiento financiero, gestión de recursos en una sola herramienta eficaz, intuitiva y adaptada a las necesidades reales de tu empresa.
+        </p>
+        <p>
+            Con CounterTex, cada puntada cuenta. Desde la adquisición de insumos hasta la entrega final del producto, automatiza procesos, optimiza tiempos y toma decisiones basadas en datos.
+        <p>
+            <strong>Transforma tu taller en una fábrica del futuro</strong>.
         </p>
 
         <div class="row justify-content-center mt-5">
             <div class="col-auto">
-                <button class="btn btn-primary btn-lg" style="min-width: 150px;" onclick="window.location.href='@Url.Action("Login", "Login")'">
+                <button class="btn btn-primary btn-lg" onclick="window.location.href='@Url.Action("Login", "Auth")'">
                     Iniciar Sesión
                 </button>
             </div>
             <div class="col-auto">
-                <button class="btn btn-outline-secondary btn-lg" style="min-width: 150px;" onclick="window.location.href='@Url.Action("Registro", "Registro")'">
+                <button class="btn btn-outline-secondary btn-lg" onclick="window.location.href='@Url.Action("Registro", "Auth")'">
                     Registrarse
                 </button>
             </div>
@@ -43,33 +254,13 @@
     </div>
 
     <footer>
-        <div class="social-media text-center my-4">
-            <a href="#">
-                <img src="~/Images/facebook.jpg"
-                     alt="Facebook"
-                     class="img-fluid"
-                     style="width: 30px; height: 30px" />
-            </a>
-            <a href="#">
-                <img src="~/Images/Instagram.png"
-                     alt="Instagram"
-                     class="img-fluid"
-                     style="width: 30px; height: 30px" />
-            </a>
-            <a href="#">
-                <img src="~/Images/google.png"
-                     alt="Google"
-                     class="img-fluid"
-                     style="width: 30px; height: 30px" />
-            </a>
-            <a href="#">
-                <img src="~/Images/descarga111.jpg"
-                     alt="Contactanos"
-                     class="img-fluid"
-                     style="width: 30px; height: 30px" />
-            </a>
+        <div class="social-media text-center my-2">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-google"></i></a>
+            <a href="mailto:countertex@gmail.com" class="social-icon"><i class="fas fa-envelope"></i></a>
             <br />
-            <a href="mailto:countertex@gmail.com" class="text-white" style="text-align: center;">Contacto vía Email</a>
+            <a href="mailto:countertex@gmail.com" class="d-block mt-2">Contacto vía Email</a>
         </div>
     </footer>
 

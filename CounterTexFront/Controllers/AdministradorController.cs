@@ -12,8 +12,9 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class AdministradorController : Controller
+    public class AdministradorController : BaseController
     {
+
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
         // Acción para obtener la lista de administradores
@@ -43,7 +44,7 @@ namespace CounterTexFront.Controllers
                 ModelState.AddModelError("", "Error al conectarse con el servidor: " + ex.Message);
             }
 
-            return View("Administrador", administradores); // Cambio aquí para la vista "Administrador"
+            return View("Index", administradores); // Cambio aquí para la vista "Administrador"
         }
 
         [HttpPost]
@@ -51,7 +52,7 @@ namespace CounterTexFront.Controllers
         public async Task<ActionResult> Create(PerfilAdministradorViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Administrador", model); // Cambio aquí para la vista "Administrador"
+                return View("Index", model); // Cambio aquí para la vista "Administrador"
 
             try
             {
@@ -66,7 +67,7 @@ namespace CounterTexFront.Controllers
                     if (!response.IsSuccessStatusCode)
                     {
                         ModelState.AddModelError("", "No se pudo crear el administrador. Inténtalo nuevamente.");
-                        return View("Administrador", model); // Cambio aquí para la vista "Administrador"
+                        return View("Index", model); // Cambio aquí para la vista "Administrador"
                     }
                 }
 
@@ -75,7 +76,7 @@ namespace CounterTexFront.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error al crear el administrador: " + ex.Message);
-                return View("Administrador", model); // Cambio aquí para la vista "Administrador"
+                return View("Index", model); // Cambio aquí para la vista "Administrador"
             }
         }
 
@@ -84,7 +85,7 @@ namespace CounterTexFront.Controllers
         public async Task<ActionResult> Edit(PerfilAdministradorViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Administrador", model); // Cambio aquí para la vista "Administrador"
+                return View("Index", model); // Cambio aquí para la vista "Administrador"
 
             try
             {
@@ -99,7 +100,7 @@ namespace CounterTexFront.Controllers
                     if (!response.IsSuccessStatusCode)
                     {
                         ModelState.AddModelError("", "No se pudo editar el administrador. Inténtalo nuevamente.");
-                        return View("Administrador", model); // Cambio aquí para la vista "Administrador"
+                        return View("Index", model); // Cambio aquí para la vista "Administrador"
                     }
                 }
 
@@ -108,7 +109,7 @@ namespace CounterTexFront.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error al editar el administrador: " + ex.Message);
-                return View("Administrador", model); // Cambio aquí para la vista "Administrador"
+                return View("Index", model); // Cambio aquí para la vista "Administrador"
             }
         }
 

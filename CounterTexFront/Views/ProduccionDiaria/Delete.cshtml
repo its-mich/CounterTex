@@ -1,0 +1,33 @@
+﻿@model CounterTexFront.Models.ProduccionDiariaViewModel
+
+@{
+    ViewBag.Title = "Eliminar Producción";
+    Layout = ViewBag.Layout;
+}
+
+<h2>¿Estás seguro de que quieres eliminar esta producción?</h2>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Fecha</dt>
+        <dd class="col-sm-10">@Model.Fecha.ToShortDateString()</dd>
+
+        <dt class="col-sm-2">Usuario</dt>
+        <dd class="col-sm-10">@Model.UsuarioId</dd>
+
+        <dt class="col-sm-2">Prenda</dt>
+        <dd class="col-sm-10">@Model.PrendaId</dd>
+
+        <dt class="col-sm-2">Total</dt>
+        <dd class="col-sm-10">@Model.TotalValor</dd>
+    </dl>
+</div>
+
+@using (Html.BeginForm("DeleteConfirmed", "ProduccionDiaria", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
+}

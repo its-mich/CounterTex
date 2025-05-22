@@ -12,13 +12,13 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class UsuariosController : Controller
+    public class UsuariosController : BaseController
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
         public async Task<ActionResult> Index()
         {
-            List<Usuarios> usuarios = new List<Usuarios>();
+            List<UsuarioViewModel> usuarios = new List<UsuarioViewModel>();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
@@ -26,7 +26,7 @@ namespace CounterTexFront.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    usuarios = JsonConvert.DeserializeObject<List<Usuarios>>(jsonResponse);
+                    usuarios = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(jsonResponse);
                 }
             }
             return View(usuarios);
@@ -34,7 +34,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Usuarios model)
+        public async Task<ActionResult> Create(UsuarioViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -52,7 +52,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(Usuarios model)
+        public async Task<ActionResult> Edit(UsuarioViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);

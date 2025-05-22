@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CounterTexFront.Models
 {
-    public class Usuarios
+    public class UsuarioViewModel
     {
         [Key]
         public int IdUsuario { get; set; }
@@ -11,6 +11,9 @@ namespace CounterTexFront.Models
         [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
         [Display(Name = "Nombre de Usuario")]
         public string NombreUsuario { get; set; }
+
+        public string Rol { get; set; }
+        public int TokenValue { get; set; }
 
         [Required(ErrorMessage = "El correo es obligatorio.")]
         [EmailAddress(ErrorMessage = "Ingrese un correo electrónico válido.")]

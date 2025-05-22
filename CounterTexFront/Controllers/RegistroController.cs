@@ -10,11 +10,11 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class RegistroController : Controller
+    public class RegistroController : BaseController
     {
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
-        public ActionResult Registro()
+        public ActionResult Login()
         {
             return View();
         }
