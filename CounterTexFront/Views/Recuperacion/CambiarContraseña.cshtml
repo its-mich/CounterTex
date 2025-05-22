@@ -1,0 +1,74 @@
+﻿
+
+@model CounterTexFront.Models.RecuperarContraseñaViewModel
+
+
+@{
+    ViewBag.Title = "CambiarContraseña";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cambiar Contraseña</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .change-password-container {
+            margin-top: 80px;
+        }
+
+        .change-password-box {
+            max-width: 500px;
+            margin: auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container change-password-container">
+        <div class="change-password-box">
+            <h4 class="text-center mb-4">Cambiar Contraseña</h4>
+
+            <form action="/Cuenta/CambiarContraseña" method="post">
+                <div class="form-group">
+                    <label for="currentPassword">Contraseña Actual</label>
+                    <input type="password" class="form-control" id="currentPassword" name="CurrentPassword" placeholder="Ingresa tu contraseña actual" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">Nueva Contraseña</label>
+                    <input type="password" class="form-control" id="newPassword" name="NewPassword" placeholder="Ingresa la nueva contraseña" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Nueva Contraseña</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="ConfirmPassword" placeholder="Repite la nueva contraseña" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS + jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+

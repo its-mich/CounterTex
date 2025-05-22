@@ -1,20 +1,93 @@
 ﻿@model CounterTexFront.Models.LoginViewModel
 
-<form class="px-4 py-3" action="@Url.Action("Login","Home")" method="post">
-    @Html.AntiForgeryToken()
+@{
+    ViewBag.Title = "Iniciar Sesión";
+}
 
-    <div class="mb-3">
-        @Html.LabelFor(m => m.UserName, new { @class = "form-label" })
-        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "correo@ejemplo.com" })
-        @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+@section Styles {
+    <style>
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1e1e2f;
+        }
+
+        .login-box {
+            background-color: #2a2a3c;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(160, 204, 242, 0.1);
+            width: 100%;
+            max-width: 400px;
+            color: #F2F2F2;
+        }
+
+            .login-box h2 {
+                color: #A0CCF2;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+        .form-control {
+            background-color: #1e1e2f;
+            color: #F2F2F2;
+            border: 1px solid #444;
+        }
+
+        .btn-info {
+            background-color: #A0CCF2;
+            border: none;
+            width: 100%;
+        }
+
+            .btn-info:hover {
+                background-color: #78b6eb;
+            }
+
+        .dropdown-item {
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+            color: #A0CCF2;
+        }
+
+            .dropdown-item:hover {
+                color: #78b6eb;
+            }
+
+        .form-label, .form-text {
+            color: #ddd;
+        }
+    </style>
+}
+
+<div class="login-wrapper">
+    <div class="login-box">
+        <h2>Iniciar Sesión</h2>
+
+        @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { @class = "px-4 py-3" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.UserName, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "correo@ejemplo.com" })
+                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Contraseña" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+
+            <br />
+            <input type="submit" class="btn btn-info" value="Iniciar Sesión" />
+
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="@Url.Action("Create", "Usuarios")">¿No tienes cuenta? Regístrate</a>
+        }
     </div>
-    <div class="mb-3">
-        @Html.LabelFor(m => m.Password, new { @class = "form-label" })
-        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", @placeholder = "Contraseña" })
-        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-    </div>
-    <br />
-    <input type="submit" class="btn btn-info" value="Iniciar Sesión" />
-    <div class="dropdown-divider"></div>
-    <a class="dropdown-item" href="@Url.Action("Create", "Usuarios")">No tienes cuenta? Registrate </a>
-</form>
+</div>

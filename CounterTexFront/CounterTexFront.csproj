@@ -154,6 +154,7 @@
     <Compile Include="Controllers\AdministradorController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\CambiarContraseñaController.cs" />
     <Compile Include="Controllers\CantidadOperacionController.cs" />
     <Compile Include="Controllers\ControlHorariosController.cs" />
     <Compile Include="Controllers\ControlPagosController.cs" />
@@ -161,12 +162,15 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProduccionDiariaController.cs" />
     <Compile Include="Controllers\ProveedorController.cs" />
+    <Compile Include="Controllers\RecuperarContraseñaController.cs" />
     <Compile Include="Controllers\RegistroController.cs" />
     <Compile Include="Controllers\SateliteController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
+    <Compile Include="Controllers\VerificarCodigoController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CambiarContraseñaViewModel.cs" />
     <Compile Include="Models\HorarioViewModel.cs" />
     <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
@@ -175,10 +179,12 @@
     <Compile Include="Models\ProduccionDetalleViewModel.cs" />
     <Compile Include="Models\ProduccionDiariaViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
+    <Compile Include="Models\RecuperarContraseñaViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
     <Compile Include="Models\SateliteViewModel.cs" />
     <Compile Include="Models\Tokens.cs" />
     <Compile Include="Models\UsuarioViewModel.cs" />
+    <Compile Include="Models\VerificarCodigoViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +271,10 @@
     <Content Include="Views\ProduccionDiaria\Create.cshtml" />
     <Content Include="Views\ProduccionDiaria\Details.cshtml" />
     <Content Include="Views\ProduccionDiaria\Delete.cshtml" />
+    <Content Include="Views\Recuperacion\CambiarContraseña.cshtml" />
+    <Content Include="Views\Recuperacion\EnviarCodigo.cshtml" />
+    <Content Include="Views\Recuperacion\RecuperarContraseña.cshtml" />
+    <Content Include="Views\Recuperacion\VerificarCodigo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
