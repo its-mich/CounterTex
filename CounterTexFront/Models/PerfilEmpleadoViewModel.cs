@@ -8,6 +8,9 @@ namespace CounterTexFront.Models
     {
         [Key]
         public int IdEmpleado { get; set; }
+        public string NombreUsuario { get; set; }
+        public string Correo { get; set; }
+
 
         [Range(0, double.MaxValue, ErrorMessage = "La producción diaria debe ser un valor positivo.")]
         [Display(Name = "Producción Diaria")]

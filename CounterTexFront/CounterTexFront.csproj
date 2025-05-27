@@ -265,14 +265,14 @@
     <Content Include="Views\ProduccionDiaria\Create.cshtml" />
     <Content Include="Views\ProduccionDiaria\Details.cshtml" />
     <Content Include="Views\ProduccionDiaria\Delete.cshtml" />
+    <Content Include="Views\Proveedor\Index.cshtml" />
+    <Content Include="Views\Empleado\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\CantidadOperacion\" />
-    <Folder Include="Views\Empleado\" />
     <Folder Include="Views\Login\" />
-    <Folder Include="Views\Proveedor\" />
     <Folder Include="Views\Registro\" />
     <Folder Include="Views\Satelite\" />
     <Folder Include="Views\Usuarios\" />

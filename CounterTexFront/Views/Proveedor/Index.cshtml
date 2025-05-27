@@ -1,16 +1,16 @@
-﻿@model List<CounterTexFront.Models.PerfilEmpleadoViewModel>
+﻿@model List<CounterTexFront.Models.ProveedorViewModel>
 
 @{
     Layout = ViewBag.Layout;
-    var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Empleado";
+    var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Administrador";
 }
 
-<h2>Bienvenido Empleado</h2>
+<h2>Bienvenido Proveedor</h2>
 <p>Usuario: <strong>@nombreUsuario</strong></p>
 
 @if (Model == null || !Model.Any())
 {
-    <p>No hay empleados registrados.</p>
+    <p>No hay proveedores registrados.</p>
 }
 else
 {
@@ -19,21 +19,23 @@ else
             <tr>
                 <th>Id</th>
                 <th>Nombre</th>
-                <th>Cargo</th>
-                <th>Departamento</th>
+                <th>Contacto</th>
+                <th>Dirección</th>
                 <!-- Agrega más columnas según tu modelo -->
             </tr>
         </thead>
         <tbody>
-            @foreach (var empleado in Model)
+            @foreach (var proveedor in Model)
             {
                 <tr>
-                    <td>@empleado.IdUsuario</td>
-                    <td>@empleado.NombreUsuario</td>
-                    <td>@empleado.Rol</td>
-                    <td>@empleado.Correo</td>
+                    <td>@proveedor.IdProveedor</td>
+                    <td>@proveedor.NombreProveedor</td>
+                    <td>@proveedor.Telefono</td>
+                    <td>@proveedor.Direccion</td>
                 </tr>
             }
         </tbody>
     </table>
 }
+
+

@@ -42,7 +42,7 @@ namespace CounterTexFront.Controllers
                 ModelState.AddModelError("", "Error al conectarse con el servidor: " + ex.Message);
             }
 
-            return View("Proveedor", proveedores); // Cambio aquí para la vista "Proveedor"
+            return View(proveedores); // Cambio aquí para la vista "Index"
         }
 
         [HttpPost]
