@@ -152,6 +152,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdministradorController.cs" />
+    <Compile Include="Controllers\AsignacionEmpleadoController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CantidadOperacionController.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AsignacionEmpleadoViewModel.cs" />
     <Compile Include="Models\HorarioViewModel.cs" />
     <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
@@ -265,6 +267,7 @@
     <Content Include="Views\ProduccionDiaria\Create.cshtml" />
     <Content Include="Views\ProduccionDiaria\Details.cshtml" />
     <Content Include="Views\ProduccionDiaria\Delete.cshtml" />
+    <Content Include="Views\AsignacionEmpleado\AsignacionEmpleado.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
