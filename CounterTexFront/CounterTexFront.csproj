@@ -164,6 +164,7 @@
     <Compile Include="Controllers\ProduccionDiariaController.cs" />
     <Compile Include="Controllers\ProveedorController.cs" />
     <Compile Include="Controllers\RegistroController.cs" />
+    <Compile Include="Controllers\RevisionEmpleadoController.cs" />
     <Compile Include="Controllers\SateliteController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
@@ -180,6 +181,7 @@
     <Compile Include="Models\ProduccionDiariaViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
+    <Compile Include="Models\RevisionEmpleadoViewModel.cs" />
     <Compile Include="Models\SateliteViewModel.cs" />
     <Compile Include="Models\Tokens.cs" />
     <Compile Include="Models\UsuarioViewModel.cs" />
@@ -271,6 +273,7 @@
     <Content Include="Views\ProduccionDiaria\Delete.cshtml" />
     <Content Include="Views\AsignacionEmpleado\AsignacionEmpleado.cshtml" />
     <Content Include="Views\DetallesPrendaEmpleado\DetallesPrendaEmpleado.cshtml" />
+    <Content Include="Views\revisionempleado\RevisionEmpleado.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
