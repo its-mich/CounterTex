@@ -1,0 +1,605 @@
+﻿
+@{
+    ViewBag.Title = "DetallesPrendaEmpleado";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de Prenda - Admin Master</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --accent-color: #ff4d8d;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark-color);
+            padding-left: 280px; /* Añadido para compensar el sidebar */
+        }
+
+        /* Sidebar Premium */
+        .admin-sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            min-height: 100vh;
+            width: 280px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        /* Contenedor principal centrado */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+            padding-left: 50px; /* Espacio adicional entre sidebar y contenido */
+        }
+
+        /* Resto de tus estilos existentes... */
+        .admin-sidebar .sidebar-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-sidebar .profile-info {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-sidebar .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+        }
+
+        .admin-sidebar .nav-menu {
+            padding: 20px 0;
+        }
+
+        .admin-sidebar .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .admin-sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .admin-sidebar .nav-link:hover,
+        .admin-sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid var(--accent-color);
+            text-decoration: none;
+        }
+
+        .admin-sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .admin-sidebar .nav-link .badge {
+            margin-left: auto;
+            background-color: var(--accent-color);
+        }
+
+        /* Form Section */
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .form-section h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section h4 i {
+            margin-right: 10px;
+        }
+
+        /* Responsive */
+        (max-width: 992px) {
+            body {
+                padding-left: 80px;
+            }
+
+            .admin-sidebar {
+                width: 80px;
+                overflow: hidden;
+            }
+
+            .admin-sidebar .profile-info,
+            .admin-sidebar .nav-link span {
+                display: none;
+            }
+
+            .admin-sidebar .nav-link {
+                justify-content: center;
+                padding: 12px 0;
+            }
+
+            .admin-sidebar .nav-link i {
+                margin-right: 0;
+                font-size: 1.3rem;
+            }
+
+            .main-container {
+                padding-left: 30px;
+            }
+        }
+
+       (max-width: 768px) {
+            body {
+                padding-left: 0;
+            }
+
+            .admin-sidebar {
+                width: 100%;
+                height: auto;
+                min-height: auto;
+                position: relative;
+            }
+
+            .main-container {
+                padding: 15px;
+            }
+        }
+
+        /* Resto de tus estilos... */
+        .floating-label {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .floating-label label {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: #6c757d;
+            transition: all 0.3s;
+            pointer-events: none;
+            background: white;
+            padding: 0 5px;
+        }
+
+        .floating-label .form-control:focus + label,
+        .floating-label .form-control:not(:placeholder-shown) + label,
+        .floating-label .form-select:focus + label,
+        .floating-label .form-select:not(:placeholder-shown) + label {
+            top: -10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+        }
+
+        .form-control, .form-select {
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+
+        .btn-submit {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 12px 25px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            background-size: 200% auto;
+        }
+
+        .btn-submit:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-completed {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-cancelled {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <h4 class="text-center mb-0">CounterTex</h4>
+        </div>
+
+        <div class="profile-info">
+            <img src="empleado.jpg" alt="Admin" class="profile-img">
+            <h5 class="mb-1">empleado</h5>
+            <p class="text-muted small mb-0">empleado</p>
+        </div>
+
+        <div class="nav-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="produccion-diaria-empleado.html" class="nav-link active">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>Producción Diaria</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="control-horarios-empleado.html" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        <span>Control de Horarios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="control-prendas-empleado.html" class="nav-link">
+                        <i class="fas fa-tshirt"></i>
+                        <span>Control de Prendas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="chat-interno-empleado.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat Interno</span>
+                        <span class="badge rounded-pill bg-success">5</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="revision-empleado.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>revision de prendas</span>
+                        <span class="badge rounded-pill bg-success">5</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="detalle-prenda-empleado.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>detalle de prenda</span>
+                        <span class="badge rounded-pill bg-success">5</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="asignacion-empleado.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>asignacion de prenda</span>
+                        <span class="badge rounded-pill bg-success">5</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="log in.html" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Contenido principal centrado -->
+    <div class="main-container">
+        <!-- Formulario de Detalles de Prenda -->
+        <div class="form-section">
+            <h4><i class="fas fa-info-circle me-2"></i>Detalles de Prenda</h4>
+
+            <form id="prendaForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="color" class="form-label">Color</label>
+                        <select class="form-select" id="color" required>
+                            <option value="" selected disabled>Seleccionar color</option>
+                            <option value="rojo">Rojo</option>
+                            <option value="azul">Azul</option>
+                            <option value="verde">Verde</option>
+                            <option value="negro">Negro</option>
+                            <option value="blanco">Blanco</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tipoPrenda" class="form-label">Tipo de Prenda</label>
+                        <select class="form-select" id="tipoPrenda" required>
+                            <option value="" selected disabled>Seleccionar tipo</option>
+                            <option value="camisa">Camisa</option>
+                            <option value="pantalon">Pantalón</option>
+                            <option value="vestido">Vestido</option>
+                            <option value="chaqueta">Chaqueta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="modelo" class="form-label">Modelo</label>
+                        <input type="text" class="form-control" id="modelo" placeholder="Ingrese el modelo" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="folio" class="form-label">Folio</label>
+                        <input type="text" class="form-control" id="folio" placeholder="Ingrese el folio" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="operacion" class="form-label">Tipo de Operación</label>
+                        <select class="form-select" id="operacion" required>
+                            <option value="" selected disabled>Seleccionar operación</option>
+                            <option value="corte">Corte</option>
+                            <option value="costura">Costura</option>
+                            <option value="planchado">Planchado</option>
+                            <option value="empaque">Empaque</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="cantidad" class="form-label">Cantidad</label>
+                        <input type="number" class="form-control" id="cantidad" min="1" value="1" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">Observaciones</label>
+                    <textarea class="form-control" id="observaciones" rows="3" placeholder="Ingrese observaciones adicionales"></textarea>
+                </div>
+
+                <hr>
+
+                <h5 class="mb-3"><i class="fas fa-save me-2"></i>Guardar Producción</h5>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Prendas</label>
+                        <div class="form-control" id="prendaSummary">-</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Color</label>
+                        <div class="form-control" id="colorSummary">-</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Modelo</label>
+                        <div class="form-control" id="modeloSummary">-</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Talla</label>
+                        <select class="form-select" id="talla">
+                            <option value="S">S</option>
+                            <option value="M" selected>M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Operación</label>
+                        <div class="form-control" id="operacionSummary">-</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Cantidad</label>
+                        <div class="form-control" id="cantidadSummary">-</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="fecha" class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="fecha" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="efecto" class="form-label">Efecto</label>
+                        <select class="form-select" id="efecto">
+                            <option value="normal">Normal</option>
+                            <option value="lavado">Lavado</option>
+                            <option value="teñido">Teñido</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="acabado" class="form-label">Acabado</label>
+                        <select class="form-select" id="acabado">
+                            <option value="estandar">Estándar</option>
+                            <option value="premium">Premium</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary" id="btnCancelar">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardar">
+                        <i class="fas fa-save me-2"></i>Guardar Producción
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Resumen de Prendas Rechazadas -->
+        <div class="form-section">
+            <h4><i class="fas fa-exclamation-triangle me-2"></i>Prendas Rechazadas</h4>
+            <div class="alert alert-warning">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle fa-2x"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h4 class="alert-heading">37 Prendas Rechazadas</h4>
+                        <p class="mb-0">Revise los criterios de calidad para reducir este número.</p>
+                    </div>
+                    <button class="btn btn-sm btn-outline-warning">Ver Detalles</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Modelo</th>
+                            <th>Defecto</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PR-10025</td>
+                            <td>Camisa M</td>
+                            <td>Corte irregular</td>
+                            <td>15/05/2023</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary">Revisar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PR-10024</td>
+                            <td>Pantalón L</td>
+                            <td>Costura desalineada</td>
+                            <td>15/05/2023</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary">Revisar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PR-10023</td>
+                            <td>Vestido S</td>
+                            <td>Mancha de tinta</td>
+                            <td>14/05/2023</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary">Revisar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Actualizar resumen en tiempo real
+        document.getElementById('color').addEventListener('change', updateSummary);
+        document.getElementById('tipoPrenda').addEventListener('change', updateSummary);
+        document.getElementById('modelo').addEventListener('input', updateSummary);
+        document.getElementById('operacion').addEventListener('change', updateSummary);
+        document.getElementById('cantidad').addEventListener('input', updateSummary);
+
+        function updateSummary() {
+            document.getElementById('prendaSummary').textContent =
+                document.getElementById('tipoPrenda').value || '-';
+            document.getElementById('colorSummary').textContent =
+                document.getElementById('color').value || '-';
+            document.getElementById('modeloSummary').textContent =
+                document.getElementById('modelo').value || '-';
+            document.getElementById('operacionSummary').textContent =
+                document.getElementById('operacion').value || '-';
+            document.getElementById('cantidadSummary').textContent =
+                document.getElementById('cantidad').value || '-';
+        }
+
+        // Establecer fecha actual por defecto
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        // Manejar envío del formulario
+        document.getElementById('prendaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Validación adicional
+            if (!document.getElementById('color').value ||
+                !document.getElementById('tipoPrenda').value) {
+                alert('Por favor complete todos los campos requeridos');
+                return;
+            }
+
+            // Simular envío de datos
+            alert('Producción guardada exitosamente');
+
+            // Aquí iría el código AJAX para enviar los datos al servidor
+            console.log('Datos a enviar:', {
+                color: document.getElementById('color').value,
+                tipoPrenda: document.getElementById('tipoPrenda').value,
+                modelo: document.getElementById('modelo').value,
+                folio: document.getElementById('folio').value,
+                operacion: document.getElementById('operacion').value,
+                cantidad: document.getElementById('cantidad').value,
+                observaciones: document.getElementById('observaciones').value,
+                talla: document.getElementById('talla').value,
+                fecha: document.getElementById('fecha').value,
+                efecto: document.getElementById('efecto').value,
+                acabado: document.getElementById('acabado').value
+            });
+        });
+
+        // Manejar botón cancelar
+        document.getElementById('btnCancelar').addEventListener('click', function() {
+            if (confirm('¿Está seguro que desea cancelar? Los datos no guardados se perderán.')) {
+                // Limpiar formulario
+                document.getElementById('prendaForm').reset();
+                updateSummary();
+            }
+        });
+
+        // Actualizar summary al cargar la página
+        updateSummary();
+    </script>
+</body>
+</html>
