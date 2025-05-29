@@ -11,6 +11,7 @@ namespace CounterTexFront.Controllers
         // GET: DetallesPrendaEmpleado
         public ActionResult DetallesPrendaEmpleado()
         {
+        
             return View();
         }
     }

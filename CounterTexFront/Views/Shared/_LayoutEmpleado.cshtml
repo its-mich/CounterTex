@@ -171,19 +171,25 @@
             <a class="nav-link" href="@Url.Action("RevisionEmpleado", "RevisionEmpleado")">
                 <i class="fas fa-clipboard-check"></i> Revisión Prendas
             </a>
-            <a class="nav-link" href="@Url.Action("DetallePrenda", "DetallePrenda")">
-                <i class="fas fa-info-circle"></i> Detalle Prenda
-            </a>
+
+             
             <a class="nav-link" href="@Url.Action("AsignacionEmpleado", "AsignacionEmpleado")">
                 <i class="fas fa-tasks"></i> Asignacion Empleado
             </a>
-            @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
-            {
-                @Html.AntiForgeryToken()
-                <a class="nav-link" href="javascript:document.getElementById('logoutForm').submit();">
-                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                </a>
-            }
+            <a class="nav-link" href="@Url.Action("DetallesPrendaEmpleado", "DetallesPrendaEmpleado")">
+                <i class="fas fa-info-circle"></i> Detalle Prenda Empleado
+
+            </a>
+
+
+
+                @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <a class="nav-link" href="javascript:document.getElementById('logoutForm').submit();">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                }
         </nav>
     </div>
 

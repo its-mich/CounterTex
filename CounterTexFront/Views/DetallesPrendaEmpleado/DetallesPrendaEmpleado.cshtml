@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "DetallesPrendaEmpleado";
+    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
 }
 @model CounterTexFront.Models.DetallesPrendaEmpleadoViewModel
 
@@ -48,12 +49,12 @@
         }
 
         /* Contenedor principal centrado */
-        .main-container {
+        /*.main-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 30px;
-            padding-left: 50px; /* Espacio adicional entre sidebar y contenido */
-        }
+            padding-left: 50px;*/ /* Espacio adicional entre sidebar y contenido */
+        /*}*/
 
         /* Resto de tus estilos existentes... */
         .admin-sidebar .sidebar-header {
@@ -139,34 +140,32 @@
                 }
 
         /* Responsive */
-        (max-width: 992px) {
-            body
-
-        {
-            padding-left: 80px;
+        max-width: 992px {
+            .admin-sidebar width: 100%;
+            height: auto;
+            min-height: auto;
+            position: relative;
         }
-
+            /*   padding-left: 80px;*/
+            /*
         .admin-sidebar {
             width: 80px;
             overflow: hidden;
-        }
-
+        }*/
+            /*
             .admin-sidebar .profile-info,
             .admin-sidebar .nav-link span {
                 display: none;
-            }
-
-            .admin-sidebar .nav-link {
+            }*/
+            /*            .admin-sidebar .nav-link {
                 justify-content: center;
                 padding: 12px 0;
-            }
-
-                .admin-sidebar .nav-link i {
+            }*/
+            /*           .admin-sidebar .nav-link i {
                     margin-right: 0;
                     font-size: 1.3rem;
-                }
-
-        .main-container {
+                }*/
+            /* .main-container {
             padding-left: 30px;
         }
 
@@ -177,20 +176,14 @@
 
         {
             padding-left: 0;
-        }
-
-        .admin-sidebar {
-            width: 100%;
-            height: auto;
-            min-height: auto;
-            position: relative;
-        }
+        }*/
+        
 
         .main-container {
             padding: 15px;
         }
 
-        }
+        
 
         /* Resto de tus estilos... */
         .floating-label {
