@@ -1,0 +1,33 @@
+﻿﻿@model CounterTexFront.Models.ProduccionDetalleViewModel
+@{
+    var index = (int)ViewData["index"];
+    var operacionesDisponibles = (IEnumerable<CounterTexFront.Models.OperacionViewModel>)ViewData["operaciones"];
+
+    // **IMPORTANTE: Establecer el prefijo para el Model Binder.**
+    // Esto asegura que Html.EditorFor y Html.DropDownListFor generen los nombres e IDs correctos
+    ViewData.TemplateInfo.HtmlFieldPrefix = $"ProduccionDetalles[{index}]";
+}
+<div class="row detalle-item mb-3 p-2 border rounded bg-light">
+    @Html.HiddenFor(model => model.Id)
+    <div class="col-md-5">
+        @Html.LabelFor(model => model.OperacionId, "Operación", new { @class = "control-label" })
+        @Html.DropDownListFor(
+            model => model.OperacionId,
+            new SelectList(operacionesDisponibles, "Id", "Nombre"),
+            "Seleccione Operación",
+            new { @class = "form-control" } // Ya no necesita el 'name' manual aquí
+        )
+        @Html.ValidationMessageFor(model => model.OperacionId, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-md-5">
+        @Html.LabelFor(model => model.Cantidad, new { @class = "control-label" })
+        @Html.EditorFor(
+            model => model.Cantidad,
+            new { htmlAttributes = new { @class = "form-control", type = "number", min = "1" } } // Ya no necesita el 'name' manual aquí
+        )
+        @Html.ValidationMessageFor(model => model.Cantidad, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="button" class="btn btn-danger remove-detalle w-100"><i class="fas fa-trash"></i> Eliminar</button>
+    </div>
+</div>

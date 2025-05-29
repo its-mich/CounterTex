@@ -1,45 +1,161 @@
-﻿
-@model IEnumerable<CounterTexFront.Models.ProduccionDiariaViewModel>
+﻿﻿@model CounterTexFront.Models.ProduccionListViewModel
 
 @{
-    ViewBag.Title = "Lista de Producciones";
     Layout = ViewBag.Layout;
+    ViewBag.Title = "Producción Diaria";
 }
 
-<h2>Producciones</h2>
+@section Styles {
+    <style>
+        /* Aquí pega todo el CSS que ya tienes en tu bloque <style> */
+        /* Estilos para el acordeón personalizado */
+        .accordion-item-custom {
+            background-color: #2a2a3c; /* Fondo similar a .card-dark */
+            border: 1px solid rgba(160, 204, 242, 0.1); /* Borde sutil del color de acento */
+            margin-bottom: 10px; /* Espacio entre los elementos del acordeón */
+            border-radius: 8px; /* Bordes redondeados */
+            overflow: hidden; /* Asegura que el contenido respete los bordes redondeados */
+        }
+
+        .accordion-header-custom .accordion-button {
+            background-color: #2a2a3c; /* Fondo del encabezado */
+            color: #F2F2F2; /* Color del texto del encabezado */
+            border-bottom: 1px solid rgba(160, 204, 242, 0.15); /* Separador debajo del encabezado */
+            font-weight: 500; /* Un poco más de grosor para el texto del encabezado */
+            padding: 15px 20px; /* Relleno */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+            .accordion-header-custom .accordion-button:not(.collapsed) {
+                background-color: #35354a; /* Fondo cuando está abierto */
+                color: #A0CCF2; /* Texto del encabezado cuando está abierto */
+                box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .accordion-header-custom .accordion-button:focus {
+                border-color: #A0CCF2; /* Borde de enfoque */
+                box-shadow: 0 0 0 0.25rem rgba(160, 204, 242, 0.25); /* Sombra de enfoque del color de acento */
+            }
+
+            .accordion-header-custom .accordion-button::after {
+                /* Personaliza la flecha del acordeón */
+                filter: invert(1) grayscale(100%) brightness(200%); /* Hace la flecha blanca/clara */
+                transition: transform 0.3s ease;
+            }
+
+            .accordion-header-custom .accordion-button:not(.collapsed)::after {
+                filter: invert(1) grayscale(100%) brightness(200%); /* Mantén la flecha blanca/clara cuando está abierta */
+                transform: rotate(-180deg); /* Rota la flecha */
+            }
+
+        .accordion-body-custom {
+            background-color: #1e1e2f; /* Fondo del cuerpo colapsable (el mismo que el body general o un tono más oscuro) */
+            color: #F2F2F2; /* Color del texto del cuerpo */
+            padding: 20px;
+        }
+
+            /* Estilos para los botones de acción dentro del acordeón (opcional, si no están ya globalmente) */
+            .accordion-body-custom .btn {
+                margin-right: 10px;
+            }
+
+        /* Algunos ajustes para el botón de crear nueva producción */
+        .btn-primary.mb-3 {
+            margin-bottom: 1rem !important; /* Asegura el margen inferior */
+        }
+
+        /* Ajustes generales para enlaces y textos si no se ven bien en fondos oscuros */
+        h2, h3, h4, h5, h6 {
+            color: #F2F2F2; /* Asegura que los títulos sean visibles */
+        }
+    </style>
+}
+
+<h2>Lista de Producciones Diarias</h2>
+
+<p>
+    @Html.ActionLink("Crear Nueva Producción", "Create", null, new { @class = "btn btn-primary mb-3" })
+</p>
 
 @if (ViewBag.Error != null)
 {
-    <div class="alert alert-danger">@ViewBag.Error</div>
+    <div class="alert alert-danger">
+        @ViewBag.Error
+    </div>
 }
-<p>
-    @Html.ActionLink("Crear nueva producción", "Create", null, new { @class = "btn btn-primary" })
-</p>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>Usuario</th>
-            <th>Prenda</th>
-            <th>Total</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="accordion" id="accordionProducciones">
+    @if (Model.ListaProducciones != null && Model.ListaProducciones.Any())
+    {
+        int i = 0;
+        foreach (var item in Model.ListaProducciones)
         {
-            <tr>
-                <td>@item.Fecha.ToShortDateString()</td>
-                <td>@item.UsuarioId</td>
-                <td>@item.PrendaId</td>
-                <td>@item.TotalValor</td>
-                <td>
-                    @Html.ActionLink("Detalles", "Details", new { id = item.Id }, new { @class = "btn btn-info btn-sm" }) |
-                    @Html.ActionLink("Eliminar", "Delete", new { id = item.Id }, new { @class = "btn btn-danger btn-sm" })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+            // CORRECCIÓN: Usar string.Format() en lugar de interpolación de cadenas
+            string collapseId = string.Format("collapse_produccion_{0}_{1}", item.Id, i);
+            string headingId = string.Format("heading_produccion_{0}_{1}", item.Id, i);
 
+            <div class="accordion-item accordion-item-custom">
+                <h2 class="accordion-header accordion-header-custom" id="@headingId">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+                        <strong>Fecha:</strong> @Html.DisplayFor(modelItem => item.FechaProduccion.Date) -
+                        <strong>Usuario:</strong> @Html.DisplayFor(modelItem => item.Usuario) -
+                        <strong>Prenda:</strong> @Html.DisplayFor(modelItem => item.Prenda) -
+                        <strong>Total:</strong> @Html.DisplayFor(modelItem => item.Total)
+                    </button>
+                </h2>
+                <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#accordionProducciones">
+                    <div class="accordion-body accordion-body-custom">
+                        <p><strong>ID Producción:</strong> @Html.DisplayFor(modelItem => item.Id)</p>
+                        <p><strong>Fecha Completa:</strong> @Html.DisplayFor(modelItem => item.FechaProduccion)</p>
+                        <p><strong>Usuario Asignado:</strong> @Html.DisplayFor(modelItem => item.Usuario)</p>
+                        <p><strong>Prenda Fabricada:</strong> @Html.DisplayFor(modelItem => item.Prenda)</p>
+                        <p><strong>Cantidad Total:</strong> @Html.DisplayFor(modelItem => item.Total)</p>
+
+                        <hr />
+                        <div>
+                            @Html.ActionLink("Ver Detalles", "Details", new { id = item.Id }, new { @class = "btn btn-info btn-sm" })
+                            @Html.ActionLink("Eliminar Producción", "Delete", new { id = item.Id }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('¿Estás seguro de que quieres eliminar esta producción?');" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            i++;
+        }
+    }
+    else
+    {
+        <div class="alert alert-info mt-3">No hay producciones registradas.</div>
+    }
+</div>
+
+@* Paginación *@
+<nav aria-label="Page navigation" class="p-3">
+    <ul class="pagination justify-content-center mb-0">
+        <li class="page-item @(Model.PaginaActual == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = Model.PaginaActual - 1 })" tabindex="-1">Anterior</a>
+        </li>
+
+        @for (int i = 1; i <= Model.TotalPaginas; i++)
+        {
+            <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+            </li>
+        }
+        <li class="page-item @(Model.PaginaActual == Model.TotalPaginas ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = Model.PaginaActual + 1 })">Siguiente</a>
+        </li>
+    </ul>
+</nav>
+
+@section Scripts {
+    <!-- No se requiere JavaScript adicional para el acordeón de Bootstrap 5 aquí,
+         pero si quieres un comportamiento extra, este es el lugar. -->
+}

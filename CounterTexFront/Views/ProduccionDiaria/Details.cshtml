@@ -1,4 +1,4 @@
-﻿@model CounterTexFront.Models.ProduccionDiariaViewModel
+﻿﻿@model CounterTexFront.Models.ProduccionDiariaViewModel
 
 @{
     ViewBag.Title = "Detalle de Producción";
@@ -13,31 +13,44 @@
         <dd class="col-sm-10">@Model.Fecha.ToShortDateString()</dd>
 
         <dt class="col-sm-2">Usuario</dt>
-        <dd class="col-sm-10">@Model.UsuarioId</dd>
+        @* Mostrar el nombre del usuario si la propiedad de navegación Usuario está cargada *@
+        <dd class="col-sm-10">@(Model.Usuario != null ? Model.Usuario.NombreUsuario : "N/A")</dd>
 
         <dt class="col-sm-2">Prenda</dt>
-        <dd class="col-sm-10">@Model.PrendaId</dd>
+        @* Mostrar el nombre de la prenda si la propiedad de navegación Prenda está cargada *@
+        <dd class="col-sm-10">@(Model.Prenda != null ? Model.Prenda.Nombre : "N/A")</dd>
 
         <dt class="col-sm-2">Total</dt>
-        <dd class="col-sm-10">@Model.TotalValor</dd>
+        <dd class="col-sm-10">@Model.TotalValor.ToString("C")</dd> @* Formato de moneda, ajusta según tu cultura *@
     </dl>
 
     <h4>Detalles</h4>
     <table class="table">
         <thead>
             <tr>
-                <th>Operación ID</th>
+                <th>Operación</th> @* Cambiado a Operación para mostrar el nombre *@
                 <th>Cantidad</th>
-                <th>Valor Total</th>
+                <th>Valor Total Detalle</th> @* Cambiado para claridad *@
             </tr>
         </thead>
         <tbody>
-            @foreach (var d in Model.Detalles)
+            @* CORRECCIÓN: Iterar sobre Model.ProduccionDetalles *@
+            @if (Model.ProduccionDetalles != null && Model.ProduccionDetalles.Any())
+            {
+                foreach (var d in Model.ProduccionDetalles)
+                {
+                    <tr>
+                        @* Mostrar el nombre de la operación si la propiedad de navegación Operacion está cargada *@
+                        <td>@(d.Operacion != null ? d.Operacion.Nombre : "N/A")</td>
+                        <td>@d.Cantidad</td>
+                        <td>@d.ValorTotal.ToString("C")</td> @* Formato de moneda *@
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td>@d.OperacionId</td>
-                    <td>@d.Cantidad</td>
-                    <td>@d.ValorTotal</td>
+                    <td colspan="3" class="text-center">No hay detalles de producción para esta entrada.</td>
                 </tr>
             }
         </tbody>
