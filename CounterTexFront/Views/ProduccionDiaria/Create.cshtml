@@ -1,60 +1,191 @@
-﻿@model CounterTexFront.Models.ProduccionDiariaViewModel
+﻿﻿@model CounterTexFront.Models.ProduccionDiariaViewModel
 
 @{
-    ViewBag.Title = "Crear Producción";
     Layout = ViewBag.Layout;
 }
 
-@if (ViewBag.Error != null)
+<h2>Crear Nueva Producción Diaria</h2>
+
+@using (Html.BeginForm("Create", "ProduccionDiaria", FormMethod.Post, new { @class = "form-horizontal", id = "produccionForm" }))
 {
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
-@using (Html.BeginForm("Create", "ProduccionDiaria", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken() // Esto genera el campo oculto con el token
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.Fecha)
-        @Html.TextBoxFor(m => m.Fecha, new { @class = "form-control", type = "date" })
+    if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="card card-dark p-4 mb-4">
+        <h4 class="card-title mb-3">Datos Generales de la Producción</h4>
+
+        <div class="form-group row mb-3">
+            @Html.LabelFor(model => model.Fecha, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Fecha, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row mb-3">
+            @Html.LabelFor(model => model.UsuarioId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.UsuarioId, new SelectList(Model.UsuariosDisponibles, "IdUsuario", "NombreUsuario"), "Seleccione un Usuario", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.UsuarioId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row mb-3">
+            @Html.LabelFor(model => model.PrendaId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.PrendaId, new SelectList(Model.PrendasDisponibles, "Id", "Nombre"), "Seleccione una Prenda", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.PrendaId, "", new { @class = "text-danger" })
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.UsuarioId)
-        @Html.TextBoxFor(m => m.UsuarioId, new { @class = "form-control" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.PrendaId)
-        @Html.TextBoxFor(m => m.PrendaId, new { @class = "form-control" })
-    </div>
-
-    <h4>Detalles de Producción</h4>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Operación ID</th>
-                <th>Cantidad</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Detalles != null)
+    <div class="card card-dark p-4 mb-4">
+        <h4 class="card-title mb-3">Detalles de Producción</h4>
+        <div id="produccionDetallesContainer">
+            @if (Model.ProduccionDetalles != null && Model.ProduccionDetalles.Any())
             {
-                for (int i = 0; i < Model.Detalles.Count; i++)
+                for (int i = 0; i < Model.ProduccionDetalles.Count; i++)
                 {
-                    <tr>
-                        <td>
-                            @Html.TextBoxFor(m => m.Detalles[i].OperacionId, new { @class = "form-control" })
-                        </td>
-                        <td>
-                            @Html.TextBoxFor(m => m.Detalles[i].Cantidad, new { @class = "form-control" })
-                        </td>
-                    </tr>
+                    @Html.Partial("_ProduccionDetallePartial", Model.ProduccionDetalles[i], new ViewDataDictionary { { "index", i }, { "operaciones", Model.OperacionesDisponibles } })
                 }
             }
-        </tbody>
-    </table>
+        </div>
+        <button type="button" id="addDetalle" class="btn btn-secondary mt-3"><i class="fas fa-plus"></i> Añadir Detalle</button>
+    </div>
 
-    <button type="submit" class="btn btn-success">Guardar</button>
-    @Html.ActionLink("Volver", "Index", null, new { @class = "btn btn-secondary" })
+    <div class="form-group mt-4">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar Producción</button>
+            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-outline-secondary ms-2" })
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+            $(document).ready(function () {
+                var detalleIndex = @(Model.ProduccionDetalles != null ? Model.ProduccionDetalles.Count : 0);
+
+                $('#addDetalle').click(function () {
+                    $.ajax({
+                        url: '@Url.Action("GetProduccionDetallePartial", "ProduccionDiaria")',
+                        type: 'GET',
+                        data: { index: detalleIndex },
+                        success: function (data) {
+                            $('#produccionDetallesContainer').append(data);
+                            detalleIndex++;
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al cargar detalle parcial:", error);
+                            alert("Error al cargar detalle de producción. Por favor, intente de nuevo.");
+                        }
+                    });
+                });
+
+                $('#produccionDetallesContainer').on('click', '.remove-detalle', function () {
+                    $(this).closest('.detalle-item').remove();
+                });
+
+                var fechaInput = $('input[name="Fecha"]');
+                if (fechaInput.length && fechaInput.val()) {
+                    var fechaOriginal = new Date(fechaInput.val());
+                    fechaInput.val(fechaOriginal.toISOString().split('T')[0]);
+                }
+
+                $('#produccionForm').submit(function (e) {
+                    e.preventDefault();
+
+                    var formData = {
+                        Fecha: $('#Fecha').val(),
+                        UsuarioId: $('#UsuarioId').val(),
+                        PrendaId: $('#PrendaId').val(),
+                        ProduccionDetalles: []
+                    };
+
+                    $('.detalle-item').each(function (index) {
+                        var detalle = {
+                            Id: $(this).find('input[name^="ProduccionDetalles"][name$=".Id"]').val(),
+                            OperacionId: $(this).find('select[name^="ProduccionDetalles"][name$=".OperacionId"]').val(),
+                            Cantidad: $(this).find('input[name^="ProduccionDetalles"][name$=".Cantidad"]').val()
+                        };
+                        if (detalle.OperacionId && parseInt(detalle.Cantidad) > 0) {
+                            formData.ProduccionDetalles.push(detalle);
+                        }
+                    });
+
+                    if (!formData.Fecha) {
+                        alert("La fecha es obligatoria.");
+                        return;
+                    }
+                    if (!formData.UsuarioId || formData.UsuarioId === "0") {
+                        alert("El usuario es obligatorio.");
+                        return;
+                    }
+                    if (!formData.PrendaId || formData.PrendaId === "0") {
+                        alert("La prenda es obligatoria.");
+                        return;
+                    }
+                    if (formData.ProduccionDetalles.length === 0) {
+                        alert("Debe agregar al menos un detalle de producción válido (Operación y Cantidad > 0).");
+                        return;
+                    }
+
+                    var jsonData = JSON.stringify(formData);
+
+                    // Obtener el token de antifalsificación
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+
+                    $.ajax({
+                        url: '@Url.Action("Create", "ProduccionDiaria")',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: jsonData,
+                        headers: { // <--- ¡AÑADIR ESTO!
+                            'RequestVerificationToken': token
+                        },
+                        success: function (response) {
+                            window.location.href = '@Url.Action("Index", "ProduccionDiaria")';
+                        },
+                        error: function (xhr, status, error) {
+                            var errorMessage = "Error desconocido al guardar la producción.";
+                            console.error("AJAX Error:", xhr.responseText);
+
+                            try {
+                                var errorResponse = JSON.parse(xhr.responseText);
+                                if (errorResponse.errors) {
+                                    errorMessage = "Errores de validación:<br>";
+                                    $.each(errorResponse.errors, function (key, value) {
+                                        errorMessage += " - " + key + ": " + value.join(", ") + "<br>";
+                                    });
+                                } else if (errorResponse.title) {
+                                    errorMessage = errorResponse.title + (errorResponse.detail ? ": " + errorResponse.detail : "");
+                                } else if (errorResponse.Message) {
+                                    errorMessage = errorResponse.Message;
+                                    if (errorResponse.ModelState) {
+                                        errorMessage += "<br>Detalles:<br>";
+                                        $.each(errorResponse.ModelState, function (key, value) {
+                                            errorMessage += " - " + key + ": " + value.join(", ") + "<br>";
+                                        });
+                                    }
+                                } else {
+                                    errorMessage = xhr.responseText;
+                                }
+                            } catch (e) {
+                                errorMessage = xhr.responseText || "Error de servidor sin formato JSON.";
+                            }
+
+                            $('#apiErrorMessages').html(errorMessage).show();
+                            alert(errorMessage);
+                        }
+                    });
+                });
+            });
+    </script>
 }

@@ -172,8 +172,11 @@
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\PerfilAdministradorViewModel.cs" />
     <Compile Include="Models\PerfilEmpleadoViewModel.cs" />
+    <Compile Include="Models\ProduccionCreateDto.cs" />
     <Compile Include="Models\ProduccionDetalleViewModel.cs" />
     <Compile Include="Models\ProduccionDiariaViewModel.cs" />
+    <Compile Include="Models\ProduccionDtoViewModel.cs" />
+    <Compile Include="Models\ProduccionListViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
     <Compile Include="Models\SateliteViewModel.cs" />
@@ -267,6 +270,7 @@
     <Content Include="Views\ProduccionDiaria\Delete.cshtml" />
     <Content Include="Views\Proveedor\Index.cshtml" />
     <Content Include="Views\Empleado\Index.cshtml" />
+    <Content Include="Views\ProduccionDiaria\_ProduccionDetallePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
