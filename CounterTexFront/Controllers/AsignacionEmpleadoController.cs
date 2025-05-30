@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class AsignacionEmpleadoController : Controller
+    public class AsignacionEmpleadoController : BaseController
     {
         // GET: AsignacionEmpleado
         public ActionResult AsignacionEmpleado()

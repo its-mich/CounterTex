@@ -1,7 +1,9 @@
 ﻿
 @{
     ViewBag.Title = "DetallesPrendaEmpleado";
-    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+
+    //Layout = ViewBag.Layout;
+
 }
 @model CounterTexFront.Models.DetallesPrendaEmpleadoViewModel
 
@@ -27,15 +29,15 @@
             --danger-color: #dc3545;
         }
 
-        body {
+        /*body {
             font-family: 'Poppins', sans-serif;
             background-color: #f5f7fb;
             color: var(--dark-color);
-            padding-left: 280px; /* Añadido para compensar el sidebar */
-        }
+            padding-left: 280px;*/ /* Añadido para compensar el sidebar */
+        /*}*/
 
         /* Sidebar Premium */
-        .admin-sidebar {
+        /*        .admin-sidebar {
             background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             min-height: 100vh;
@@ -46,7 +48,7 @@
             box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
             z-index: 1000;
-        }
+        }*/
 
         /* Contenedor principal centrado */
         /*.main-container {
@@ -146,26 +148,30 @@
             min-height: auto;
             position: relative;
         }
-            /*   padding-left: 80px;*/
-            /*
+
+        padding-left: 80px;
+
         .admin-sidebar {
             width: 80px;
             overflow: hidden;
-        }*/
-            /*
-            .admin-sidebar .profile-info,
-            .admin-sidebar .nav-link span {
-                display: none;
-            }*/
-            /*            .admin-sidebar .nav-link {
-                justify-content: center;
-                padding: 12px 0;
-            }*/
-            /*           .admin-sidebar .nav-link i {
-                    margin-right: 0;
-                    font-size: 1.3rem;
-                }*/
-            /* .main-container {
+        }
+
+        .admin-sidebar .profile-info,
+        .admin-sidebar .nav-link span {
+            display: none;
+        }
+
+        .admin-sidebar .nav-link {
+            justify-content: center;
+            padding: 12px 0;
+        }
+
+            .admin-sidebar .nav-link i {
+                margin-right: 0;
+                font-size: 1.3rem;
+            }
+
+        .main-container {
             padding-left: 30px;
         }
 
@@ -176,14 +182,14 @@
 
         {
             padding-left: 0;
-        }*/
-        
+        }
+
 
         .main-container {
             padding: 15px;
         }
 
-        
+
 
         /* Resto de tus estilos... */
         .floating-label {
@@ -264,75 +270,7 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="admin-sidebar">
-        <div class="sidebar-header">
-            <h4 class="text-center mb-0">CounterTex</h4>
-        </div>
 
-        <div class="profile-info">
-            <img src="empleado.jpg" alt="Admin" class="profile-img">
-            <h5 class="mb-1">empleado</h5>
-            <p class="text-muted small mb-0">empleado</p>
-        </div>
-
-        <div class="nav-menu">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a href="produccion-diaria-empleado.html" class="nav-link active">
-                        <i class="fas fa-calendar-day"></i>
-                        <span>Producción Diaria</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="control-horarios-empleado.html" class="nav-link">
-                        <i class="fas fa-clock"></i>
-                        <span>Control de Horarios</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="control-prendas-empleado.html" class="nav-link">
-                        <i class="fas fa-tshirt"></i>
-                        <span>Control de Prendas</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="chat-interno-empleado.html" class="nav-link">
-                        <i class="fas fa-comments"></i>
-                        <span>Chat Interno</span>
-                        <span class="badge rounded-pill bg-success">5</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="revision-empleado.html" class="nav-link">
-                        <i class="fas fa-comments"></i>
-                        <span>revision de prendas</span>
-                        <span class="badge rounded-pill bg-success">5</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="detalle-prenda-empleado.html" class="nav-link">
-                        <i class="fas fa-comments"></i>
-                        <span>detalle de prenda</span>
-                        <span class="badge rounded-pill bg-success">5</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="asignacion-empleado.html" class="nav-link">
-                        <i class="fas fa-comments"></i>
-                        <span>asignacion de prenda</span>
-                        <span class="badge rounded-pill bg-success">5</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="log in.html" class="nav-link">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Cerrar Sesión</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
 
     <!-- Contenido principal centrado -->
     <div class="main-container">

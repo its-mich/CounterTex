@@ -1,9 +1,13 @@
 ﻿
-@{
-    ViewBag.Title = "RevisionEmpleado";
-}
 
 @model CounterTexFront.Models.RevisionEmpleadoViewModel
+
+@{
+    ViewBag.Title = "RevisionEmpleado";
+    Layout = ViewBag.Layout;
+
+}
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -25,12 +29,12 @@
             --danger-color: #dc3545;
         }
 
-        body {
+     /*   body {
             font-family: 'Poppins', sans-serif;
             background-color: #f5f7fb;
             color: var(--dark-color);
         }
-
+*/
         /* Sidebar Premium */
         .admin-sidebar {
             background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -42,7 +46,7 @@
             transition: all 0.3s;
             z-index: 1000;
         }
-
+/*
             .admin-sidebar .sidebar-header {
                 padding: 20px;
                 background: rgba(0, 0, 0, 0.1);
@@ -62,9 +66,9 @@
                 object-fit: cover;
                 border: 3px solid rgba(255, 255, 255, 0.2);
                 margin-bottom: 15px;
-            }
+            }*/
 
-            .admin-sidebar .nav-menu {
+      /*      .admin-sidebar .nav-menu {
                 padding: 20px 0;
             }
 
@@ -80,8 +84,8 @@
                 transition: all 0.3s;
                 border-left: 3px solid transparent;
             }
-
-                .admin-sidebar .nav-link:hover,
+*/
+           /*     .admin-sidebar .nav-link:hover,
                 .admin-sidebar .nav-link.active {
                     color: white;
                     background: rgba(255, 255, 255, 0.1);
@@ -99,7 +103,7 @@
                 .admin-sidebar .nav-link .badge {
                     margin-left: auto;
                     background-color: var(--accent-color);
-                }
+                }*/
 
         /* Main Content */
         .main-content {
@@ -130,7 +134,7 @@
                     color: var(--primary-color);
                 }
 
-        .header-actions {
+      /*  .header-actions {
             display: flex;
             align-items: center;
         }
@@ -151,9 +155,9 @@
                 .search-box input:focus {
                     border-color: var(--primary-color);
                     box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
-                }
+                }*/
 
-            .search-box i {
+      /*      .search-box i {
                 position: absolute;
                 left: 15px;
                 top: 50%;
@@ -171,10 +175,10 @@
                 height: 40px;
                 border-radius: 50%;
                 margin-right: 10px;
-            }
+            }*/
 
         /* Dashboard Cards */
-        .dashboard-card {
+/*        .dashboard-card {
             background: white;
             border-radius: 10px;
             padding: 20px;
@@ -198,9 +202,9 @@
             justify-content: center;
             font-size: 24px;
             margin-bottom: 15px;
-        }
+        }*/
 
-            .card-icon.primary {
+        /*    .card-icon.primary {
                 background: rgba(106, 17, 203, 0.1);
                 color: var(--primary-color);
             }
@@ -218,9 +222,9 @@
             .card-icon.danger {
                 background: rgba(220, 53, 69, 0.1);
                 color: var(--danger-color);
-            }
+            }*/
 
-        .card-value {
+        /*.card-value {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 5px;
@@ -229,10 +233,10 @@
         .card-label {
             color: #6c757d;
             font-size: 14px;
-        }
+        }*/
 
         /* Production Form */
-        .production-form {
+        /*.production-form {
             background: white;
             border-radius: 10px;
             padding: 25px;
@@ -249,9 +253,9 @@
             color: var(--primary-color);
             display: flex;
             align-items: center;
-        }
+        }*/
 
-            .form-section-title i {
+   /*         .form-section-title i {
                 margin-right: 10px;
             }
 
@@ -271,7 +275,7 @@
             font-weight: 500;
             transition: all 0.3s;
         }
-
+*//*
             .form-tab:hover,
             .form-tab.active {
                 background: var(--primary-color);
@@ -281,9 +285,9 @@
         .floating-label {
             position: relative;
             margin-bottom: 20px;
-        }
+        }*/
 
-            .floating-label label {
+      /*      .floating-label label {
                 position: absolute;
                 top: 15px;
                 left: 15px;
@@ -302,9 +306,9 @@
                 left: 10px;
                 font-size: 0.8rem;
                 color: var(--primary-color);
-            }
+            }*/
 
-        .form-control, .form-select {
+     /*   .form-control, .form-select {
             padding: 15px;
             border-radius: 8px;
             border: 1px solid #e0e0e0;
@@ -330,7 +334,7 @@
                 background-position: right center;
                 transform: translateY(-2px);
                 box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
-            }
+            }*/
 
         /* Production Table */
         .production-table {
@@ -353,7 +357,7 @@
 
             .table tbody tr:hover {
                 background-color: rgba(106, 17, 203, 0.05);
-            }
+         /*   }
 
         .status-badge {
             padding: 5px 10px;
@@ -386,9 +390,9 @@
             justify-content: center;
             margin: 0 3px;
             transition: all 0.3s;
-        }
+        }*/
 
-            .action-btn.edit {
+       /*     .action-btn.edit {
                 background: rgba(13, 110, 253, 0.1);
                 color: #0d6efd;
             }
@@ -404,11 +408,11 @@
             }
 
             .action-btn:hover {
-                transform: scale(1.1);
-            }
+                transform: scale(1.1);*/
+            /*}*/
 
         /* Responsive */
-        (max-width: 992px) {
+        /*(max-width: 992px) {
             .admin-sidebar
 
         {
@@ -451,7 +455,7 @@
         .dashboard-card {
             margin-bottom: 15px;
         }
-        }
+        }*/
     </style>
 </head>
 <body>
@@ -602,11 +606,10 @@
             </div>
         </div>
     </div>
-    </div>
-    </div>
+
 
     <!-- Bootstrap JS y dependencias -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   
     <script>
         // Datos de ejemplo
         const prendasRevision = [
@@ -691,17 +694,17 @@
             datos.forEach(prenda => {
                 const row = tabla.insertRow();
                 row.innerHTML = `
-                        <td>${prenda.id}</td>
-                        <td>${prenda.tipo}</td>
-                        <td>${prenda.descripcion}</td>
-                        <td>${prenda.operador}</td>
-                        <td><span class="badge ${getBadgeClassRevision(prenda.estado)} status-badge">${prenda.estado}</span></td>
-                        <td>
-                            ${prenda.estado === 'Por Revisar' ?
+                                <td>${prenda.id}</td>
+                                <td>${prenda.tipo}</td>
+                                <td>${prenda.descripcion}</td>
+                                <td>${prenda.operador}</td>
+                                <td><span class="badge ${getBadgeClassRevision(prenda.estado)} status-badge">${prenda.estado}</span></td>
+                                <td>
+                                    ${prenda.estado === 'Por Revisar' ?
                         `<button class="btn btn-sm btn-primary btn-revisar" data-id="${prenda.id}">Revisar</button>` :
                         `<button class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="${prenda.comentario || 'Sin comentarios'}">Ver Detalles</button>`}
-                        </td>
-                    `;
+                                </td>
+                            `;
             });
 
             // Inicializar tooltips

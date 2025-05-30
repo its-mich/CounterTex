@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
-    public class RevisionEmpleadoController : Controller
+    public class RevisionEmpleadoController :   BaseController
     {
         // GET: RevisionEmpleado
         public ActionResult RevisionEmpleado()
