@@ -5,8 +5,6 @@
     Layout = ViewBag.Layout;
 }
 
-<h2>Detalle de Producción</h2>
-
 <div>
     <dl class="row">
         <dt class="col-sm-2">Fecha</dt>
@@ -14,7 +12,7 @@
 
         <dt class="col-sm-2">Usuario</dt>
         @* Mostrar el nombre del usuario si la propiedad de navegación Usuario está cargada *@
-        <dd class="col-sm-10">@(Model.Usuario != null ? Model.Usuario.NombreUsuario : "N/A")</dd>
+        <dd class="col-sm-10">@(Model.Usuario != null ? Model.Usuario.Nombre : "N/A")</dd>
 
         <dt class="col-sm-2">Prenda</dt>
         @* Mostrar el nombre de la prenda si la propiedad de navegación Prenda está cargada *@

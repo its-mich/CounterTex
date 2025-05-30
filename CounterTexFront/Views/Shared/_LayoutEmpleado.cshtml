@@ -16,146 +16,176 @@
 
     @RenderSection("Styles", required: false)
 
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #1e1e2f;
-            color: #F2F2F2;
-            margin: 0;
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #1e1e2f;
+        color: #F2F2F2;
+        margin: 0;
+    }
+
+    .admin-sidebar {
+        background: linear-gradient(180deg,#2d3a4a 0%, #1a1a1a 100%);
+        color: white;
+        min-height: 100vh;
+        width: 250px;
+        position: fixed;
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+    }
+
+    .sidebar-header {
+        color: white;
+        text-decoration: none;
+        padding: 20px;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .logo-img {
+        width: 80px;
+        height: auto;
+        margin-bottom: 5px;
+    }
+
+    .sidebar-profile {
+        background-color: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+        .sidebar-profile .admin-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid #A0CCF2;
+            object-fit: cover;
         }
 
-        .admin-sidebar {
-            background: linear-gradient(180deg,#2d3a4a 0%, #1a1a1a 100%);
-            color: white;
-            min-height: 100vh;
-            width: 250px;
-            position: fixed;
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-        }
+    .sidebar-header img {
+        width: 80px;
+        height: auto;
+        margin-bottom: 10px;
+    }
 
-        .sidebar-header {
-            padding: 20px;
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.05);
-        }
+    .sidebar-header h4 {
+        margin: 0;
+        font-weight: bold;
+        font-size: 1.3rem;
+        color: #ffffff;
+    }
 
-        .logo-img {
-            width: 80px;
-            height: auto;
-            margin-bottom: 5px;
-        }
+    .admin-sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.85);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        border-left: 4px solid transparent;
+        transition: all 0.3s ease;
+    }
 
-        .sidebar-header h4 {
-            margin: 0;
-            font-weight: bold;
-            font-size: 1.3rem;
+        .admin-sidebar .nav-link:hover,
+        .admin-sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-left-color: #A0CCF2;
             color: #ffffff;
-        }
-
-        .admin-sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.85);
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            border-left: 4px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-            .admin-sidebar .nav-link:hover,
-            .admin-sidebar .nav-link.active {
-                background-color: rgba(255, 255, 255, 0.08);
-                border-left-color: #A0CCF2;
-                color: #ffffff;
-                text-decoration: none;
-            }
-
-            .admin-sidebar .nav-link i {
-                margin-right: 12px;
-                font-size: 1.2rem;
-            }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-            background: #1e1e2f;
-            min-height: 100vh;
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-            .user-info img {
-                width: 45px;
-                height: 45px;
-                border-radius: 50%;
-                border: 2px solid #A0CCF2;
-            }
-
-        footer {
-            background-color: rgba(15, 23, 42, 0.85);
-            padding: 20px 0;
-            font-size: 0.9rem;
-            color: #F2F2F2;
-        }
-
-        .social-icon {
-            color: #A0CCF2;
-            font-size: 26px;
-            margin: 0 12px;
-            transition: transform 0.4s ease, color 0.4s ease;
-        }
-
-            .social-icon:hover {
-                transform: scale(1.4) rotate(10deg);
-                color: #ffffff;
-            }
-
-        a {
-            color: #A0CCF2;
             text-decoration: none;
         }
 
-            a:hover {
-                text-decoration: underline;
-            }
-
-        .card-dark {
-            background-color: #2a2a3c;
-            border: none;
-            border-radius: 12px;
-            color: #F2F2F2;
+        .admin-sidebar .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
         }
 
-            .card-dark .card-title {
-                color: #A0CCF2;
-            }
+    .main-content {
+        margin-left: 250px;
+        padding: 30px;
+        background: #1e1e2f;
+        min-height: 100vh;
+    }
 
-        .shadow-hover:hover {
-            box-shadow: 0 4px 12px rgba(160, 204, 242, 0.3);
-            transform: translateY(-3px);
-            transition: all 0.3s ease;
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .user-info img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #A0CCF2;
         }
-    </style>
+
+    footer {
+        background-color: rgba(15, 23, 42, 0.85);
+        padding: 20px 0;
+        font-size: 0.9rem;
+        color: #F2F2F2;
+    }
+
+    .social-icon {
+        color: #A0CCF2;
+        font-size: 26px;
+        margin: 0 12px;
+        transition: transform 0.4s ease, color 0.4s ease;
+    }
+
+        .social-icon:hover {
+            transform: scale(1.4) rotate(10deg);
+            color: #ffffff;
+        }
+
+    a {
+        color: #A0CCF2;
+        text-decoration: none;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    .card-dark {
+        background-color: #2a2a3c;
+        border: none;
+        border-radius: 12px;
+        color: #F2F2F2;
+    }
+
+        .card-dark .card-title {
+            color: #A0CCF2;
+        }
+
+    .shadow-hover:hover {
+        box-shadow: 0 4px 12px rgba(160, 204, 242, 0.3);
+        transform: translateY(-3px);
+        transition: all 0.3s ease;
+    }
+
+    /*.admin-sidebar .nav-link:hover,
+    .admin-sidebar .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-left-color: #A0CCF2;
+        color: #ffffff;
+        text-shadow: 0 0 8px rgba(160, 204, 242, 0.8);
+        transition: all 0.2s ease-in-out;
+    }*/
+</style>
 </head>
 <body>
 
     <!-- Sidebar -->
     <div class="admin-sidebar">
         <div class="sidebar-header">
-            <a href="@Url.Action("Index", "Empleado")" style="text-decoration: none;">
+            <a href="@Url.Action("Index", "Administrador")" style="text-decoration: none;">
                 <img src="~/images/logoredondo.png" alt="Logo CounterTex" class="logo-img" />
-                <h4>Empleado</h4>
+                <h3>Empleado</h3>
             </a>
         </div>
         <nav class="nav flex-column">

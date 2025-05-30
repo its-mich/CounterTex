@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,6 +10,15 @@ namespace CounterTexFront.Models
 {
     public class ProduccionDiariaViewModel
     {
+        //constructor por defecto
+        public ProduccionDiariaViewModel()
+        {
+            ProduccionDetalles = new List<ProduccionDetalleViewModel>();
+            UsuariosDisponibles = new List<UsuarioViewModel>();
+            PrendasDisponibles = new List<PrendaViewModel>();
+            OperacionesDisponibles = new List<OperacionViewModel>();
+        }
+
         public int Id { get; set; }
 
         [Required(ErrorMessage = "La fecha es obligatoria.")]
@@ -32,6 +42,7 @@ namespace CounterTexFront.Models
         public List<ProduccionDetalleViewModel> ProduccionDetalles { get; set; }
 
         // Propiedades para rellenar DropDownLists en la vista (no se envían a la API)
+        public IEnumerable<UsuarioViewModel> UsuariosDisponibles { get; set; }
         public IEnumerable<PrendaViewModel> PrendasDisponibles { get; set; }
         public IEnumerable<OperacionViewModel> OperacionesDisponibles { get; set; }
 
