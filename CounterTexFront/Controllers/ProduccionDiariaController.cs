@@ -124,6 +124,12 @@ namespace CounterTexFront.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(ProduccionDiariaViewModel model)
         {
+            // Aseguramos que ProduccionDetalles no sea null
+            if (model.ProduccionDetalles == null)
+            {
+                model.ProduccionDetalles = new List<ProduccionDetalleViewModel>();
+            }
+
             model = await LoadFormData(model);
 
             if (!ModelState.IsValid)

@@ -7,11 +7,11 @@ namespace CounterTexFront.Models
     public class UsuarioViewModel
     {
         [Key]
-        public int IdUsuario { get; set; }
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
         [Display(Name = "Nombre de Usuario")]
-        public string NombreUsuario { get; set; }
+        public string Nombre { get; set; }
 
         public string Rol { get; set; }
         public int TokenValue { get; set; }
@@ -32,6 +32,5 @@ namespace CounterTexFront.Models
         public int? Edad { get; set; } // ¡CORRECCIÓN CLAVE AQUÍ: int? para permitir null!
         public string Telefono { get; set; }
 
-        public IEnumerable<UsuarioViewModel> UsuariosDisponibles { get; set; }
     }
 }
