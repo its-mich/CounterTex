@@ -3,7 +3,7 @@
 @model CounterTexFront.Models.RevisionEmpleadoViewModel
 
 @{
-    ViewBag.Title = "RevisionEmpleado";
+    ViewBag.Title = "Revision Prendas";
     Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
 
 }
@@ -25,152 +25,182 @@
 
 
 
-        <!-- Contadores -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card card-counter">
-                    <div class="card-body">
-                        <h5 class="card-title">Por Revisar</h5>
-                        <h3 class="card-text" id="contadorPorRevisar">24</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card card-counter">
-                    <div class="card-body">
-                        <h5 class="card-title">Aprobadas</h5>
-                        <h3 class="card-text" id="contadorAprobadas">156</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card card-counter">
-                    <div class="card-body">
-                        <h5 class="card-title">Rechazadas</h5>
-                        <h3 class="card-text" id="contadorRechazadas">12</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card card-counter">
-                    <div class="card-body">
-                        <h5 class="card-title">Total</h5>
-                        <h3 class="card-text" id="contadorTotal">192</h3>
-                    </div>
+    <!-- Contadores -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card card-counter">
+                <div class="card-body">
+                    <h5 class="card-title">Por Revisar</h5>
+                    <h3 class="card-text" id="contadorPorRevisar">24</h3>
                 </div>
             </div>
         </div>
-
-        <!-- Filtros -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Filtrar Prendas</h5>
-                <div class="row">
-                    <div class="col-md-3">
-                        <label for="tipoPrenda" class="form-label">Tipo de Prenda</label>
-                        <select class="form-select" id="tipoPrenda">
-                            <option selected>Todas</option>
-                            <option>Médico</option>
-                            <option>Operación</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="estadoRevision" class="form-label">Estado Revisión</label>
-                        <select class="form-select" id="estadoRevision">
-                            <option selected>Todos</option>
-                            <option>Por Revisar</option>
-                            <option>Aprobado</option>
-                            <option>Rechazado</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="operador" class="form-label">Operador</label>
-                        <select class="form-select" id="operador">
-                            <option selected>Todos</option>
-                            <option>Operador 1</option>
-                            <option>Operador 2</option>
-                            <option>Operador 3</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button class="btn btn-primary w-100" id="btnFiltrar">Filtrar</button>
-                    </div>
+        <div class="col-md-3">
+            <div class="card card-counter">
+                <div class="card-body">
+                    <h5 class="card-title">Aprobadas</h5>
+                    <h3 class="card-text" id="contadorAprobadas">156</h3>
                 </div>
             </div>
         </div>
-
-        <!-- Tabla de Prendas -->
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="tablaPrendas">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tipo</th>
-                                <th>Descripción</th>
-                                <th>Operador</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Datos se llenarán con JavaScript -->
-                        </tbody>
-                    </table>
+        <div class="col-md-3">
+            <div class="card card-counter">
+                <div class="card-body">
+                    <h5 class="card-title">Rechazadas</h5>
+                    <h3 class="card-text" id="contadorRechazadas">12</h3>
                 </div>
             </div>
         </div>
-
-        <!-- Modal Revisión -->
-        <div class="modal fade" id="modalRevision" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Revisar Prenda <span id="modalPrendaId"></span></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="formRevision">
-                            <div class="mb-3">
-                                <label class="form-label">Tipo:</label>
-                                <p class="form-control-static" id="modalTipo"></p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Descripción:</label>
-                                <p class="form-control-static" id="modalDescripcion"></p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Operador:</label>
-                                <p class="form-control-static" id="modalOperador"></p>
-                            </div>
-                            <div class="mb-3">
-                                <label for="resultadoRevision" class="form-label">Resultado:</label>
-                                <select class="form-select" id="resultadoRevision" required>
-                                    <option value="">Seleccionar...</option>
-                                    <option value="Aprobado">Aprobado</option>
-                                    <option value="Rechazado">Rechazado</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="comentariosRevision" class="form-label">Comentarios:</label>
-                                <textarea class="form-control" id="comentariosRevision" rows="3" required></textarea>
-                            </div>
-                            <input type="hidden" id="prendaIdRevision">
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="btnConfirmarRevision">Guardar Revisión</button>
-                    </div>
+        <div class="col-md-3">
+            <div class="card card-counter">
+                <div class="card-body">
+                    <h5 class="card-title">Total</h5>
+                    <h3 class="card-text" id="contadorTotal">192</h3>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Filtrar Prendas</h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="tipoPrenda" class="form-label">Tipo de Prenda</label>
+                    <select class="form-select" id="tipoPrenda">
+                        <option selected>Todas</option>
+                        <option>Médico</option>
+                        <option>Operación</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="estadoRevision" class="form-label">Estado Revisión</label>
+                    <select class="form-select" id="estadoRevision">
+                        <option selected>Todos</option>
+                        <option>Por Revisar</option>
+                        <option>Aprobado</option>
+                        <option>Rechazado</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="operador" class="form-label">Operador</label>
+                    <select class="form-select" id="operador">
+                        <option selected>Todos</option>
+                        <option>Operador 1</option>
+                        <option>Operador 2</option>
+                        <option>Operador 3</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="Nombre" class="form-label">Nombre</label>
+                    <select class="form-select" id="    ">
+                        <option selected>Todos</option>
+                        <option> Camisa Clásica</option>
+                        <option> Pantalón Slim</option>
+
+                    </select>
+                </div>
+
+
+                <div class="col-md-3">
+                    <label for="Genero" class="form-label">Genero</label>
+                    <select class="form-select" id="operador">
+                        <option selected>Todos</option>
+                        <option> Unisex</option>
+                        <option>Masculino</option>
+
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="Color" class="form-label">Color</label>
+                    <select class="form-select" id="operador">
+                        <option selected>Todos</option>
+                        <option> Blanco</option>
+                        <option> Azul</option>
+
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" id="btnFiltrar">Filtrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Prendas -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="tablaPrendas">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Operador</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Datos se llenarán con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Revisión -->
+    <div class="modal fade" id="modalRevision" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Revisar Prenda <span id="modalPrendaId"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formRevision">
+                        <div class="mb-3">
+                            <label class="form-label">Tipo:</label>
+                            <p class="form-control-static" id="modalTipo"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción:</label>
+                            <p class="form-control-static" id="modalDescripcion"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Operador:</label>
+                            <p class="form-control-static" id="modalOperador"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resultadoRevision" class="form-label">Resultado:</label>
+                            <select class="form-select" id="resultadoRevision" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Aprobado">Aprobado</option>
+                                <option value="Rechazado">Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comentariosRevision" class="form-label">Comentarios:</label>
+                            <textarea class="form-control" id="comentariosRevision" rows="3" required></textarea>
+                        </div>
+                        <input type="hidden" id="prendaIdRevision">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarRevision">Guardar Revisión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
 
     <!-- Bootstrap JS y dependencias -->
-   
+
     <script>
         // Datos de ejemplo
         const prendasRevision = [
@@ -255,17 +285,17 @@
             datos.forEach(prenda => {
                 const row = tabla.insertRow();
                 row.innerHTML = `
-                                <td>${prenda.id}</td>
-                                <td>${prenda.tipo}</td>
-                                <td>${prenda.descripcion}</td>
-                                <td>${prenda.operador}</td>
-                                <td><span class="badge ${getBadgeClassRevision(prenda.estado)} status-badge">${prenda.estado}</span></td>
-                                <td>
-                                    ${prenda.estado === 'Por Revisar' ?
+                                    <td>${prenda.id}</td>
+                                    <td>${prenda.tipo}</td>
+                                    <td>${prenda.descripcion}</td>
+                                    <td>${prenda.operador}</td>
+                                    <td><span class="badge ${getBadgeClassRevision(prenda.estado)} status-badge">${prenda.estado}</span></td>
+                                    <td>
+                                        ${prenda.estado === 'Por Revisar' ?
                         `<button class="btn btn-sm btn-primary btn-revisar" data-id="${prenda.id}">Revisar</button>` :
                         `<button class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="${prenda.comentario || 'Sin comentarios'}">Ver Detalles</button>`}
-                                </td>
-                            `;
+                                    </td>
+                                `;
             });
 
             // Inicializar tooltips
@@ -297,3 +327,5 @@
     </script>
 </body>
 </html>
+
+hazmelo basada en esta 
