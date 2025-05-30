@@ -1,10 +1,10 @@
 ﻿@model CounterTexFront.Models.HorarioViewModel
 @{
+    ViewBag.Title = "Control de Horarios";
     Layout = ViewBag.Layout;
-    var empleadosJson = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Empleados);
 }
 
-<h2 class="mb-4"><i class="fas fa-clock me-2"></i>Control de Horarios</h2>
+@*<h2 class="mb-4"><i class="fas fa-clock me-2"></i>Control de Horarios</h2>*@
 
 <!-- Estadísticas rápidas -->
 <div class="row mb-4">
@@ -44,7 +44,6 @@
 
 <!-- Registros de Hoy -->
 <h4 class="mb-3"><i class="fas fa-list-check me-2"></i>Registros de Hoy</h4>
-
 <div class="row" id="registroContainer"></div>
 
 <!-- Botón para nuevo registro -->
@@ -67,10 +66,10 @@
                     <div class="mb-3">
                         <label for="EmpleadoId" class="form-label">Empleado</label>
                         <select class="form-select" id="EmpleadoId" name="EmpleadoId" required>
-                            <option disabled selected>Seleccionar empleado</option>
+                            <option value="" disabled selected>Seleccionar empleado</option>
                             @foreach (var emp in ViewBag.Empleados)
                             {
-                                <option value="@emp.IdEmpleado">@emp.Usuario?.Nombre</option>
+                                <option value="@emp.Id">@emp.Nombre</option>
                             }
                         </select>
                     </div>
@@ -95,12 +94,11 @@
 
 @section Scripts {
     <script>
-        // Lista de empleados para buscar nombres
-        const empleados = @Html.Raw(empleadosJson);
+        const empleados = @Html.Raw(ViewBag.EmpleadosJson);
 
         function obtenerNombreEmpleado(id) {
-            const emp = empleados.find(e => e.IdEmpleado === id);
-            return emp?.Usuario?.Nombre ?? `Empleado #${id}`;
+            const emp = empleados.find(e => e.Id === id);
+            return emp?.Nombre ?? `Empleado #${id}`;
         }
 
         function cargarRegistrosHoy() {
@@ -143,18 +141,17 @@
                         const nombreEmpleado = obtenerNombreEmpleado(registro.EmpleadoId);
 
                         const html = `
-                    <div class="col-md-6">
-                        <div class="card border-start ${claseBorde} mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">${nombreEmpleado}</h5>
-                                <p class="card-subtitle text-muted">${registro.Tipo.charAt(0).toUpperCase() + registro.Tipo.slice(1)}</p>
-                                <p><strong>Hora:</strong> ${registro.Hora}</p>
-                                ${badge}
+                            <div class="col-md-6">
+                                <div class="card border-start ${claseBorde} mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${nombreEmpleado}</h5>
+                                        <p class="card-subtitle text-muted">${registro.Tipo.charAt(0).toUpperCase() + registro.Tipo.slice(1)}</p>
+                                        <p><strong>Hora:</strong> ${registro.Hora}</p>
+                                        ${badge}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                `;
-
+                        `;
                         container.append(html);
                     });
                 },
@@ -167,11 +164,17 @@
         $("#formRegistroManual").submit(function (e) {
             e.preventDefault();
 
+            const empleadoId = $("#EmpleadoId").val();
+            if (!empleadoId) {
+                alert("Debes seleccionar un empleado.");
+                return;
+            }
+
             const horaInput = $("#Hora").val();
             const horaConSegundos = horaInput + ":00";
 
             const data = {
-                EmpleadoId: parseInt($("#EmpleadoId").val()),
+                EmpleadoId: parseInt(empleadoId),
                 Tipo: $("#TipoRegistro").val(),
                 Hora: horaConSegundos,
                 Fecha: new Date().toISOString().substring(0, 10),
@@ -179,7 +182,7 @@
             };
 
             $.ajax({
-                url: '/ControlHorarios/Create', // ← Asegúrate de que esté así
+                url: '/ControlHorarios/Create',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
@@ -188,6 +191,7 @@
                         alert(response.mensaje);
                         $("#addTimeRecordModal").modal('hide');
                         $("#formRegistroManual")[0].reset();
+                        $("#EmpleadoId").val("");
                         cargarRegistrosHoy();
                     } else {
                         alert("Error: " + response.mensaje);
@@ -197,6 +201,11 @@
                     alert("Ocurrió un error al enviar los datos: " + xhr.responseText);
                 }
             });
+        });
+
+        // Cargar registros al inicio
+        $(document).ready(function () {
+            cargarRegistrosHoy();
         });
     </script>
 }

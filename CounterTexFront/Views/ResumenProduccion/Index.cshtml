@@ -1,0 +1,204 @@
+﻿@{
+    ViewBag.Title = "Resumen de Producción Mensual";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4">Resumen de Producción Mensual</h3>
+
+    <div class="row mb-3">
+        <div class="col-md-2">
+            <label for="anio">Año:</label>
+            <input type="number" id="anio" class="form-control" value="2025" min="2000" max="2100" />
+        </div>
+        <div class="col-md-2">
+            <label for="mes">Mes:</label>
+            <input type="number" id="mes" class="form-control" value="5" min="1" max="12" />
+        </div>
+        <div class="col-md-4">
+            <label for="usuarioId">Empleado:</label>
+            <select id="usuarioId" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="tipoPrenda">Tipo de prenda:</label>
+            <select id="tipoPrenda" class="form-control">
+                <option value="">Todas</option>
+                <option value="Camisa">Camisa</option>
+                <option value="Pantalón">Pantalón</option>
+            </select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button onclick="cargarResumen()" class="btn btn-primary">Consultar</button>
+        </div>
+    </div>
+
+    <canvas id="graficoResumen" width="800" height="400" class="mt-4"></canvas>
+    <div id="estadisticas" class="mt-4">
+        <h5>Estadísticas</h5>
+        <ul id="listaEstadisticas" class="mb-0"></ul>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    let grafico = null;
+
+    function cargarResumen() {
+        const anio = document.getElementById("anio").value;
+        const mes = document.getElementById("mes").value;
+        const usuarioId = document.getElementById("usuarioId").value;
+        const tipoPrenda = document.getElementById("tipoPrenda").value;
+
+        let url = `https://localhost:7030/api/Produccion/GetResumenMensual?anio=${anio}&mes=${mes}`;
+        if (usuarioId) url += `&usuarioId=${usuarioId}`;
+        if (tipoPrenda) url += `&tipoPrenda=${tipoPrenda}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error(`Error ${response.status} en la petición`);
+                return response.json();
+            })
+            .then(data => {
+                if (!Array.isArray(data)) throw new Error("Los datos recibidos no son un arreglo");
+                renderizarGrafico(data);
+            })
+            .catch(error => {
+                console.error("Error al obtener el resumen:", error.message);
+                alert("Error al obtener los datos: " + error.message);
+            });
+    }
+
+    function renderizarGrafico(data) {
+        const etiquetas = data.map(item => item.prenda);
+        const cantidades = data.map(item => item.total);
+
+        const totalUnidades = cantidades.reduce((a, b) => a + b, 0);
+        const max = Math.max(...cantidades);
+        const min = Math.min(...cantidades);
+        const prendaMax = etiquetas[cantidades.indexOf(max)];
+        const prendaMin = etiquetas[cantidades.indexOf(min)];
+
+        document.getElementById("listaEstadisticas").innerHTML = `
+            <li><strong>Total unidades producidas:</strong> ${totalUnidades}</li>
+            <li><strong>Prenda más producida:</strong> ${prendaMax} (${max} unidades)</li>
+            <li><strong>Prenda menos producida:</strong> ${prendaMin} (${min} unidades)</li>
+        `;
+
+        const config = {
+            type: 'bar',
+            data: {
+                labels: etiquetas,
+                datasets: [{
+                    label: 'Unidades producidas',
+                    data: cantidades,
+                    backgroundColor: 'rgba(160, 204, 242, 0.7)',
+                    borderColor: '#404040',
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#404040',
+                            font: { weight: 'bold' }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Resumen de Producción por Prenda',
+                        color: '#404040',
+                        font: {
+                            size: 20,
+                            weight: 'bold'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#404040',
+                        titleColor: '#A0CCF2',
+                        bodyColor: '#F2F2F2',
+                        callbacks: {
+                            label: function (context) {
+                                return ` ${context.dataset.label}: ${context.raw} unidades`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#404040', font: { weight: 'bold' } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#404040', font: { weight: 'bold' } }
+                    }
+                }
+            }
+        };
+
+        if (grafico) grafico.destroy();
+        const ctx = document.getElementById('graficoResumen').getContext('2d');
+        grafico = new Chart(ctx, config);
+    }
+
+    function cargarUsuarios() {
+        fetch('https://localhost:7030/api/Usuarios')
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById("usuarioId");
+                select.innerHTML = '<option value="">Todos</option>';
+                data.filter(u => u.rol === "Empleado")
+                    .forEach(u => {
+                        const opt = document.createElement("option");
+                        opt.value = u.id;
+                        opt.textContent = u.nombre;
+                        select.appendChild(opt);
+                    });
+                cargarResumen();
+            })
+            .catch(error => {
+                console.error("Error cargando usuarios:", error);
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        cargarUsuarios();
+    });
+</script>
+
+<style>
+    #estadisticas {
+        background-color: #2c2c2c; /* Fondo oscuro */
+        color: #f2f2f2; /* Texto claro */
+        border: 1px solid #444;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+        padding: 1rem;
+    }
+
+        #estadisticas h5 {
+            font-weight: bold;
+            border-bottom: 1px solid #444;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            color: #A0CCF2; /* Azul claro */
+        }
+
+    #listaEstadisticas {
+        list-style: disc inside;
+    }
+
+        #listaEstadisticas li {
+            margin-bottom: 6px;
+            color: #f2f2f2; /* Color blanco suave */
+            font-size: 1rem;
+        }
+</style>
+

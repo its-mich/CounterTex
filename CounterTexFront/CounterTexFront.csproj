@@ -162,6 +162,7 @@
     <Compile Include="Controllers\ProduccionDiariaController.cs" />
     <Compile Include="Controllers\ProveedorController.cs" />
     <Compile Include="Controllers\RegistroController.cs" />
+    <Compile Include="Controllers\ResumenProduccionController.cs" />
     <Compile Include="Controllers\SateliteController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
@@ -271,6 +272,7 @@
     <Content Include="Views\Proveedor\Index.cshtml" />
     <Content Include="Views\Empleado\Index.cshtml" />
     <Content Include="Views\ProduccionDiaria\_ProduccionDetallePartial.cshtml" />
+    <Content Include="Views\ResumenProduccion\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
