@@ -183,7 +183,7 @@
         <div class="sidebar-header">
             <a href="@Url.Action("Index", "Administrador")" style="text-decoration: none;">
                 <img src="~/images/logoredondo.png" alt="Logo CounterTex" class="logo-img" />
-                <h3>Administrativo</h3>
+                <h3>Administrador</h3>
             </a>
         </div>
         <nav class="nav flex-column">
@@ -193,8 +193,9 @@
             <a class="nav-link" href="@Url.Action("Index", "ControlHorarios")">
                 <i class="fas fa-clock"></i> Control de Horarios
             </a>
-            <a class="nav-link" href="@Url.Action("Index", "ProduccionMensual")">
-                <i class="fas fa-chart-line"></i> Producción Mensual
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ResumenProduccion" ? "active" : "")"
+               href="@Url.Action("Index", "ResumenProduccion")">
+                <i class="fas fa-chart-bar"></i> Resumen Producción Mensual
             </a>
             <a class="nav-link" href="@Url.Action("ControlPrendas", "ControlPrendas")">
                 <i class="fas fa-tshirt"></i> Control de Prendas
