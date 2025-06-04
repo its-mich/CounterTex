@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using Newtonsoft.Json;        // Para JsonConvert y serialización/deserialización
+using Newtonsoft.Json.Linq;   // Para JObject, JArray, etc. si lo necesitas
+using System.Linq;            // Para LINQ
+using System;                 // Para tipos básicos como DateTime
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Web;
 
 namespace CounterTexFront.Models
