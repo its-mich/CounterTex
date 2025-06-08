@@ -1,0 +1,29 @@
+﻿@model CounterTexFront.Models.UsuarioViewModel
+@{
+    Layout = ViewBag.Layout;
+    ViewBag.Title = "Editar Rol de Usuario";
+    var roles = ViewBag.Roles as List<CounterTexFront.Models.RolViewModel>;
+}
+
+<h3>Editar Rol de @Model.Nombre</h3>
+
+@using (Html.BeginForm("EditarRolUsuario", "Administrador", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("id", Model.Id) <!-- 👈 clave para que el controlador reciba el parámetro -->
+
+
+    <div class="form-group">
+        <label for="RolId">Rol</label>
+        <select class="form-control" name="rolId" required>
+            <option value="">Seleccione un rol...</option>
+            @foreach (var rol in roles)
+            {
+                <option value="@rol.Id" @(rol.Nombre == Model.RolNombre ? "selected" : "")>@rol.Nombre</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="@Url.Action("Index", "Administrador")" class="btn btn-secondary">Cancelar</a>
+}

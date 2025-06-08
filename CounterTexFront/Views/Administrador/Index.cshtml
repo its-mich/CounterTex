@@ -1,59 +1,138 @@
-﻿@{
+﻿@model List<CounterTexFront.Models.UsuarioViewModel>
+
+@{
     Layout = ViewBag.Layout;
+    ViewBag.Title = "Panel Administrativo";
     var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Administrador";
 }
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <div class="navbar">
-                <span>Bienvenido, @(Session["NombreUsuario"] ?? "Invitado")</span>
-            </div>
-            <h3 class="mb-4">Bienvenido @(Session["NombreUsuario"] ?? "Invitado") al panel Administrativo</h3>
-            <p class="lead">Desde aquí puedes gestionar la producción, los empleados, los pagos y más.</p>
-        </div>
-    </div>
+    <h3 class="mb-4">Bienvenido @nombreUsuario al panel Administrativo</h3>
 
-    <div class="row">
-        <!-- Tarjeta de ejemplo -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-warning">
+            @TempData["Mensaje"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning">No se encontraron usuarios. Verifique si la API devuelve datos correctamente.</div>
+    }
+
+    <p class="lead">Desde aquí puedes gestionar la producción, los empleados, los pagos y más.</p>
+
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="dashboard-card text-center">
+                <div class="card-icon primary"><i class="fas fa-user-cog"></i></div>
+                <div class="card-value">@Model.Count</div>
+                <div class="card-label">Usuarios registrados</div>
+            </div>
+        </div>
         <div class="col-md-6 col-lg-3 mb-4">
             <div class="dashboard-card text-center">
-                <div class="card-icon primary">
-                    <i class="fas fa-user-cog"></i>
-                </div>
-                <div class="card-value">12</div>
-                <div class="card-label">Usuarios activos</div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="dashboard-card text-center">
-                <div class="card-icon success">
-                    <i class="fas fa-check-circle"></i>
-                </div>
+                <div class="card-icon success"><i class="fas fa-check-circle"></i></div>
                 <div class="card-value">980</div>
                 <div class="card-label">Prendas Completadas</div>
             </div>
         </div>
-
         <div class="col-md-6 col-lg-3 mb-4">
             <div class="dashboard-card text-center">
-                <div class="card-icon warning">
-                    <i class="fas fa-clock"></i>
-                </div>
+                <div class="card-icon warning"><i class="fas fa-clock"></i></div>
                 <div class="card-value">120</div>
                 <div class="card-label">En Proceso</div>
             </div>
         </div>
-
         <div class="col-md-6 col-lg-3 mb-4">
             <div class="dashboard-card text-center">
-                <div class="card-icon danger">
-                    <i class="fas fa-times-circle"></i>
-                </div>
+                <div class="card-icon danger"><i class="fas fa-times-circle"></i></div>
                 <div class="card-value">35</div>
                 <div class="card-label">Prendas Rechazadas</div>
             </div>
         </div>
     </div>
+
+    <button class="btn btn-info mb-3" type="button" onclick="toggleTablaUsuarios()">Mostrar/Ocultar usuarios</button>
+
+    <div id="tablaUsuarios" style="display:none;">
+        <h4 class="mt-4 text-light">Usuarios del sistema</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-dark table-hover">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Documento</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var usuario in Model)
+                        {
+                            <tr>
+                                <td>@usuario.Nombre</td>
+                                <td>@usuario.Correo</td>
+                                <td>@usuario.Documento</td>
+                                <td>@usuario.RolNombre</td>
+                                <td>
+                                    <a href="@Url.Action("EditarUsuario", "Administrador", new { id = usuario.Id })"
+                                       class="btn btn-sm btn-warning cambiar-rol"
+                                       data-nombre="@usuario.Nombre"
+                                       data-url="@Url.Action("EditarUsuario", "Administrador", new { id = usuario.Id })">
+                                        Cambiar Rol
+                                    </a>
+
+                                    <a href="@Url.Action("EliminarUsuario", "Administrador", new { id = usuario.Id })"
+                                       class="btn btn-sm btn-danger eliminar-usuario"
+                                       data-nombre="@usuario.Nombre">
+                                        Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-danger">No se encontraron usuarios. Verifica si la API está devolviendo datos correctamente.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        function toggleTablaUsuarios() {
+            var tabla = document.getElementById("tablaUsuarios");
+            tabla.style.display = tabla.style.display === "none" ? "block" : "none";
+        }
+
+        // Confirmar cambio de rol
+        document.querySelectorAll(".cambiar-rol").forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                const nombre = this.dataset.nombre;
+                if (!confirm(`¿Deseas cambiar el rol del usuario "${nombre}"?`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Confirmar eliminación
+        document.querySelectorAll(".eliminar-usuario").forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                const nombre = this.dataset.nombre;
+                if (!confirm(`¿Estás seguro de eliminar a "${nombre}"? Esta acción no se puede deshacer.`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

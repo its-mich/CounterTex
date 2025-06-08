@@ -1,20 +1,15 @@
-﻿using CounterTexFront.Models;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CounterTexFront.Models
 {
     public class UsuarioViewModel
     {
-        [Key]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
         [Display(Name = "Nombre de Usuario")]
         public string Nombre { get; set; }
 
-        public string Rol { get; set; }
-        public int TokenValue { get; set; }
         public string Documento { get; set; }
 
         [Required(ErrorMessage = "El correo es obligatorio.")]
@@ -22,15 +17,18 @@ namespace CounterTexFront.Models
         [Display(Name = "Correo Electrónico")]
         public string Correo { get; set; }
 
-        [Required(ErrorMessage = "La contraseña es obligatoria.")]
+        // Este campo solo lo necesitas si vas a crear/editar usuarios desde formulario
         [DataType(DataType.Password)]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener entre 6 y 100 caracteres.")]
         [Display(Name = "Contraseña")]
-        public string Clave { get; set; }
+        public string Contraseña { get; set; }
 
-        public int? OperacionId { get; set; } // Si OperacionId puede ser null en la API, también hazlo int?
-        public int? Edad { get; set; } // ¡CORRECCIÓN CLAVE AQUÍ: int? para permitir null!
+        public int RolId { get; set; }
+
+        public string RolNombre { get; set; } = "Sin rol"; // <- vendrá de Usuario.Rol.Nombre en la API
+
+        public int? Edad { get; set; }
+
         public string Telefono { get; set; }
-
     }
 }

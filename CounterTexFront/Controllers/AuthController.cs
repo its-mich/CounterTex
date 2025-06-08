@@ -2,15 +2,13 @@
 using Newtonsoft.Json;
 using System;
 using System.Configuration;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Web;
 
 namespace CounterTexFront.Controllers
 {
@@ -49,19 +47,22 @@ namespace CounterTexFront.Controllers
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
 
-                    var json = JsonConvert.SerializeObject(new
+                    var usuario = new
                     {
-                        Nombre = $"{model.Nombres} {model.Apellidos}", // <- este es el cambio importante
-                        Documento = model.Documento,
-                        Correo = model.Correo,
-                        Contraseña = model.Contraseña,
-                        Rol = model.Rol
-                    });
+                        id = 0,
+                        nombre = $"{model.Nombres} {model.Apellidos}",
+                        documento = model.Documento,
+                        correo = model.Correo,
+                        contraseña = model.Contraseña,
+                        rolId = ObtenerRolId(model.Rol),
+                        edad = model.Edad,
+                        telefono = model.Telefono
+                    };
 
+                    var json = JsonConvert.SerializeObject(usuario);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.PostAsync("api/Usuarios", content);
-
+                    var response = await client.PostAsync("api/Usuarios/PostUsuarios", content);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -80,6 +81,22 @@ namespace CounterTexFront.Controllers
                 return View(model);
             }
         }
+
+        private int ObtenerRolId(string rol)
+        {
+            switch (rol)
+            {
+                case "Administrador":
+                    return 1;
+                case "Empleado":
+                    return 2;
+                case "Proveedor":
+                    return 3;
+                default:
+                    return 0;
+            }
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -121,28 +138,44 @@ namespace CounterTexFront.Controllers
 
                 string json = JsonConvert.SerializeObject(model);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpResponseMessage Res = await client.PostAsync("api/Auth/Login", content);
 
-                if (Res.IsSuccessStatusCode)
+                var response = await client.PostAsync("api/Auth/Login", content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    var res = await Res.Content.ReadAsStringAsync();
+                    var result = await response.Content.ReadAsStringAsync();
+                    var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(result);
 
-                    // Deserializa toda la respuesta a un solo modelo
-                    var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(res);
-
-                    if (loginResponse == null || string.IsNullOrEmpty(loginResponse.Rol))
+                    if (loginResponse?.Rol == null || string.IsNullOrEmpty(loginResponse.Rol.Nombre))
                     {
                         ModelState.AddModelError("", "El rol del usuario no está asignado correctamente.");
                         return View(model);
                     }
 
-                    // Guarda datos en sesión
+                    // Guardar en sesión
                     Session["BearerToken"] = loginResponse.Token;
-                    Session["UserRole"] = loginResponse.Rol;
-                    Session["NombreUsuario"] = $"{loginResponse.Nombres} {loginResponse.Apellidos}".Trim();
+                    Session["UserRole"] = loginResponse.Rol.Nombre;
+                    Session["NombreUsuario"] = loginResponse.Nombres;
 
-                    // Redirecciona según rol
-                    switch (loginResponse.Rol)
+                    // Crear el ticket de autenticación
+                    var authTicket = new FormsAuthenticationTicket(
+                        1,
+                        loginResponse.Nombres, // Usuario
+                        DateTime.Now,
+                        DateTime.Now.AddMinutes(60), // duración
+                        false,
+                        loginResponse.Rol.Nombre // puedes almacenar el rol
+                    );
+
+                    string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
+                    var authCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket)
+                    {
+                        HttpOnly = true
+                    };
+                    Response.Cookies.Add(authCookie);
+
+                    // Redirección según rol
+                    switch (loginResponse.Rol.Nombre)
                     {
                         case "Administrador":
                             return RedirectToAction("Index", "Administrador");
@@ -151,12 +184,13 @@ namespace CounterTexFront.Controllers
                         case "Empleado":
                             return RedirectToAction("Index", "Empleado");
                         default:
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("Welcome", "Home");
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Credenciales incorrectas. Nombre de usuario o contraseña no válidos");
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", $"Error del servidor: {errorContent}");
                     return View(model);
                 }
             }

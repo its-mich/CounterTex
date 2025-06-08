@@ -19,7 +19,7 @@ namespace CounterTexFront.Models
         [DisplayName("Contraseña")]
         [Required(ErrorMessage = "El campo {0} es requerido", AllowEmptyStrings = false)]
         [DataType(DataType.Password)]
-        [JsonProperty("Clave")]  // Esto lo cambia de "Password" a "Clave" en el JSON
+        [JsonProperty("Contraseña")]  // Esto lo cambia de "Password" a "Clave" en el JSON
         public string Password { get; set; }
     }
 }

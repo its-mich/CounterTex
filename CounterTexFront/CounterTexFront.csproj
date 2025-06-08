@@ -180,6 +180,7 @@
     <Compile Include="Models\ProduccionListViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
+    <Compile Include="Models\RolViewModel.cs" />
     <Compile Include="Models\SateliteViewModel.cs" />
     <Compile Include="Models\Tokens.cs" />
     <Compile Include="Models\UsuarioViewModel.cs" />
@@ -273,6 +274,7 @@
     <Content Include="Views\Empleado\Index.cshtml" />
     <Content Include="Views\ProduccionDiaria\_ProduccionDetallePartial.cshtml" />
     <Content Include="Views\ResumenProduccion\Index.cshtml" />
+    <Content Include="Views\Administrador\EditarUsuario.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

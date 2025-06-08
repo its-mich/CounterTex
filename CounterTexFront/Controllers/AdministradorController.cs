@@ -3,140 +3,164 @@ using CounterTexFront.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
+    [Authorize]
     public class AdministradorController : BaseController
     {
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
-
-        // Acción para obtener la lista de administradores
+        // Mostrar lista de usuarios
         public async Task<ActionResult> Index()
         {
-            List<PerfilAdministradorViewModel> administradores = new List<PerfilAdministradorViewModel>();
+            List<UsuarioViewModel> usuarios = new List<UsuarioViewModel>();
+
             try
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.GetAsync("api/Administrador/GetAdministrador");
+
+                    // ⚠️ Token de sesión, si lo estás usando para la API
+                    var token = Session["BearerToken"]?.ToString();
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    }
+
+                    var response = await client.GetAsync("api/Usuarios/GetUsuarios");
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var jsonResponse = await response.Content.ReadAsStringAsync();
-                        administradores = JsonConvert.DeserializeObject<List<PerfilAdministradorViewModel>>(jsonResponse);
+                        var json = await response.Content.ReadAsStringAsync();
+                        usuarios = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(json);
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        // 🔐 Token inválido o expirado → cerrar sesión
+                        Session.Clear();
+                        Session.Abandon();
+                        return RedirectToAction("Login", "Auth");
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Error al obtener los datos de administradores.");
+                        ModelState.AddModelError("", $"Error al obtener usuarios. Código: {response.StatusCode}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al conectarse con el servidor: " + ex.Message);
+                ModelState.AddModelError("", "Error inesperado: " + ex.Message);
             }
 
-            return View("Index", administradores); // Cambio aquí para la vista "Administrador"
+            return View("Index", usuarios);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(PerfilAdministradorViewModel model)
+        // GET: Administrador/EditarUsuario/5
+        [Authorize(Roles = "Administrador")]
+        public async Task<ActionResult> EditarUsuario(int id)
         {
-            if (!ModelState.IsValid)
-                return View("Index", model); // Cambio aquí para la vista "Administrador"
+            UsuarioViewModel usuario = null;
+            List<RolViewModel> roles = new List<RolViewModel>();
 
-            try
+            using (var client = new HttpClient { BaseAddress = new Uri(apiUrl) })
             {
-                using (var client = new HttpClient())
+                var responseUsuario = await client.GetAsync($"api/Usuarios/{id}");
+                var responseRoles = await client.GetAsync("api/Roles");
+
+                if (responseUsuario.IsSuccessStatusCode)
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    string json = JsonConvert.SerializeObject(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    HttpResponseMessage response = await client.PostAsync("api/Administrador/PostAdministrador", content);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        ModelState.AddModelError("", "No se pudo crear el administrador. Inténtalo nuevamente.");
-                        return View("Index", model); // Cambio aquí para la vista "Administrador"
-                    }
+                    var json = await responseUsuario.Content.ReadAsStringAsync();
+                    usuario = JsonConvert.DeserializeObject<UsuarioViewModel>(json);
                 }
 
-                return RedirectToAction("Index");
+                if (responseRoles.IsSuccessStatusCode)
+                {
+                    var jsonRoles = await responseRoles.Content.ReadAsStringAsync();
+                    roles = JsonConvert.DeserializeObject<List<RolViewModel>>(jsonRoles);
+                }
             }
-            catch (Exception ex)
+
+            if (usuario == null)
+                return HttpNotFound();
+
+            ViewBag.Roles = roles;
+            return View(usuario);
+        }
+
+        // POST: Administrador/EditarRolUsuario
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
+        public async Task<ActionResult> EditarRolUsuario(int id, int rolId)
+        {
+            if (Session["BearerToken"] == null)
             {
-                ModelState.AddModelError("", "Error al crear el administrador: " + ex.Message);
-                return View("Index", model); // Cambio aquí para la vista "Administrador"
+                return RedirectToAction("Login", "Auth"); // ← redirige al login personalizado si no hay token
+            }
+            var token = Session["BearerToken"].ToString();
+
+            if (rolId <= 0)
+            {
+                ModelState.AddModelError("", "Debe seleccionar un rol válido.");
+                return RedirectToAction("EditarUsuario", new { id });
+            }
+
+            using (var client = new HttpClient { BaseAddress = new Uri(apiUrl) })
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var payload = new StringContent(JsonConvert.SerializeObject(rolId), Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/Usuarios/AsignarRol/{id}")
+                {
+                    Content = payload
+                };
+
+                var response = await client.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Mensaje"] = "Rol actualizado correctamente.";
+                    return RedirectToAction("Index");
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    TempData["Mensaje"] = "Sesión expirada. Por favor vuelve a iniciar sesión.";
+                    return RedirectToAction("Login", "Auth");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Error al actualizar el rol. Código: " + response.StatusCode);
+                    return RedirectToAction("EditarUsuario", new { id });
+                }
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(PerfilAdministradorViewModel model)
+        // Eliminar usuario
+        [Authorize(Roles = "Administrador")]
+        public async Task<ActionResult> EliminarUsuario(int id)
         {
-            if (!ModelState.IsValid)
-                return View("Index", model); // Cambio aquí para la vista "Administrador"
-
-            try
+            using (var client = new HttpClient { BaseAddress = new Uri(apiUrl) })
             {
-                using (var client = new HttpClient())
+                var response = await client.DeleteAsync($"api/Usuarios/{id}");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    string json = JsonConvert.SerializeObject(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    HttpResponseMessage response = await client.PutAsync("api/Administrador/PutAdministrador", content);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        ModelState.AddModelError("", "No se pudo editar el administrador. Inténtalo nuevamente.");
-                        return View("Index", model); // Cambio aquí para la vista "Administrador"
-                    }
+                    TempData["Mensaje"] = "Usuario eliminado correctamente.";
                 }
-
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error al editar el administrador: " + ex.Message);
-                return View("Index", model); // Cambio aquí para la vista "Administrador"
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id)
-        {
-            try
-            {
-                using (var client = new HttpClient())
+                else
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.DeleteAsync($"api/Administrador/DeleteAdministrador/{id}");
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        ModelState.AddModelError("", "No se pudo eliminar el administrador. Inténtalo nuevamente.");
-                    }
+                    TempData["Mensaje"] = $"No se pudo eliminar el usuario. Código: {response.StatusCode}";
                 }
+            }
 
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error al eliminar el administrador: " + ex.Message);
-                return RedirectToAction("Index");
-            }
+            return RedirectToAction("Index");
         }
     }
 }

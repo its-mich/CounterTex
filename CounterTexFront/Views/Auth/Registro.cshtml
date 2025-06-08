@@ -231,6 +231,18 @@
             </div>
 
             <div class="form-group">
+                @Html.LabelFor(m => m.Edad)
+                @Html.TextBoxFor(m => m.Edad, new { @class = "form-control", @type = "number", @placeholder = "Edad", required = "required" })
+                @Html.ValidationMessageFor(m => m.Edad, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Telefono)
+                @Html.TextBoxFor(m => m.Telefono, new { @class = "form-control", @type = "tel", @placeholder = "Teléfono", required = "required" })
+                @Html.ValidationMessageFor(m => m.Telefono, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
                 @Html.LabelFor(m => m.Correo)
                 @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", @type = "email", @placeholder = "correo@ejemplo.com", required = "required" })
                 @Html.ValidationMessageFor(m => m.Correo, "", new { @class = "text-danger" })
@@ -248,19 +260,22 @@
                 @Html.ValidationMessageFor(m => m.ConfirmarContraseña, "", new { @class = "text-danger" })
             </div>
 
-            <div class="form-group">
-                @Html.LabelFor(m => m.Rol, "Tipo de Usuario")
-                @Html.DropDownListFor(m => m.Rol,
-                    new SelectList(new[]
-                    {
-                        new { Value = "", Text = "Seleccione un rol" }, // Opción vacía como placeholder
-                        new { Value = "Administrador", Text = "Administrador" },
-                        new { Value = "Empleado", Text = "Empleado" },
-                        new { Value = "Proveedor", Text = "Proveedor" }
-                    }, "Value", "Text"),
-                    new { @class = "form-control", required = "required" })
-                @Html.ValidationMessageFor(m => m.Rol, "", new { @class = "text-danger" })
-            </div>
+            if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+            {
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Rol, "Tipo de Usuario")
+                    @Html.DropDownListFor(m => m.Rol,
+                         new SelectList(new[]
+                         {
+                            new { Value = "", Text = "Seleccione un rol" }, // Opción vacía como placeholder
+                            new { Value = "Administrador", Text = "Administrador" },
+                            new { Value = "Empleado", Text = "Empleado" },
+                            new { Value = "Proveedor", Text = "Proveedor" }
+                         }, "Value", "Text"),
+                         new { @class = "form-control", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Rol, "", new { @class = "text-danger" })
+                </div>
+            }
 
             <button type="submit" class="btn btn-primary">Registrarse</button>
             <p class="mt-3">¿Ya tienes una cuenta? <a href="@Url.Action("Login", "Auth")" class="register-link">Iniciar Sesión</a></p>

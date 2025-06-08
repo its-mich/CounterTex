@@ -31,8 +31,7 @@ namespace CounterTexFront.Models
 
         // Estos campos no se muestran en la vista, pero se envían a la API
         public string Rol { get; set; }
-        public int? OperacionId { get; set; } = null;
-        public int? Edad { get; set; } = null;
-        public string Telefono { get; set; } = "";
+        public int Edad { get; set; }
+        public string Telefono { get; set; }
     }
 }
