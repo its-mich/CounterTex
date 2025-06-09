@@ -48,6 +48,16 @@ namespace CounterTexFront.Models
 
             [Required(ErrorMessage = "El acabado es obligatorio.")]
             public string Acabado { get; set; }
-        
+
+        [Required]
+        public int UsuarioId { get; set; }  // <- Nuevo campo
+
+        [Required]
+        public int PrendaId { get; set; }   // <- Nuevo campo
+
+        [Required]
+        public int OperacionId { get; set; }  // <- Nuevo campo
+
+
     }
 }

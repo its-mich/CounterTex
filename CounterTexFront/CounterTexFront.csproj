@@ -274,6 +274,8 @@
     <Content Include="Views\AsignacionEmpleado\AsignacionEmpleado.cshtml" />
     <Content Include="Views\DetallesPrendaEmpleado\DetallesPrendaEmpleado.cshtml" />
     <Content Include="Views\revisionempleado\RevisionEmpleado.cshtml" />
+    <Content Include="Views\DetallesPrendaEmpleado\Guardar.cshtml" />
+    <Content Include="Views\DetallesPrendaEmpleado\GuardarProduccion.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
