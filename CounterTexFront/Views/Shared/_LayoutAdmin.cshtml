@@ -187,31 +187,53 @@
             </a>
         </div>
         <nav class="nav flex-column">
-            <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "ProduccionDiaria" ? "active" : "")" href="@Url.Action("Index", "ProduccionDiaria")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ProduccionDiaria" ? "active" : "")"
+               href="@Url.Action("Index", "ProduccionDiaria")">
                 <i class="fas fa-calendar-day"></i> Producción Diaria
             </a>
-            <a class="nav-link" href="@Url.Action("Index", "ControlHorarios")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ControlHorarios" ? "active" : "")"
+               href="@Url.Action("Index", "ControlHorarios")">
                 <i class="fas fa-clock"></i> Control de Horarios
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ResumenProduccion" ? "active" : "")"
                href="@Url.Action("Index", "ResumenProduccion")">
                 <i class="fas fa-chart-bar"></i> Resumen Producción Mensual
             </a>
-            <a class="nav-link" href="@Url.Action("ControlPrendas", "ControlPrendas")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ControlPrendas" ? "active" : "")"
+               href="@Url.Action("Index", "ControlPrendas")">
                 <i class="fas fa-tshirt"></i> Control de Prendas
             </a>
-            <a class="nav-link" href="@Url.Action("Contacto", "Contacto")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Contacto" ? "active" : "")"
+               href="@Url.Action("Contacto", "Contacto")">
                 <i class="fas fa-money-bill-wave"></i> Control de Pagos
             </a>
-            <a class="nav-link" href="@Url.Action("Chat", "Chat")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Chat" ? "active" : "")"
+               href="@Url.Action("Chat", "Chat")">
                 <i class="fas fa-comments"></i> Chat Interno
             </a>
-            <a class="nav-link" href="@Url.Action("Revision", "Revision")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Revision" ? "active" : "")"
+               href="@Url.Action("Index", "Revision")">
                 <i class="fas fa-check-circle"></i> Revisión Prendas
             </a>
-            <a class="nav-link" href="@Url.Action("Asignacion", "Asignacion")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Asignacion" ? "active" : "")"
+               href="@Url.Action("Index", "Asignacion")">
                 <i class="fas fa-tasks"></i> Asignación de Prendas
             </a>
+
+            <!-- Opciones administrativas solo para administradores -->
+            @if (ViewBag.EsAdmin == true)
+            {
+                <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "CambiarRol" ? "active" : "")"
+                   href="@Url.Action("CambiarRol", "Administrador")">
+                    <i class="fas fa-user-cog"></i> Cambiar Rol
+                </a>
+                <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "EliminarUsuario" ? "active" : "")"
+                   href="@Url.Action("EliminarUsuario", "Administrador")">
+                    <i class="fas fa-user-slash"></i> Eliminar Usuario
+                </a>
+            }
+
+            <!-- Cerrar sesión -->
             @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
             {
                 @Html.AntiForgeryToken()

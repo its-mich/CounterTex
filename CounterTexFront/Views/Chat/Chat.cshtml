@@ -1,0 +1,75 @@
+﻿@model CounterTexFront.Models.ChatViewModel
+@{
+    ViewBag.Title = "Chat Interno";
+    Layout = ViewBag.Layout;
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Usuarios</h4>
+            @Html.DropDownList("DestinatarioId", (SelectList)ViewBag.Usuarios, "Selecciona un usuario", new { @class = "form-select", id = "destinatarioSelect" })
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div id="chatBox" class="border p-3 rounded bg-light text-dark" style="height: 400px; overflow-y: scroll;">
+                <!-- Mensajes cargados dinámicamente -->
+            </div>
+
+            <div class="input-group mt-3">
+                <input type="text" id="mensajeInput" class="form-control" placeholder="Escribe tu mensaje..." />
+                <button id="enviarBtn" class="btn btn-primary">Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const remitenteId = @ViewBag.RemitenteId;
+
+        function cargarMensajes() {
+            const destinatarioId = $("#destinatarioSelect").val();
+            if (!destinatarioId) return;
+
+            $.get(`/Chat/ObtenerMensajes?remitenteId=${remitenteId}&destinatarioId=${destinatarioId}`, function (data) {
+                $("#chatBox").empty();
+                data.forEach(msg => {
+                    const clase = msg.remitenteId === remitenteId ? 'text-end text-primary' : 'text-start text-success';
+                    $("#chatBox").append(`<div class="${clase}"><small>${msg.contenido}</small><br/><small class="text-muted">${msg.fechaHora}</small></div><hr/>`);
+                });
+                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+            });
+        }
+
+        $("#destinatarioSelect").change(function () {
+            cargarMensajes();
+        });
+
+        $("#enviarBtn").click(function () {
+            const contenido = $("#mensajeInput").val().trim();
+            const destinatarioId = $("#destinatarioSelect").val();
+
+            if (!contenido || !destinatarioId) return;
+
+            $.post("/Chat/EnviarMensaje", {
+                RemitenteId: remitenteId,
+                DestinatarioId: destinatarioId,
+                Contenido: contenido
+            }).done(function (ok) {
+                if (ok) {
+                    $("#mensajeInput").val("");
+                    cargarMensajes();
+                }
+            });
+        });
+
+        setInterval(() => {
+            if ($("#destinatarioSelect").val()) {
+                cargarMensajes();
+            }
+        }, 5000);
+    </script>
+}

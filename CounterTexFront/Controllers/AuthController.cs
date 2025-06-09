@@ -102,6 +102,7 @@ namespace CounterTexFront.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model)
         {
+
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Por favor verifica los campos del formulario.");
@@ -146,15 +147,16 @@ namespace CounterTexFront.Controllers
                     var result = await response.Content.ReadAsStringAsync();
                     var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(result);
 
-                    if (loginResponse?.Rol == null || string.IsNullOrEmpty(loginResponse.Rol.Nombre))
+                    if (loginResponse?.Rol == null || string.IsNullOrEmpty(loginResponse.Rol))
                     {
                         ModelState.AddModelError("", "El rol del usuario no está asignado correctamente.");
                         return View(model);
                     }
 
                     // Guardar en sesión
+                    Session["Usuario"] = loginResponse;
                     Session["BearerToken"] = loginResponse.Token;
-                    Session["UserRole"] = loginResponse.Rol.Nombre;
+                    Session["UserRole"] = loginResponse.Rol;
                     Session["NombreUsuario"] = loginResponse.Nombres;
 
                     // Crear el ticket de autenticación
@@ -164,7 +166,7 @@ namespace CounterTexFront.Controllers
                         DateTime.Now,
                         DateTime.Now.AddMinutes(60), // duración
                         false,
-                        loginResponse.Rol.Nombre // puedes almacenar el rol
+                        loginResponse.Rol // puedes almacenar el rol
                     );
 
                     string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
@@ -174,8 +176,19 @@ namespace CounterTexFront.Controllers
                     };
                     Response.Cookies.Add(authCookie);
 
+                    // 🔥 Limpia la cookie antifalsificación para evitar conflictos de usuario
+                    if (Request.Cookies["__RequestVerificationToken"] != null)
+                    {
+                        var tokenCookie = new HttpCookie("__RequestVerificationToken")
+                        {
+                            Expires = DateTime.Now.AddDays(-1),
+                            HttpOnly = true
+                        };
+                        Response.Cookies.Add(tokenCookie);
+                    }
+
                     // Redirección según rol
-                    switch (loginResponse.Rol.Nombre)
+                    switch (loginResponse.Rol)
                     {
                         case "Administrador":
                             return RedirectToAction("Index", "Administrador");

@@ -155,6 +155,7 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CantidadOperacionController.cs" />
+    <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\ControlHorariosController.cs" />
     <Compile Include="Controllers\ControlPagosController.cs" />
     <Compile Include="Controllers\EmpleadoController.cs" />
@@ -168,6 +169,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CambiarRolViewModel.cs" />
+    <Compile Include="Models\ChatViewModel.cs" />
     <Compile Include="Models\HorarioViewModel.cs" />
     <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
@@ -275,6 +278,9 @@
     <Content Include="Views\ProduccionDiaria\_ProduccionDetallePartial.cshtml" />
     <Content Include="Views\ResumenProduccion\Index.cshtml" />
     <Content Include="Views\Administrador\EditarUsuario.cshtml" />
+    <Content Include="Views\Administrador\CambiarRol.cshtml" />
+    <Content Include="Views\Administrador\EditarRol.cshtml" />
+    <Content Include="Views\Chat\Chat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -9,7 +9,7 @@ namespace CounterTexFront.Models
 	public class LoginResponse
 	{
         public string Token { get; set; }
-        public RolViewModel Rol { get; set; }  // Cambio aquí
+        public string Rol { get; set; }  // Cambio aquí
         public int Id { get; set; }
         public string Nombres { get; set; }
     }

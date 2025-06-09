@@ -20,43 +20,20 @@ namespace CounterTexFront.Controllers
         {
             using (var client = new HttpClient())
             {
-                // Cargar Usuarios (URL en plural, como tu API)
                 var usuariosResponse = await client.GetAsync($"{apiUrl}/Usuarios");
-                if (usuariosResponse.IsSuccessStatusCode)
-                {
-                    var json = await usuariosResponse.Content.ReadAsStringAsync();
-                    model.UsuariosDisponibles = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(json);
-                }
-                else
-                {
-                    ModelState.AddModelError("", $"Error al cargar usuarios: {usuariosResponse.StatusCode}");
-                    model.UsuariosDisponibles = new List<UsuarioViewModel>();
-                }
+                model.UsuariosDisponibles = usuariosResponse.IsSuccessStatusCode
+                    ? JsonConvert.DeserializeObject<List<UsuarioViewModel>>(await usuariosResponse.Content.ReadAsStringAsync())
+                    : new List<UsuarioViewModel>();
 
-                // Cargar Prendas (URL en plural, como tu API)
                 var prendasResponse = await client.GetAsync($"{apiUrl}/Prendas");
-                if (prendasResponse.IsSuccessStatusCode)
-                {
-                    var json = await prendasResponse.Content.ReadAsStringAsync();
-                    model.PrendasDisponibles = JsonConvert.DeserializeObject<List<PrendaViewModel>>(json);
-                }
-                else
-                {
-                    ModelState.AddModelError("", $"Error al cargar prendas: {prendasResponse.StatusCode}");
-                    model.PrendasDisponibles = new List<PrendaViewModel>();
-                }
+                model.PrendasDisponibles = prendasResponse.IsSuccessStatusCode
+                    ? JsonConvert.DeserializeObject<List<PrendaViewModel>>(await prendasResponse.Content.ReadAsStringAsync())
+                    : new List<PrendaViewModel>();
 
                 var operacionesResponse = await client.GetAsync($"{apiUrl}/Operacion");
-                if (operacionesResponse.IsSuccessStatusCode)
-                {
-                    var json = await operacionesResponse.Content.ReadAsStringAsync();
-                    model.OperacionesDisponibles = JsonConvert.DeserializeObject<List<OperacionViewModel>>(json);
-                }
-                else
-                {
-                    ModelState.AddModelError("", $"Error al cargar operaciones: {operacionesResponse.StatusCode}");
-                    model.OperacionesDisponibles = new List<OperacionViewModel>();
-                }
+                model.OperacionesDisponibles = operacionesResponse.IsSuccessStatusCode
+                    ? JsonConvert.DeserializeObject<List<OperacionViewModel>>(await operacionesResponse.Content.ReadAsStringAsync())
+                    : new List<OperacionViewModel>();
             }
             return model;
         }
@@ -267,34 +244,20 @@ namespace CounterTexFront.Controllers
         // ACCIÓN: Para cargar la vista parcial de un detalle de producción dinámicamente
         public async Task<ActionResult> GetProduccionDetallePartial(int index)
         {
-            var model = new ProduccionDetalleViewModel(); // Puedes dejarlo así o pasar un ID si es para editar
+            var model = new ProduccionDetalleViewModel();
+            IEnumerable<OperacionViewModel> operaciones = new List<OperacionViewModel>();
 
-            // ¡Asegúrate de que esta sección exista y cargue las operaciones!
-            IEnumerable<OperacionViewModel> operacionesDisponibles = new List<OperacionViewModel>();
             using (var client = new HttpClient())
             {
-                try
+                var response = await client.GetAsync($"{apiUrl}/Operacion");
+                if (response.IsSuccessStatusCode)
                 {
-                    var operacionesResponse = await client.GetAsync($"{apiUrl}/Operacion");
-                    if (operacionesResponse.IsSuccessStatusCode)
-                    {
-                        var json = await operacionesResponse.Content.ReadAsStringAsync();
-                        operacionesDisponibles = JsonConvert.DeserializeObject<List<OperacionViewModel>>(json);
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error al cargar operaciones para el detalle: {operacionesResponse.StatusCode}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Excepción al cargar operaciones para el detalle: {ex.Message}");
+                    operaciones = JsonConvert.DeserializeObject<List<OperacionViewModel>>(await response.Content.ReadAsStringAsync());
                 }
             }
 
-            // ¡CRÍTICO: Pasar las operaciones al ViewData!
             ViewData["index"] = index;
-            ViewData["operaciones"] = operacionesDisponibles; // <--- ¡Esta línea es fundamental!
+            ViewData["operaciones"] = operaciones;
 
             return PartialView("_ProduccionDetallePartial", model);
         }

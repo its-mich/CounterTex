@@ -1,8 +1,9 @@
-﻿@{
+﻿@using System.Web;
+@model CounterTexFront.Models.LoginViewModel
+@{
     Layout = null;
 }
-@using System.Web;
-@model CounterTexFront.Models.LoginViewModel
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -25,7 +26,7 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
 
-<style>
+    <style>
 
         body {
             margin: 0;
@@ -49,37 +50,51 @@
             overflow: hidden;
         }
 
-        .background-container .bg {
-            position: absolute;
-            height: 100%;
-            width: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            animation: fadeImages 24s infinite;
-        }
+            .background-container .bg {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+                background-size: cover;
+                background-position: center;
+                opacity: 0;
+                animation: fadeImages 24s infinite;
+            }
 
-        .background-container .bg1 {
-            background-image: url('../../images/fondo.jpg');
-            animation-delay: 0s;
-        }
+            .background-container .bg1 {
+                background-image: url('../../images/fondo.jpg');
+                animation-delay: 0s;
+            }
 
-        .background-container .bg2 {
-            background-image: url('../../images/fondo-login.jpg');
-            animation-delay: 8s;
-        }
+            .background-container .bg2 {
+                background-image: url('../../images/fondo-login.jpg');
+                animation-delay: 8s;
+            }
 
-        .background-container .bg3 {
-            background-image: url('../../images/fondo3.jpg');
-            animation-delay: 16s;
-        }
+            .background-container .bg3 {
+                background-image: url('../../images/fondo3.jpg');
+                animation-delay: 16s;
+            }
 
         @@keyframes fadeImages {
-            0% { opacity: 0; }
-            10% { opacity: 1; }
-            30% { opacity: 1; }
-            40% { opacity: 0; }
-            100% { opacity: 0; }
+            0% {
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            40% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
         .login-card {
@@ -190,7 +205,7 @@
             transform: scale(1.04); /* Aumenta la escala en un 5% - puedes ajustar este valor */
             transform-origin: center center; /* Asegura que la escala se aplique desde el centro */
         }
-</style>
+    </style>
 
 
 </head>

@@ -1,14 +1,22 @@
 ﻿@model CounterTexFront.Models.ProduccionDiariaViewModel
 
 @{
+    ViewBag.Title = "Nueva Producción Diaria";
     Layout = ViewBag.Layout;
 }
-<h2>Nueva Producción Diaria</h2>
+<h2>@ViewBag.Title</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success">
         @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.Error
     </div>
 }
 
@@ -25,57 +33,60 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.UsuarioId, "Usuario", new { @class = "control-label col-md-2" })
+        @Html.LabelFor(m => m.UsuarioId, "Usuario", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-4">
-            @Html.DropDownListFor(m => m.UsuarioId, new SelectList(Model.UsuariosDisponibles, "Id", "Nombre"), "-- Seleccione Usuario --", new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.UsuarioId, new SelectList(Model.UsuariosDisponibles, "Id", "Nombre"), "-- Selecciona un usuario --", new { @class = "form-control" })
             @Html.ValidationMessageFor(m => m.UsuarioId, "", new { @class = "text-danger" })
         </div>
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.PrendaId, "Prenda", new { @class = "control-label col-md-2" })
+        @Html.LabelFor(m => m.PrendaId, "Prenda", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-4">
-            @Html.DropDownListFor(m => m.PrendaId, new SelectList(Model.PrendasDisponibles, "Id", "Nombre"), "-- Seleccione Prenda --", new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.PrendaId, new SelectList(Model.PrendasDisponibles, "Id", "Nombre"), "-- Selecciona una prenda --", new { @class = "form-control" })
             @Html.ValidationMessageFor(m => m.PrendaId, "", new { @class = "text-danger" })
         </div>
     </div>
 
     <hr />
     <h4>Detalles de Producción</h4>
-    <div id="detalle-container">
-        @for (int i = 0; i < Model.ProduccionDetalles.Count; i++)
+
+    <div id="detallesContainer">
+        @if (Model.ProduccionDetalles != null && Model.ProduccionDetalles.Any())
         {
-            @Html.Partial("_ProduccionDetallePartial", Model.ProduccionDetalles[i], new ViewDataDictionary { { "index", i }, { "operaciones", Model.OperacionesDisponibles } })
+            for (int i = 0; i < Model.ProduccionDetalles.Count; i++)
+            {
+                @Html.Partial("_ProduccionDetallePartial", Model.ProduccionDetalles[i], new ViewDataDictionary { { "index", i }, { "operaciones", Model.OperacionesDisponibles } })
+            }
         }
     </div>
-    <button type="button" id="agregarDetalle" class="btn btn-secondary mt-3"><i class="fas fa-plus"></i> Añadir Detalle</button>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-4">
+            <button type="button" class="btn btn-info" id="btnAgregarDetalle">Agregar Detalle</button>
+        </div>
+    </div>
 
     <hr />
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar Producción</button>
-            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-outline-secondary ms-2" })
+        <div class="col-md-offset-2 col-md-4">
+            <input type="submit" value="Guardar Producción" class="btn btn-success" />
+            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-default" })
         </div>
     </div>
 }
 
-@section Scripts {
-@Scripts.Render("~/bundles/jqueryval")
-    <script>
-    $(document).ready(function () {
-        var index = @Model.ProduccionDetalles.Count;
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 
-        $('#agregarDetalle').click(function () {
-            $.get('@Url.Action("GetProduccionDetallePartial", "ProduccionDiaria")', { index: index }, function (html) {
-                $('#detalle-container').append(html);
+    <script>
+        let index = @Model.ProduccionDetalles?.Count ?? 0;
+
+        $("#btnAgregarDetalle").click(function () {
+            $.get("@Url.Action("GetProduccionDetallePartial", "ProduccionDiaria")", { index: index }, function (html) {
+                $("#detallesContainer").append(html);
                 index++;
             });
         });
-
-        // Delegación de evento para eliminar detalles
-        $('#detalle-container').on('click', '.remove-detalle', function () {
-            $(this).closest('.detalle-item').remove();
-        });
-    });
     </script>
 }
