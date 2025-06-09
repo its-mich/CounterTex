@@ -1,0 +1,15 @@
+﻿@{
+    var usuario = Session["Usuario"] as CounterTexFront.Models.LoginResponse;
+}
+
+@if (usuario != null)
+{
+    <li class="nav-item position-relative" id="chatNotificacionWrapper">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Chat" ? "active" : "")" href="@Url.Action("Chat", "Chat")">
+            <i class="fas fa-comments"></i> Chat Interno
+            <span id="chatBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                ¡Nuevo!
+            </span>
+        </a>
+    </li>
+}

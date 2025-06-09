@@ -14,8 +14,10 @@ namespace CounterTexFront.Controllers
             var action = filterContext.RouteData.Values["action"].ToString().ToLower();
 
             // Excluir acciones públicas
-            bool esAccionPublica = controller == "auth" &&
-                (action == "login" || action == "registro" || action == "recuperar");
+            bool esAccionPublica =
+        (controller == "auth" &&
+            (action == "login" || action == "registro" || action == "recuperar")) ||
+        (controller == "home" && action == "welcome");
 
             // ⚠️ Verificar que haya token
             if (!esAccionPublica && Session["Bearertoken"] == null)
