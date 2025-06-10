@@ -14,15 +14,17 @@ namespace CounterTexFront.Controllers
 {
     public class ChatController : BaseController
     {
+
         string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
         private readonly HttpClient _httpClient;
+
 
         public ChatController()
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(apiUrl);
         }
-
+        // GET: Chat
         public ActionResult Index()
         {
             return View();
@@ -30,8 +32,11 @@ namespace CounterTexFront.Controllers
 
         public async Task<ActionResult> Chat()
         {
+            // ✅ Validar que la sesión existe
             if (Session["Usuario"] == null)
+            {
                 return RedirectToAction("Login", "Auth");
+            }
 
             var remitente = (LoginResponse)Session["Usuario"];
             var remitenteId = remitente.Id;
@@ -45,8 +50,8 @@ namespace CounterTexFront.Controllers
             }
 
             var usuarios = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(await usuariosResponse.Content.ReadAsStringAsync())
-                               .Where(u => u.Id != remitenteId)
-                               .ToList();
+                           .Where(u => u.Id != remitenteId)
+                           .ToList();
 
             ViewBag.Usuarios = new SelectList(usuarios, "Id", "Nombre");
             ViewBag.RemitenteId = remitenteId;
@@ -76,8 +81,8 @@ namespace CounterTexFront.Controllers
                 {
                     var contenido = await response.Content.ReadAsStringAsync();
                     var mensajes = JsonConvert.DeserializeObject<List<MensajeChatDTO>>(contenido);
-                    return Json(mensajes, JsonRequestBehavior.AllowGet);
-                }
+            return Json(mensajes, JsonRequestBehavior.AllowGet);
+        }
 
                 return new HttpStatusCodeResult((int)response.StatusCode, "Error al obtener mensajes del backend.");
             }
@@ -103,7 +108,7 @@ namespace CounterTexFront.Controllers
                     if (mensaje == null || string.IsNullOrWhiteSpace(mensaje.Mensaje))
                         return new HttpStatusCodeResult(400, "El mensaje no puede ser nulo.");
 
-                    mensaje.FechaHora = DateTime.Now;
+            mensaje.FechaHora = DateTime.Now;
 
                     var jsonEnviar = JsonConvert.SerializeObject(mensaje, new JsonSerializerSettings
                     {
