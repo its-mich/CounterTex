@@ -10,28 +10,38 @@ namespace CounterTexFront.Controllers
     {
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var rol = System.Web.HttpContext.Current.Session["UserRole"]?.ToString();
-            var nombreUsuario = HttpContext.Session["NombreUsuario"]?.ToString();
+            var controller = filterContext.RouteData.Values["controller"].ToString().ToLower();
+            var action = filterContext.RouteData.Values["action"].ToString().ToLower();
 
-            // Asignar layout según el rol
+            // Excluir acciones públicas
+            bool esAccionPublica =
+        (controller == "auth" &&
+            (action == "login" || action == "registro" || action == "recuperar")) ||
+        (controller == "home" && action == "welcome");
+
+            // ⚠️ Verificar que haya token
+            if (!esAccionPublica && Session["Bearertoken"] == null)
+            {
+                filterContext.Result = new RedirectToRouteResult(
+                    new System.Web.Routing.RouteValueDictionary(new
+                    {
+                        controller = "Auth",
+                        action = "Login"
+                    })
+                );
+                return;
+            }
+
+            // Layout según rol
+            var rol = Session["UserRole"]?.ToString();
             if (rol == "Administrador")
-            {
                 ViewBag.Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-            }
             else if (rol == "Empleado")
-            {
                 ViewBag.Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
-            }
             else if (rol == "Proveedor")
-            {
                 ViewBag.Layout = "~/Views/Shared/_LayoutProveedor.cshtml";
-            }
 
-            // Pasar nombre de usuario al ViewBag
-            if (!string.IsNullOrEmpty(nombreUsuario))
-            {
-                ViewBag.NombreUsuario = nombreUsuario;
-            }
+            ViewBag.NombreUsuario = Session["NombreUsuario"]?.ToString();
 
             base.OnActionExecuting(filterContext);
         }

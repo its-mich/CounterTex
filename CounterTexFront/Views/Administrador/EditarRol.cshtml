@@ -1,0 +1,36 @@
+﻿@model CounterTexFront.Models.CambiarRolViewModel
+
+@{
+    ViewBag.Title = "Editar Rol de Usuario";
+    Layout = ViewBag.Layout;
+}
+
+<h2 class="text-xl font-bold mb-4">Editar Rol de @Model.Nombre</h2>
+
+@using (Html.BeginForm("EditarRol", "Administrador", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="form-group">
+        @Html.Label("Usuario")
+        <input class="form-control" value="@Model.Nombre" disabled />
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Rol Actual")
+        <input class="form-control" value="@Model.NombreRol" disabled />
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.NuevoRolId)
+        @Html.DropDownListFor(m => m.NuevoRolId,
+            new SelectList(Model.RolesDisponibles, "Id", "Nombre"),
+            "-- Selecciona un rol --",
+            new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.NuevoRolId, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    @Html.ActionLink("Cancelar", "CambiarRol", null, new { @class = "btn btn-default" })
+}

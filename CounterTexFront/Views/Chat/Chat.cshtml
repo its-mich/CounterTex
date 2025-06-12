@@ -1,0 +1,128 @@
+﻿@model CounterTexFront.Models.ChatViewModel
+@{
+    ViewBag.Title = "Chat Interno";
+    Layout = ViewBag.Layout;
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Usuarios</h4>
+            @Html.DropDownList("DestinatarioId", (SelectList)ViewBag.Usuarios, "Selecciona un usuario", new { @class = "form-select", id = "destinatarioSelect" })
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div id="chatBox" class="border p-3 rounded bg-light text-dark" style="height: 400px; overflow-y: scroll;">
+                <!-- Mensajes cargados dinámicamente -->
+            </div>
+
+            <div class="input-group mt-3">
+                <input type="text" id="mensajeInput" class="form-control" placeholder="Escribe tu mensaje..." />
+                <button id="enviarBtn" class="btn btn-primary">Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const remitenteId = parseInt('@ViewBag.RemitenteId');
+        let ultimoMensajeId = 0;
+
+        // 🔔 Notificación visual (en el menú)
+        function notificarNuevoMensaje() {
+            $("#chatNotificacionWrapper a").addClass("text-warning fw-bold");
+        }
+
+        // 🔄 Cargar mensajes + notificación
+        function cargarMensajes() {
+            const destinatarioId = $("#destinatarioSelect").val();
+            if (!destinatarioId) return;
+
+            $.get(`/Chat/ObtenerMensajes?remitenteId=${remitenteId}&destinatarioId=${destinatarioId}`, function (data) {
+                $("#chatBox").empty();
+                let nuevoUltimo = ultimoMensajeId;
+
+                data.forEach(msg => {
+                    const clase = msg.RemitenteId === remitenteId ? 'text-end text-primary' : 'text-start text-success';
+                    const rawTicks = msg.fechaHora || msg.FechaHora;
+                    const timestamp = parseInt(rawTicks.replace(/[^0-9]/g, ''));
+                    const fecha = new Date(timestamp);
+                    const fechaFormateada = fecha.toLocaleString();
+
+                    $("#chatBox").append(`
+                        <div class="${clase}">
+                            <small>${msg.Mensaje}</small><br/>
+                            <small class="text-muted">${fechaFormateada}</small>
+                        </div><hr/>
+                    `);
+                    if (msg.id > nuevoUltimo) nuevoUltimo = msg.id;
+                });
+
+                // 🔔 Mostrar notificación si hay nuevos
+                if (nuevoUltimo > ultimoMensajeId) {
+                    notificarNuevoMensaje();
+                    if (Notification.permission === "granted") {
+                        new Notification("Nuevo mensaje recibido");
+                    }
+                    // new Audio("/Content/notify.mp3").play(); // Opcional: sonido
+                }
+
+                ultimoMensajeId = nuevoUltimo;
+                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+            });
+        }
+
+        // Solicitar permiso notificación al cargar
+        if (Notification && Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+
+        // 🔁 Intervalo para actualizar chat + detectar nuevos
+        setInterval(() => {
+            const destinatarioId = $("#destinatarioSelect").val();
+            if (destinatarioId) {
+                cargarMensajes();
+            }
+        }, 5000);
+
+        // Al cambiar destinatario, cargar mensajes
+        $("#destinatarioSelect").change(function () {
+            cargarMensajes();
+        });
+
+        // Enviar mensaje
+        $("#enviarBtn").click(function () {
+            const mensajeTexto = $("#mensajeInput").val().trim();
+            const destinatarioId = $("#destinatarioSelect").val();
+            if (!mensajeTexto || !destinatarioId) return;
+
+            $.ajax({
+                url: "/Chat/EnviarMensaje",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    id: 0,
+                    mensaje: mensajeTexto,
+                    remitenteId: remitenteId,
+                    destinatarioId: parseInt(destinatarioId),
+                    fechaHora: new Date().toISOString()
+                })
+            }).done(function (ok) {
+                if (ok) {
+                    $("#mensajeInput").val("");
+                    cargarMensajes();
+                }
+            }).fail(function (xhr) {
+                console.error("Error al enviar mensaje:", xhr.status, xhr.responseText); // ✅ para depurar
+            });
+        });
+
+        // Limpia notificación visual cuando se hace clic en el menú
+        $(document).on("click", "#chatNotificacionWrapper a", function () {
+            $(this).removeClass("text-warning fw-bold");
+        });
+    </script>
+}

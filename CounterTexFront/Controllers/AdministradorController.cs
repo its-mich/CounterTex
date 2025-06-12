@@ -3,140 +3,177 @@ using CounterTexFront.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace CounterTexFront.Controllers
 {
+
+    [Authorize]
     public class AdministradorController : BaseController
     {
+        private readonly HttpClient _httpClient;
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+        public AdministradorController()
+        {
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(apiUrl)
+            };
 
-        // Acción para obtener la lista de administradores
+            var token = System.Web.HttpContext.Current.Session["BearerToken"]?.ToString();
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            }
+        }
+
+        public ActionResult PruebaRuta()
+        {
+            return Content("MVC funciona correctamente");
+        }
+
+
+        // Mostrar lista de usuarios
         public async Task<ActionResult> Index()
         {
-            List<PerfilAdministradorViewModel> administradores = new List<PerfilAdministradorViewModel>();
+            List<UsuarioViewModel> usuarios = new List<UsuarioViewModel>();
+
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.GetAsync("api/Administrador/GetAdministrador");
+                var response = await _httpClient.GetAsync("api/Usuarios/GetUsuarios");
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonResponse = await response.Content.ReadAsStringAsync();
-                        administradores = JsonConvert.DeserializeObject<List<PerfilAdministradorViewModel>>(jsonResponse);
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Error al obtener los datos de administradores.");
-                    }
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    usuarios = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(json);
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    Session.Clear();
+                    Session.Abandon();
+                    TempData["Mensaje"] = "Sesión expirada. Por favor, inicia sesión nuevamente.";
+                    return RedirectToAction("Login", "Cuenta");
+                }
+                else
+                {
+                    ModelState.AddModelError("", $"Error al obtener usuarios. Código: {response.StatusCode}");
                 }
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al conectarse con el servidor: " + ex.Message);
+                ModelState.AddModelError("", "Error inesperado: " + ex.Message);
             }
 
-            return View("Index", administradores); // Cambio aquí para la vista "Administrador"
+            return View("Index", usuarios);
         }
 
+        // GET: Admin → lista usuarios
+        public async Task<ActionResult> CambiarRol()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Usuarios");
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["Mensaje"] = "No se pudieron obtener los usuarios.";
+                    return RedirectToAction("Index");
+                }
+
+                var list = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(await response.Content.ReadAsStringAsync());
+                return View(list);
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al cargar la vista: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        // GET: EditarRol
+        public async Task<ActionResult> EditarRol(int id)
+        {
+            try
+            {
+                var respU = await _httpClient.GetAsync($"api/Usuarios/{id}");
+                var usuario = JsonConvert.DeserializeObject<UsuarioViewModel>(await respU.Content.ReadAsStringAsync());
+
+                var respR = await _httpClient.GetAsync("api/Roles");
+                var roles = JsonConvert.DeserializeObject<List<RolViewModel>>(await respR.Content.ReadAsStringAsync());
+
+                var model = new CambiarRolViewModel
+                {
+                    Id = usuario.Id,
+                    Nombre = usuario.Nombre,
+                    NombreRol = usuario.RolNombre,
+                    RolesDisponibles = roles
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al obtener datos del usuario: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        // POST: EditarRol
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(PerfilAdministradorViewModel model)
+        public async Task<ActionResult> EditarRol(CambiarRolViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Index", model); // Cambio aquí para la vista "Administrador"
+            {
+                model.RolesDisponibles = JsonConvert.DeserializeObject<List<RolViewModel>>(
+                    await (await _httpClient.GetAsync("api/Roles")).Content.ReadAsStringAsync());
+                    return View(model);
+            }
 
             try
             {
-                using (var client = new HttpClient())
+                var payload = new
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    string json = JsonConvert.SerializeObject(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    Id = model.Id,
+                    RolId = model.NuevoRolId
+                };
 
-                    HttpResponseMessage response = await client.PostAsync("api/Administrador/PostAdministrador", content);
+                var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+                var resp = await _httpClient.PutAsync($"api/Usuarios/{model.Id}/Rol", content);
 
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        ModelState.AddModelError("", "No se pudo crear el administrador. Inténtalo nuevamente.");
-                        return View("Index", model); // Cambio aquí para la vista "Administrador"
-                    }
-                }
-
-                return RedirectToAction("Index");
+                TempData[resp.IsSuccessStatusCode ? "SuccessMessage" : "Error"] =
+                    resp.IsSuccessStatusCode ? "Rol actualizado correctamente." : "Error al actualizar el rol.";
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al crear el administrador: " + ex.Message);
-                return View("Index", model); // Cambio aquí para la vista "Administrador"
+                TempData["Error"] = "Error inesperado al actualizar el rol: " + ex.Message;
             }
+
+            return RedirectToAction("CambiarRol");
         }
 
+        // POST: Eliminar
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(PerfilAdministradorViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View("Index", model); // Cambio aquí para la vista "Administrador"
-
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    string json = JsonConvert.SerializeObject(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    HttpResponseMessage response = await client.PutAsync("api/Administrador/PutAdministrador", content);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        ModelState.AddModelError("", "No se pudo editar el administrador. Inténtalo nuevamente.");
-                        return View("Index", model); // Cambio aquí para la vista "Administrador"
-                    }
-                }
-
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error al editar el administrador: " + ex.Message);
-                return View("Index", model); // Cambio aquí para la vista "Administrador"
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> EliminarUsuario(int id)
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.DeleteAsync($"api/Administrador/DeleteAdministrador/{id}");
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        ModelState.AddModelError("", "No se pudo eliminar el administrador. Inténtalo nuevamente.");
-                    }
-                }
-
-                return RedirectToAction("Index");
+                var resp = await _httpClient.DeleteAsync($"api/Usuarios/{id}");
+                TempData[resp.IsSuccessStatusCode ? "SuccessMessage" : "Error"] =
+                    resp.IsSuccessStatusCode ? "Usuario eliminado correctamente." : "Error al eliminar.";
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al eliminar el administrador: " + ex.Message);
-                return RedirectToAction("Index");
+                TempData["Error"] = "Error inesperado al eliminar el usuario: " + ex.Message;
             }
+
+            return RedirectToAction("CambiarRol");
         }
     }
 }
