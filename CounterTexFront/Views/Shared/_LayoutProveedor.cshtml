@@ -139,13 +139,13 @@
             </a>
         </div>
         <nav class="nav flex-column">
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ControlPrendas" ? "active" : "")" href="@Url.Action("Index", "ControlPrendas")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Entrega de Prendas" ? "active" : "")" href="@Url.Action("IndexEntregas", "Proveedor")">
                 <i class="fas fa-box"></i> Prendas Entregadas
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Contacto" ? "active" : "")" href="@Url.Action("Index", "Contacto")">
                 <i class="fas fa-dollar-sign"></i> Pagos
             </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Chat" ? "active" : "")" href="@Url.Action("Chat", "Chat")">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Soporte" ? "active" : "")" href="@Url.Action("Index", "Soporte")">
                 <i class="fas fa-comments"></i> Soporte
             </a>
 

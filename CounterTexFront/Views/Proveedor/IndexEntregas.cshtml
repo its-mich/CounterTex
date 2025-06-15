@@ -1,0 +1,65 @@
+﻿@model List<CounterTexFront.Models.PrendasEntregadasViewModel>
+
+@{
+    Layout = "~/Views/Shared/_LayoutProveedor.cshtml"; // Asegúrate de que el layout esté bien referenciado
+    ViewBag.Title = "Listado de Prendas";
+}
+
+<div class="mb-4">
+    @Html.ActionLink("Nueva Entrega", "CreateEntrega", "Proveedor", null, new { @class = "btn btn-primary" })
+</div>
+
+<div class="table-responsive">
+    <table class="table table-dark table-hover table-bordered align-middle">
+        <thead class="table-secondary text-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Género</th>
+                <th scope="col">Color</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Nombre</td>
+                    <td>@item.Genero</td>
+                    <td>@item.Color</td>
+                    <td>@item.CantidadPrendas</td>
+                    <td>
+                        @Html.ActionLink("Editar", "EditEntrega", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })
+                        <button class="btn btn-danger btn-sm ms-2" onclick="confirmarEliminacion(@item.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarEliminacion(id) {
+            if (confirm("¿Estás seguro de que deseas eliminar esta prenda?")) {
+                fetch(`https://localhost:7030/api/Prendas/${id}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Prenda eliminada correctamente.");
+                            location.reload();
+                        } else {
+                            alert("Error al eliminar la prenda.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Error al eliminar la prenda.");
+                    });
+            }
+        }
+    </script>
+}

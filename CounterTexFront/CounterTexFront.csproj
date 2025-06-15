@@ -181,6 +181,7 @@
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\PerfilAdministradorViewModel.cs" />
     <Compile Include="Models\PerfilEmpleadoViewModel.cs" />
+    <Compile Include="Models\PrendasEntregadasViewModel.cs" />
     <Compile Include="Models\ProduccionCreateDto.cs" />
     <Compile Include="Models\ProduccionDetalleViewModel.cs" />
     <Compile Include="Models\ProduccionDiariaViewModel.cs" />
@@ -285,6 +286,9 @@
     <Content Include="Views\Administrador\EditarRol.cshtml" />
     <Content Include="Views\Chat\Chat.cshtml" />
     <Content Include="Views\Shared\_ChatAccess.cshtml" />
+    <Content Include="Views\Proveedor\IndexEntregas.cshtml" />
+    <Content Include="Views\Proveedor\CreateEntrega.cshtml" />
+    <Content Include="Views\Proveedor\EditEntrega.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

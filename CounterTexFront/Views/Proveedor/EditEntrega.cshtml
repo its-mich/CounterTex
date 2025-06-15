@@ -1,0 +1,42 @@
+﻿@model CounterTexFront.Models.PrendasEntregadasViewModel
+
+@{
+    ViewBag.Title = "Editar Prenda Entregada";
+    Layout = ViewBag.Layout;
+}
+
+
+
+@using (Html.BeginForm("EditEntrega", "Proveedor", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Nombre)
+        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", placeholder = "Nombre de la prenda" })
+        @Html.ValidationMessageFor(m => m.Nombre)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Genero)
+        @Html.TextBoxFor(m => m.Genero, new { @class = "form-control", placeholder = "Género (masculino, femenino, unisex)" })
+        @Html.ValidationMessageFor(m => m.Genero)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Color)
+        @Html.TextBoxFor(m => m.Color, new { @class = "form-control", placeholder = "Color de la prenda" })
+        @Html.ValidationMessageFor(m => m.Color)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.CantidadPrendas)
+        @Html.TextBoxFor(m => m.CantidadPrendas, new { @class = "form-control", type = "number", min = "1" })
+        @Html.ValidationMessageFor(m => m.CantidadPrendas)
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    @Html.ActionLink("Cancelar", "IndexEntregas", null, new { @class = "btn btn-secondary ml-2" })
+}
