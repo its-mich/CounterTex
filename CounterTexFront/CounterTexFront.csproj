@@ -189,6 +189,7 @@
     <Compile Include="Models\ProduccionListViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
+    <Compile Include="Models\ReiniciarContrasenaViewModel.cs" />
     <Compile Include="Models\RolViewModel.cs" />
     <Compile Include="Models\SateliteViewModel.cs" />
     <Compile Include="Models\Tokens.cs" />
@@ -281,14 +282,14 @@
     <Content Include="Views\Empleado\Index.cshtml" />
     <Content Include="Views\ProduccionDiaria\_ProduccionDetallePartial.cshtml" />
     <Content Include="Views\ResumenProduccion\Index.cshtml" />
-    <Content Include="Views\Administrador\EditarUsuario.cshtml" />
-    <Content Include="Views\Administrador\CambiarRol.cshtml" />
     <Content Include="Views\Administrador\EditarRol.cshtml" />
     <Content Include="Views\Chat\Chat.cshtml" />
     <Content Include="Views\Shared\_ChatAccess.cshtml" />
     <Content Include="Views\Proveedor\IndexEntregas.cshtml" />
     <Content Include="Views\Proveedor\CreateEntrega.cshtml" />
     <Content Include="Views\Proveedor\EditEntrega.cshtml" />
+    <Content Include="Views\Administrador\RecuperarContrasena.cshtml" />
+    <Content Include="Views\Administrador\ReiniciarContrasena.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

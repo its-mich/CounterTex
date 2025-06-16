@@ -1,179 +1,231 @@
-﻿using Newtonsoft.Json;
-using CounterTexFront.Models;
+﻿using CounterTexFront.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.Security;
 
 namespace CounterTexFront.Controllers
 {
-
     [Authorize]
     public class AdministradorController : BaseController
     {
-        private readonly HttpClient _httpClient;
-        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
-        public AdministradorController()
+        private HttpClient GetClient()
         {
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(apiUrl)
-            };
+            var client = new HttpClient { BaseAddress = new Uri(apiUrl) };
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var token = System.Web.HttpContext.Current.Session["BearerToken"]?.ToString();
             if (!string.IsNullOrEmpty(token))
-            {
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            }
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            return client;
         }
 
-        public ActionResult PruebaRuta()
-        {
-            return Content("MVC funciona correctamente");
-        }
-
-
-        // Mostrar lista de usuarios
+        // LISTAR USUARIOS
         public async Task<ActionResult> Index()
         {
             List<UsuarioViewModel> usuarios = new List<UsuarioViewModel>();
-
-            try
+            using (var client = GetClient())
             {
-                var response = await _httpClient.GetAsync("api/Usuarios/GetUsuarios");
-
-                if (response.IsSuccessStatusCode)
+                HttpResponseMessage resp = await client.GetAsync("api/Usuarios/GetUsuarios");
+                if (resp.IsSuccessStatusCode)
                 {
-                    var json = await response.Content.ReadAsStringAsync();
+                    string json = await resp.Content.ReadAsStringAsync();
                     usuarios = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(json);
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    Session.Clear();
-                    Session.Abandon();
-                    TempData["Mensaje"] = "Sesión expirada. Por favor, inicia sesión nuevamente.";
-                    return RedirectToAction("Login", "Cuenta");
                 }
                 else
                 {
-                    ModelState.AddModelError("", $"Error al obtener usuarios. Código: {response.StatusCode}");
+                    ModelState.AddModelError("", "Error al obtener los usuarios.");
                 }
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error inesperado: " + ex.Message);
-            }
-
-            return View("Index", usuarios);
+            return View(usuarios);
         }
 
-        // GET: Admin → lista usuarios
-        public async Task<ActionResult> CambiarRol()
+        // EDITAR ROL - GET
+        public async Task<ActionResult> EditarRol(int id)
         {
-            try
+            using (var client = GetClient())
             {
-                var response = await _httpClient.GetAsync("api/Usuarios");
-                if (!response.IsSuccessStatusCode)
+                // Obtener el usuario por ID
+                var userResp = await client.GetAsync($"api/Usuarios/GetUsuariosId/{id}");
+                if (!userResp.IsSuccessStatusCode)
                 {
-                    TempData["Mensaje"] = "No se pudieron obtener los usuarios.";
+                    TempData["Mensaje"] = $"No se pudo obtener el usuario. Código: {userResp.StatusCode}";
                     return RedirectToAction("Index");
                 }
 
-                var list = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(await response.Content.ReadAsStringAsync());
-                return View(list);
-            }
-            catch (Exception ex)
-            {
-                TempData["Mensaje"] = "Error al cargar la vista: " + ex.Message;
-                return RedirectToAction("Index");
-            }
-        }
+                string userJson = await userResp.Content.ReadAsStringAsync();
+                var usuario = JsonConvert.DeserializeObject<UsuarioViewModel>(userJson); // ✅
 
-        // GET: EditarRol
-        public async Task<ActionResult> EditarRol(int id)
-        {
-            try
-            {
-                var respU = await _httpClient.GetAsync($"api/Usuarios/{id}");
-                var usuario = JsonConvert.DeserializeObject<UsuarioViewModel>(await respU.Content.ReadAsStringAsync());
+                // Obtener la lista de roles
+                var rolesResp = await client.GetAsync("api/Usuarios/GetRoles");
+                if (!rolesResp.IsSuccessStatusCode)
+                {
+                    TempData["Mensaje"] = "No se pudieron cargar los roles.";
+                    return RedirectToAction("Index");
+                }
 
-                var respR = await _httpClient.GetAsync("api/Roles");
-                var roles = JsonConvert.DeserializeObject<List<RolViewModel>>(await respR.Content.ReadAsStringAsync());
+                string rolesJson = await rolesResp.Content.ReadAsStringAsync();
+                var roles = JsonConvert.DeserializeObject<List<RolViewModel>>(rolesJson); // ✅
 
+                ViewBag.Roles = roles.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Nombre
+                }).ToList();
+
+                // Armar el modelo de la vista
                 var model = new CambiarRolViewModel
                 {
                     Id = usuario.Id,
                     Nombre = usuario.Nombre,
-                    NombreRol = usuario.RolNombre,
-                    RolesDisponibles = roles
+                    Correo = usuario.Correo,
+                    RolActual = usuario.RolNombre,
                 };
 
                 return View(model);
             }
-            catch (Exception ex)
-            {
-                TempData["Mensaje"] = "Error al obtener datos del usuario: " + ex.Message;
-                return RedirectToAction("Index");
-            }
         }
 
-        // POST: EditarRol
+        // EDITAR ROL - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditarRol(CambiarRolViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                model.RolesDisponibles = JsonConvert.DeserializeObject<List<RolViewModel>>(
-                    await (await _httpClient.GetAsync("api/Roles")).Content.ReadAsStringAsync());
-                    return View(model);
+                TempData["Mensaje"] = "Formulario inválido.";
+                return RedirectToAction("Index");
             }
 
-            try
+            using (var client = GetClient())
             {
-                var payload = new
+                var data = new { IdNuevoRol = model.NuevoRolId };
+                var json = JsonConvert.SerializeObject(data);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var patch = new HttpMethod("PATCH");
+                var request = new HttpRequestMessage(patch, $"api/Usuarios/AsignarRol/{model.Id}")
                 {
-                    Id = model.Id,
-                    RolId = model.NuevoRolId
+                    Content = content
                 };
 
-                var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-                var resp = await _httpClient.PutAsync($"api/Usuarios/{model.Id}/Rol", content);
-
-                TempData[resp.IsSuccessStatusCode ? "SuccessMessage" : "Error"] =
-                    resp.IsSuccessStatusCode ? "Rol actualizado correctamente." : "Error al actualizar el rol.";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = "Error inesperado al actualizar el rol: " + ex.Message;
+                var response = await client.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                    TempData["Mensaje"] = "Rol actualizado correctamente.";
+                else
+                    TempData["Mensaje"] = "Error al actualizar el rol.";
             }
 
-            return RedirectToAction("CambiarRol");
+            return RedirectToAction("Index", new { id = model.Id });
         }
 
-        // POST: Eliminar
+        // ELIMINAR - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EliminarUsuario(int id)
+        public async Task<ActionResult> Eliminar(int id)
         {
             try
             {
-                var resp = await _httpClient.DeleteAsync($"api/Usuarios/{id}");
-                TempData[resp.IsSuccessStatusCode ? "SuccessMessage" : "Error"] =
-                    resp.IsSuccessStatusCode ? "Usuario eliminado correctamente." : "Error al eliminar.";
+                using (var client = GetClient())
+                {
+                    HttpResponseMessage resp = await client.DeleteAsync($"api/Usuarios/{id}");
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        TempData["Mensaje"] = "Usuario eliminado correctamente.";
+                    }
+                    else
+                    {
+                        TempData["Mensaje"] = "Error al eliminar el usuario.";
+                    }
+                }
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Error inesperado al eliminar el usuario: " + ex.Message;
+                TempData["Mensaje"] = "Error interno: " + ex.Message;
             }
 
-            return RedirectToAction("CambiarRol");
+            return RedirectToAction("Index");
         }
+
+        // RECUPERAR CONTRASEÑA - GET
+        public ActionResult RecuperarContrasena()
+        {
+            return View();
+        }
+
+        // RECUPERAR CONTRASEÑA - POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RecuperarContrasena(string correo)
+        {
+            if (string.IsNullOrWhiteSpace(correo))
+            {
+                TempData["Mensaje"] = "Debe ingresar un correo válido.";
+                return View();
+            }
+
+            using (var client = GetClient())
+            {
+                var json = JsonConvert.SerializeObject(new { Correo = correo });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("api/Usuarios/RecuperarContrasena", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Mensaje"] = "Correo de recuperación enviado correctamente.";
+                }
+                else
+                {
+                    TempData["Mensaje"] = "No se pudo enviar el correo. Verifique el email.";
+                }
+            }
+
+            return View();
+        }
+
+        // REINICIAR CONTRASEÑA - GET
+        public ActionResult ReiniciarContrasena()
+        {
+            return View();
+        }
+
+        // REINICIAR CONTRASEÑA - POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ReiniciarContrasena(ReiniciarContrasenaViewModel modelo)
+        {
+            if (!ModelState.IsValid)
+                return View(modelo);
+
+            using (var client = GetClient())
+            {
+                var json = JsonConvert.SerializeObject(modelo);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage resp = await client.PostAsync("api/Usuarios/ReiniciarContrasena", content);
+                if (resp.IsSuccessStatusCode)
+                {
+                    TempData["Mensaje"] = "Contraseña restablecida correctamente.";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["Mensaje"] = "Error al restablecer la contraseña.";
+                }
+            }
+
+            return View(modelo);
+        }
+
+
     }
 }

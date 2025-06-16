@@ -12,11 +12,13 @@ namespace CounterTexFront.Models
 
         public string Nombre { get; set; }
 
-        public string NombreRol { get; set; }
+        public string Correo { get; set; }
 
+        public string RolActual { get; set; }
+
+        [Required(ErrorMessage = "Debe seleccionar un nuevo rol.")]
         [Display(Name = "Nuevo Rol")]
-        [Required(ErrorMessage = "Debe seleccionar un rol.")]
-        public int? NuevoRolId { get; set; }
+        public int NuevoRolId { get; set; }
 
         public List<RolViewModel> RolesDisponibles { get; set; }
     }

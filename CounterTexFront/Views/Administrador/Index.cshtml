@@ -1,28 +1,22 @@
-﻿-@model List<CounterTexFront.Models.UsuarioViewModel>
+﻿@model List<CounterTexFront.Models.UsuarioViewModel>
 
 @{
+    ViewBag.Title = "Gestion de Usuarios";
     Layout = ViewBag.Layout;
-    ViewBag.Title = "Panel Administrativo";
     var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Administrador";
 }
 
 <div class="container-fluid">
     <h3 class="mb-4">Bienvenido @nombreUsuario al panel Administrativo</h3>
 
-    @if (TempData["Mensaje"] != null)
-    {
-        <div class="alert alert-warning">
-            @TempData["Mensaje"]
-        </div>
-    }
-
-    @if (!Model.Any())
+    @if (Model == null || Model.Count == 0)
     {
         <div class="alert alert-warning">No se encontraron usuarios. Verifique si la API devuelve datos correctamente.</div>
     }
 
     <p class="lead">Desde aquí puedes gestionar la producción, los empleados, los pagos y más.</p>
 
+    <!-- Tarjetas -->
     <div class="row mb-4">
         <div class="col-md-6 col-lg-3">
             <div class="dashboard-card text-center">
@@ -54,85 +48,65 @@
         </div>
     </div>
 
-    <button class="btn btn-info mb-3" type="button" onclick="toggleTablaUsuarios()">Mostrar/Ocultar usuarios</button>
+    <h2 class="text-light mb-4">Usuarios Registrados</h2>
 
-    <div id="tablaUsuarios" style="display:none;">
-        <h4 class="mt-4 text-light">Usuarios del sistema</h4>
-        <div class="table-responsive">
-            <table class="table table-bordered table-dark table-hover">
-                <thead>
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-info">@TempData["Mensaje"]</div>
+    }
+
+    <div class="table-responsive mt-4">
+        <table class="table table-dark table-striped table-hover">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-user text-secondary"></i> Nombre</th>
+                    <th><i class="fas fa-envelope text-secondary"></i> Correo</th>
+                    <th><i class="fas fa-user-tag text-secondary"></i> Rol</th>
+                    <th><i class="fas fa-cogs text-secondary"></i> Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var usuario in Model)
+                {
                     <tr>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Documento</th>
-                        <th>Rol</th>
-                        <th>Acciones</th>
+                        <td>@usuario.Nombre</td>
+                        <td>@usuario.Correo</td>
+                        <td>@usuario.RolNombre</td>
+                        <td>
+                            <a href="@Url.Action("EditarRol", "Administrador", new { id = usuario.Id })"
+                               class="btn btn-sm btn-primary mr-1" title="Cambiar Rol">
+                                <i class="fas fa-user-edit"></i>
+                            </a>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    title="Eliminar"
+                                    onclick="confirmarEliminacion(@usuario.Id)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+
+                            @using (Html.BeginForm("Eliminar", "Administrador", FormMethod.Post, new { @id = "form-eliminar-" + usuario.Id }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", usuario.Id)
+                            }
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var usuario in Model)
-                        {
-                            <tr>
-                                <td>@usuario.Nombre</td>
-                                <td>@usuario.Correo</td>
-                                <td>@usuario.Documento</td>
-                                <td>@usuario.RolNombre</td>
-                                <td>
-                                    <a href="@Url.Action("EditarUsuario", "Administrador", new { id = usuario.Id })"
-                                       class="btn btn-sm btn-warning cambiar-rol"
-                                       data-nombre="@usuario.Nombre"
-                                       data-url="@Url.Action("EditarUsuario", "Administrador", new { id = usuario.Id })">
-                                        Cambiar Rol
-                                    </a>
-
-                                    <a href="@Url.Action("EliminarUsuario", "Administrador", new { id = usuario.Id })"
-                                       class="btn btn-sm btn-danger eliminar-usuario"
-                                       data-nombre="@usuario.Nombre">
-                                        Eliminar
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="5" class="text-center text-danger">No se encontraron usuarios. Verifica si la API está devolviendo datos correctamente.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
+
+    @section Scripts {
+        <script>
+            function confirmarEliminacion(id) {
+                if (confirm("¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.")) {
+                    const form = document.getElementById('form-eliminar-' + id);
+                    if (form) {
+                        form.submit();
+                    }
+                }
+            }
+        </script>
+    }
 </div>
-
-@section Scripts {
-    <script>
-        function toggleTablaUsuarios() {
-            var tabla = document.getElementById("tablaUsuarios");
-            tabla.style.display = tabla.style.display === "none" ? "block" : "none";
-        }
-
-        // Confirmar cambio de rol
-        document.querySelectorAll(".cambiar-rol").forEach(btn => {
-            btn.addEventListener("click", function (e) {
-                const nombre = this.dataset.nombre;
-                if (!confirm(`¿Deseas cambiar el rol del usuario "${nombre}"?`)) {
-                    e.preventDefault();
-                }
-            });
-        });
-
-        // Confirmar eliminación
-        document.querySelectorAll(".eliminar-usuario").forEach(btn => {
-            btn.addEventListener("click", function (e) {
-                const nombre = this.dataset.nombre;
-                if (!confirm(`¿Estás seguro de eliminar a "${nombre}"? Esta acción no se puede deshacer.`)) {
-                    e.preventDefault();
-                }
-            });
-        });
-    </script>
-}

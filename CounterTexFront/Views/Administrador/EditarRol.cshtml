@@ -1,36 +1,51 @@
 ﻿@model CounterTexFront.Models.CambiarRolViewModel
 
 @{
-    ViewBag.Title = "Editar Rol de Usuario";
+    ViewBag.Title = "Editar Rol del Usuario";
     Layout = ViewBag.Layout;
 }
 
-<h2 class="text-xl font-bold mb-4">Editar Rol de @Model.Nombre</h2>
+<!-- Asegúrate de tener Font Awesome o Bootstrap Icons cargado en tu layout -->
+<!-- Ejemplo: <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" /> -->
 
-@using (Html.BeginForm("EditarRol", "Administrador", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.Id)
+<div class="container mt-5 text-light bg-dark p-4 rounded shadow">
+    <h2 class="mb-4 border-bottom border-secondary pb-2">
+        <i class="fas fa-user-shield text-info"></i> Cambiar Rol de: <span class="text-primary">@Model.Nombre</span>
+    </h2>
 
-    <div class="form-group">
-        @Html.Label("Usuario")
-        <input class="form-control" value="@Model.Nombre" disabled />
-    </div>
+    @using (Html.BeginForm("EditarRol", "Administrador", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
 
-    <div class="form-group">
-        @Html.Label("Rol Actual")
-        <input class="form-control" value="@Model.NombreRol" disabled />
-    </div>
+        <div class="form-group mb-3">
+            <label class="text-muted">Nombre:</label>
+            @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control bg-secondary text-light", @readonly = "readonly" })
+        </div>
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.NuevoRolId)
-        @Html.DropDownListFor(m => m.NuevoRolId,
-            new SelectList(Model.RolesDisponibles, "Id", "Nombre"),
-            "-- Selecciona un rol --",
-            new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.NuevoRolId, "", new { @class = "text-danger" })
-    </div>
+        <div class="form-group mb-3">
+            <label class="text-muted">Correo:</label>
+            @Html.TextBoxFor(m => m.Correo, new { @class = "form-control bg-secondary text-light", @readonly = "readonly" })
+        </div>
 
-    <button type="submit" class="btn btn-success">Guardar</button>
-    @Html.ActionLink("Cancelar", "CambiarRol", null, new { @class = "btn btn-default" })
-}
+        <div class="form-group mb-3">
+            <label class="text-muted">Rol actual:</label>
+            @Html.TextBoxFor(m => m.RolActual, new { @class = "form-control bg-secondary text-light", @readonly = "readonly" })
+        </div>
+
+        <div class="form-group mb-4">
+            <label class="text-muted" for="NuevoRolId">Nuevo Rol:</label>
+            @Html.DropDownListFor(m => m.NuevoRolId, ViewBag.Roles as List<SelectListItem>, "Seleccione nuevo Rol", new { @class = "form-control bg-dark text-light border-secondary" })
+            @Html.ValidationMessageFor(m => m.NuevoRolId, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <a href="@Url.Action("Index", "Administrador")" class="btn btn-outline-light">
+                <i class="fas fa-arrow-left"></i> Cancelar
+            </a>
+        </div>
+    }
+</div>

@@ -1,0 +1,31 @@
+﻿@model CounterTexFront.Models.ReiniciarContrasenaViewModel
+@{
+    ViewBag.Title = "Reiniciar Contraseña";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Reiniciar Contraseña</h2>
+
+@using (Html.BeginForm("ReiniciarContrasena", "Administrador", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Correo)
+        @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", placeholder = "Correo del usuario" })
+        @Html.ValidationMessageFor(m => m.Correo, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.NuevaContrasena)
+        @Html.PasswordFor(m => m.NuevaContrasena, new { @class = "form-control", placeholder = "Nueva contraseña" })
+        @Html.ValidationMessageFor(m => m.NuevaContrasena, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-success">Reiniciar Contraseña</button>
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-info mt-3">@TempData["Mensaje"]</div>
+}
