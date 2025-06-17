@@ -1,0 +1,77 @@
+﻿@model List<CounterTexFront.Models.ProduccionDetalleEmpleadoViewModel>
+
+@{
+    ViewBag.Title = "ProduccionDetalleEmpleado";
+    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+}
+
+<h2>Detalle de Producción</h2>
+
+<form method="get" class="form-inline mb-3">
+    <input type="text" name="prenda" placeholder="Buscar por prenda"
+           value="@Request.QueryString["prenda"]"
+           class="form-control mr-2" />
+
+    <input type="text" name="color" placeholder="Buscar por color"
+           value="@Request.QueryString["color"]"
+           class="form-control mr-2" />
+
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Request.QueryString["prenda"]) || !string.IsNullOrEmpty(Request.QueryString["color"]))
+{
+    <div class="alert alert-info">
+        Mostrando resultados para:
+        @if (!string.IsNullOrEmpty(Request.QueryString["prenda"]))
+        {
+            <span><strong> Prenda:</strong> @Request.QueryString["prenda"] </span>
+        }
+        @if (!string.IsNullOrEmpty(Request.QueryString["color"]))
+        {
+            <span><strong> | Color:</strong> @Request.QueryString["color"]</span>
+        }
+    </div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>#</th>
+            <th>Prenda</th>
+            <th>Color</th>
+            <th>Operación</th>
+            <th>Cantidad</th>
+            <th>Valor Total</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int i = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(i++)</td>
+                    <td>@item.NombrePrenda</td>
+                    <td>@item.ColorPrenda</td>
+                    <td>@item.NombreOperacion</td>
+                    <td>@item.Cantidad</td>
+                    <td>@item.ValorTotal?.ToString("C")</td>
+                    <td>
+                        <a href="@Url.Action("Detalle", new { id = item.Id })" class="btn btn-info btn-sm">
+                            Ver Detalle
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center">No se encontraron resultados.</td>
+            </tr>
+        }
+    </tbody>
+</table>

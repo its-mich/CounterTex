@@ -79,14 +79,19 @@
 @section scripts {
     @Scripts.Render("~/bundles/jqueryval")
 
-    <script>
+<script>
         let index = @Model.ProduccionDetalles?.Count ?? 0;
 
-        $("#btnAgregarDetalle").click(function () {
-            $.get("@Url.Action("GetProduccionDetallePartial", "ProduccionDiaria")", { index: index }, function (html) {
-                $("#detallesContainer").append(html);
-                index++;
-            });
-        });
-    </script>
+$("#btnAgregarDetalle").click(function () {
+    $.get("@Url.Action("GetProduccionDetallePartial", "ProduccionDiaria")", { index: index }, function (html) {
+        $("#detallesContainer").append(html);
+        index++;
+    });
+});
+
+$(document).on("click", ".remove-detalle", function () {
+    $(this).closest(".form-group").remove();
+});
+
+</script>
 }

@@ -2,41 +2,18 @@
 @{
     ViewBag.Title = "Control de Horarios";
     Layout = ViewBag.Layout;
+    var empleadosJson = ViewBag.EmpleadosJson ?? "[]";
 }
 
-@*<h2 class="mb-4"><i class="fas fa-clock me-2"></i>Control de Horarios</h2>*@
+<h2 class="mb-4"><i class="fas fa-clock me-2"></i>Control de Horarios</h2>
 
-<!-- Estadísticas rápidas -->
+<!-- Estadísticas rápidas (simuladas por ahora) -->
 <div class="row mb-4">
     <div class="col-md-3">
         <div class="card bg-primary text-white mb-3">
             <div class="card-body">
                 <h5 class="card-title">Total Empleados</h5>
-                <p class="card-text display-6">48</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Presentes Hoy</h5>
-                <p class="card-text display-6">42</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-danger text-white mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Ausentes Hoy</h5>
-                <p class="card-text display-6">6</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-dark mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Atrasados Hoy</h5>
-                <p class="card-text display-6">5</p>
+                <p class="card-text display-6">@((ViewBag.Empleados as List<CounterTexFront.Models.PerfilEmpleadoViewModel>)?.Count ?? 0)</p>
             </div>
         </div>
     </div>
@@ -53,7 +30,7 @@
     </button>
 </div>
 
-<!-- Modal de registro -->
+<!-- Modal de registro manual -->
 <div class="modal fade" id="addTimeRecordModal" tabindex="-1" aria-labelledby="addTimeRecordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -67,7 +44,7 @@
                         <label for="EmpleadoId" class="form-label">Empleado</label>
                         <select class="form-select" id="EmpleadoId" name="EmpleadoId" required>
                             <option value="" disabled selected>Seleccionar empleado</option>
-                            @foreach (var emp in ViewBag.Empleados)
+                            @foreach (var emp in ViewBag.Empleados as List<CounterTexFront.Models.PerfilEmpleadoViewModel>)
                             {
                                 <option value="@emp.Id">@emp.Nombre</option>
                             }
@@ -94,25 +71,25 @@
 
 @section Scripts {
     <script>
-        const empleados = @Html.Raw(ViewBag.EmpleadosJson);
+        const empleados = @Html.Raw(Json.Encode(ViewBag.Empleados));
 
         function obtenerNombreEmpleado(id) {
             const emp = empleados.find(e => e.Id === id);
-            return emp?.Nombre ?? `Empleado #${id}`;
+            return emp ? emp.Nombre : `Empleado #${id}`;
         }
 
         function cargarRegistrosHoy() {
             $.ajax({
-                url: `/api/Horarios?fecha=${new Date().toISOString().substring(0, 10)}`,
+                url: '@Url.Action("ObtenerRegistrosHoy", "ControlHorarios")',
                 type: 'GET',
                 success: function (data) {
-                    if (!Array.isArray(data)) {
-                        alert("Error al cargar registros");
-                        return;
-                    }
-
                     const container = $("#registroContainer");
                     container.empty();
+
+                    if (!Array.isArray(data)) {
+                        alert("Error al cargar registros.");
+                        return;
+                    }
 
                     data.forEach(registro => {
                         let badge = '';
@@ -145,7 +122,7 @@
                                 <div class="card border-start ${claseBorde} mb-3">
                                     <div class="card-body">
                                         <h5 class="card-title">${nombreEmpleado}</h5>
-                                        <p class="card-subtitle text-muted">${registro.Tipo.charAt(0).toUpperCase() + registro.Tipo.slice(1)}</p>
+                                        <p class="card-subtitle text-muted">${registro.Tipo}</p>
                                         <p><strong>Hora:</strong> ${registro.Hora}</p>
                                         ${badge}
                                     </div>
@@ -165,45 +142,43 @@
             e.preventDefault();
 
             const empleadoId = $("#EmpleadoId").val();
-            if (!empleadoId) {
-                alert("Debes seleccionar un empleado.");
+            const tipo = $("#TipoRegistro").val();
+            const hora = $("#Hora").val() + ":00"; // convertir a formato completo
+
+            if (!empleadoId || !tipo || !hora) {
+                alert("Todos los campos son obligatorios.");
                 return;
             }
 
-            const horaInput = $("#Hora").val();
-            const horaConSegundos = horaInput + ":00";
-
             const data = {
                 EmpleadoId: parseInt(empleadoId),
-                Tipo: $("#TipoRegistro").val(),
-                Hora: horaConSegundos,
+                Tipo: tipo,
+                Hora: hora,
                 Fecha: new Date().toISOString().substring(0, 10),
                 Observaciones: ""
             };
 
             $.ajax({
-                url: '/ControlHorarios/Create',
+                url: '@Url.Action("Create", "ControlHorarios")',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function (response) {
                     if (response.exito) {
                         alert(response.mensaje);
-                        $("#addTimeRecordModal").modal('hide');
+                        $("#addTimeRecordModal").modal("hide");
                         $("#formRegistroManual")[0].reset();
-                        $("#EmpleadoId").val("");
                         cargarRegistrosHoy();
                     } else {
                         alert("Error: " + response.mensaje);
                     }
                 },
                 error: function (xhr) {
-                    alert("Ocurrió un error al enviar los datos: " + xhr.responseText);
+                    alert("Error al guardar el registro: " + xhr.responseText);
                 }
             });
         });
 
-        // Cargar registros al inicio
         $(document).ready(function () {
             cargarRegistrosHoy();
         });

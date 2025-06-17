@@ -24,9 +24,12 @@ namespace CounterTexFront.Controllers
         }
         public async Task<ActionResult> Index()
         {
-            ViewBag.Empleados = await ObtenerEmpleados();
+            var empleados = await ObtenerEmpleados();
+            ViewBag.Empleados = empleados;
+            ViewBag.EmpleadosJson = JsonConvert.SerializeObject(empleados); // ← ESTO FALTABA
             return View();
         }
+
         private async Task<List<PerfilEmpleadoViewModel>> ObtenerEmpleados()
         {
             using (var client = new HttpClient())
@@ -40,7 +43,7 @@ namespace CounterTexFront.Controllers
                     var usuarios = JsonConvert.DeserializeObject<List<PerfilEmpleadoViewModel>>(json);
 
                     // Suponiendo que tienes un campo Tipo o Rol
-                    return usuarios.Where(u => u.Rol == "Empleado").ToList();
+                    return usuarios.Where(u => u.Rol == "empleado").ToList();
                 }
             }
 

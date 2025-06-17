@@ -1,28 +1,26 @@
-﻿using Newtonsoft.Json;        // Para JsonConvert y serialización/deserialización
-using Newtonsoft.Json.Linq;   // Para JObject, JArray, etc. si lo necesitas
-using System.Linq;            // Para LINQ
-using System;                 // Para tipos básicos como DateTime
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Web;
 
 namespace CounterTexFront.Models
 {
     public class ProduccionDiariaViewModel
     {
-        //constructor por defecto
+        // Constructor por defecto
         public ProduccionDiariaViewModel()
         {
             ProduccionDetalles = new List<ProduccionDetalleViewModel>();
             UsuariosDisponibles = new List<UsuarioViewModel>();
             PrendasDisponibles = new List<PrendaViewModel>();
             OperacionesDisponibles = new List<OperacionViewModel>();
+            ListaProducciones = new List<ProduccionListadoViewModel>();
         }
 
+        // Datos de Producción
         public int Id { get; set; }
 
         [Required(ErrorMessage = "La fecha es obligatoria.")]
-        [DataType(DataType.Date)] // Para que el input de fecha se muestre mejor
+        [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
 
@@ -34,28 +32,48 @@ namespace CounterTexFront.Models
         [Display(Name = "Prenda")]
         public int PrendaId { get; set; }
 
-        // ¡DESCOMENTAR O AÑADIR ESTA PROPIEDAD!
-        // Tu API devuelve 'totalValor' en el JSON de detalle, por eso la vista lo espera.
         public decimal TotalValor { get; set; }
 
-        // Importante: El nombre de la propiedad debe coincidir con el nombre de la colección en tu entidad 'Produccion' en la API
+        // Detalles de producción
         public List<ProduccionDetalleViewModel> ProduccionDetalles { get; set; }
 
-        // Propiedades para rellenar DropDownLists en la vista (no se envían a la API)
+        // Para combos en la vista
         public IEnumerable<UsuarioViewModel> UsuariosDisponibles { get; set; }
         public IEnumerable<PrendaViewModel> PrendasDisponibles { get; set; }
         public IEnumerable<OperacionViewModel> OperacionesDisponibles { get; set; }
 
-        // Propiedades de navegación para la vista de Detalles (si la API las devuelve)
-        // Basado en el JSON que me mostraste, tu API sí devuelve estos objetos completos.
+        // Para mostrar registros existentes
+        public List<ProduccionListadoViewModel> ListaProducciones { get; set; }
+
+        // Paginación
+        public int PaginaActual { get; set; }
+        public int TotalPaginas { get; set; }
+
+        // Propiedades navegacionales si se devuelven en detalle
         public UsuarioViewModel Usuario { get; set; }
         public PrendaViewModel Prenda { get; set; }
     }
+
+  
+    public class ProduccionListadoViewModel
+    {
+        public int Id { get; set; }
+        public string TipoPrenda { get; set; }
+        public string Color { get; set; }
+        public string Modelo { get; set; }
+        public string Talla { get; set; }
+        public string Operacion { get; set; }
+        public int Cantidad { get; set; }
+        public DateTime FechaProduccion { get; set; }
+        public string Estado { get; set; }
+    }
+
+  
+
     public class PrendaViewModel
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
-        // Añade otras propiedades si tu API las devuelve y las necesitas (ej. Genero, Color)
         public string Genero { get; set; }
         public string Color { get; set; }
     }

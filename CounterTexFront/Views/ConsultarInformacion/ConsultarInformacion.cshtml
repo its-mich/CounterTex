@@ -1,0 +1,79 @@
+﻿@*@model List<CounterTexFront.Models.AsignacionPrendasEmpleadoViewModel>
+
+@{
+    ViewBag.Title = "Asignaciones de Prendas";
+    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        .dropdown-details {
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #212529;
+        }
+
+            .dropdown-details strong {
+                display: block;
+                margin-bottom: 5px;
+                color: #007bff;
+            }
+
+        .dropdown-menu {
+            min-width: 250px;
+        }
+    </style>
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-white">Asignaciones de Prendas</h2>
+
+    <table class="table table-bordered table-hover table-dark shadow rounded">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int i = 1;
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Ver Detalles
+                                </button>
+                                <div class="dropdown-menu p-2 dropdown-details">
+                                    <strong>Nombre de la prenda:</strong>
+                                    <div>@item.Nombre</div>
+                                    <strong>Género:</strong>
+                                    <div>@item.Genero</div>
+                                    <strong>Color:</strong>
+                                    <div>@item.Color</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="2" class="text-center">No hay asignaciones registradas.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+}*@

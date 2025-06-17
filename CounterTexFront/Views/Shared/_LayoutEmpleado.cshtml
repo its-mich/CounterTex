@@ -189,8 +189,8 @@
             </a>
         </div>
         <nav class="nav flex-column">
-            <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "ProduccionDiaria" ? "active" : "")" href="@Url.Action("Index", "ProduccionDiaria")">
-                <i class="fas fa-calendar-day"></i> Producción Diaria
+            <a class="nav-link" href="@Url.Action("Index", "ProduccionDiaria")">
+                <i class="fas fa-clock"></i> ProduccionDiaria
             </a>
             <a class="nav-link" href="@Url.Action("Index", "ControlHorarios")">
                 <i class="fas fa-clock"></i> Control de Horarios
@@ -200,14 +200,15 @@
                 @Html.Partial("_ChatAccess")
             </span>
 
-            <a class="nav-link" href="@Url.Action("Revision", "Revision")">
-                <i class="fas fa-clipboard-check"></i> Revisión Prendas
+            @*<a class="nav-link" href="@Url.Action("Revision", "Revision")">
+            <i class="fas fa-clipboard-check"></i> Revisión Prendas
+        </a>*@
+            @*<a class="nav-link" href="@Url.Action("ProduccionDetalleEmpleado", "ProduccionDetalleEmpleado")">
+        <i class="fas fa-info-circle"></i> Detalle Prenda*@
             </a>
-            <a class="nav-link" href="@Url.Action("DetallePrenda", "Detalle")">
-                <i class="fas fa-info-circle"></i> Detalle Prenda
-            </a>
-            <a class="nav-link" href="@Url.Action("Asignacion", "Asignacion")">
-                <i class="fas fa-tasks"></i> Asignación de Prenda
+            <a class="nav-link" href="@Url.Action("Index", "ConsultarInformacion")">
+                <i class="fas fa-tasks"></i>Consultar Informacion
+
             </a>
             @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
             {

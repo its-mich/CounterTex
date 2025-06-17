@@ -2,8 +2,8 @@
 
 namespace CounterTexFront.Models
 {
-	public class ProduccionDetalleViewModel
-	{
+    public class ProduccionDetalleViewModel
+    {
         public int Id { get; set; }
 
         [Required(ErrorMessage = "La cantidad es obligatoria.")]
