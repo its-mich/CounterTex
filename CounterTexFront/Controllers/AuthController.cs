@@ -14,7 +14,7 @@ namespace CounterTexFront.Controllers
 {
     public class AuthController : BaseController
     {
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
         public ActionResult Login()
         {
@@ -25,6 +25,8 @@ namespace CounterTexFront.Controllers
         {
             return View();
         }
+
+        // REGISTRO DE USUARIO
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Registro(RegistroViewModel model)
@@ -97,7 +99,7 @@ namespace CounterTexFront.Controllers
             }
         }
 
-
+        // LOGIN
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model)
@@ -190,14 +192,10 @@ namespace CounterTexFront.Controllers
                     // Redirección según rol
                     switch (loginResponse.Rol)
                     {
-                        case "Administrador":
-                            return RedirectToAction("Index", "Administrador");
-                        case "Proveedor":
-                            return RedirectToAction("Index", "Proveedor");
-                        case "Empleado":
-                            return RedirectToAction("Index", "Empleado");
-                        default:
-                            return RedirectToAction("Welcome", "Home");
+                        case "Administrador": return RedirectToAction("Index", "Administrador");
+                        case "Proveedor": return RedirectToAction("Index", "Proveedor");
+                        case "Empleado": return RedirectToAction("Index", "Empleado");
+                        default: return RedirectToAction("Welcome", "Home");
                     }
                 }
                 else

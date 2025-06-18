@@ -23,8 +23,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jqueryval")
+    @* @Scripts.Render("~/bundles/jquery") *@
+    @* @Scripts.Render("~/bundles/jqueryval") *@
 
     <style>
 
@@ -235,6 +235,13 @@
                 }
             }
 
+            @if (TempData["MensajeLogin"] != null)
+            {
+                <div class="alert alert-success text-left">
+                    <strong>Éxito:</strong> @TempData["MensajeLogin"]
+                </div>
+            }
+
             @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id = "loginForm" }))
             {
                 @Html.AntiForgeryToken()
@@ -256,18 +263,166 @@
                 <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
 
                 <p class="mt-3">¿No tienes una cuenta? <a href="@Url.Action("Registro", "Auth")" class="register-link">Regístrate</a></p>
-                <p><a href="@Url.Action("Recuperar", "Auth")" class="forgot-password">¿Olvidaste tu contraseña?</a></p>
+                <p><a href="#" class="forgot-password" data-toggle="modal" data-target="#recuperarModal">¿Olvidaste tu contraseña?</a></p>
             }
         </div>
+    </div>
 
-        @if (!string.IsNullOrEmpty(Convert.ToString(TempData["MensajeRegistro"])))
-        {
-            var mensaje = HttpUtility.JavaScriptStringEncode(TempData["MensajeRegistro"].ToString());
-            <script type="text/javascript">
-        window.onload = function () {
-            alert("@Html.Raw(mensaje)");
-        };
-            </script>
-        }
+    <!-- Modal de recuperación de contraseña -->
+    <div class="modal fade" id="recuperarModal" tabindex="-1" role="dialog" aria-labelledby="recuperarModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="recuperarModalLabel">Recuperar contraseña</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="recuperarForm">
+                        <div class="form-group">
+                            <label for="email">Correo electrónico</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Ingrese su correo" required />
+                        </div>
+                        <div id="mensajeRecuperacion" class="text-success" style="display:none;"></div>
+                        <div id="errorRecuperacion" class="text-danger" style="display:none;"></div>
+                        <button type="submit" class="btn btn-primary btn-block">Enviar instrucciones</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ingresar código de verificación -->
+    <div class="modal fade" id="codigoModal" tabindex="-1" role="dialog" aria-labelledby="codigoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="codigoModalLabel">Verificar código</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="codigoForm">
+                        <div class="form-group">
+                            <label for="codigo">Código recibido</label>
+                            <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Ingrese el código de verificación" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="nuevoPassword">Nueva contraseña</label>
+                            <input type="password" class="form-control" id="nuevoPassword" name="nuevoPassword" placeholder="Ingrese nueva contraseña" required />
+                        </div>
+                        <div id="mensajeCodigo" class="text-success" style="display:none;"></div>
+                        <div id="errorCodigo" class="text-danger" style="display:none;"></div>
+                        <button type="submit" class="btn btn-primary btn-block">Restablecer contraseña</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toastSuccess" class="alert alert-success text-center" style="display:none; position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        Contraseña actualizada exitosamente.
+    </div>
+    <script>
+        $(document).ready(function () {
+            let emailGuardado = "";
+
+            // Primer formulario: envío del código
+            $('#recuperarForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const email = $('#email').val();
+                emailGuardado = email; // Guarda el correo para el segundo paso
+                $('#mensajeRecuperacion').hide();
+                $('#errorRecuperacion').hide();
+
+                fetch('https://localhost:7030/api/Usuarios/SolicitarRecuperacion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ correo: email })
+                })
+                    .then(response => {
+                        if (!response.ok) throw response;
+                        return response.text();
+                    })
+                    .then(data => {
+                        $('#mensajeRecuperacion').text("Código enviado al correo.").show();
+
+                        // Oculta el primer modal
+                        $('#recuperarModal').modal('hide');
+
+                        // Espera un poco antes de mostrar el segundo modal
+                        setTimeout(() => {
+                            $('#codigoModal').modal('show');
+                        }, 500); // medio segundo para asegurar la transición
+                    })
+                    .catch(async (error) => {
+                        let errMsg = "Ocurrió un error inesperado.";
+
+                        if (error instanceof Response) {
+                            errMsg = await error.text();
+                        } else if (error.message) {
+                            errMsg = error.message;
+                        }
+
+                        $('#errorRecuperacion').text(errMsg).show();
+                    });
+            });
+
+            // Segundo formulario: verificación de código y cambio de contraseña
+            $('#codigoForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const codigo = $('#codigo').val();
+                const nuevaClave = $('#nuevoPassword').val();
+
+                $('#mensajeCodigo').hide();
+                $('#errorCodigo').hide();
+
+                fetch('https://localhost:7030/api/Usuarios/RestablecerContrasena', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        correo: emailGuardado,
+                        codigo: codigo,
+                        nuevaContraseña: nuevaClave
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) throw response;
+                        return response.text();
+                    })
+                    .then(data => {
+                        $('#mensajeCodigo').text("Contraseña actualizada.").show();
+                        $('#toastSuccess').fadeIn();
+
+                        setTimeout(() => {
+                            $('#codigoModal').modal('hide');
+                            $('#toastSuccess').fadeOut();
+                            $('#email').val('');
+                            $('#codigo').val('');
+                            $('#nuevoPassword').val('');
+                            window.location.href = '/Auth/Login';
+                        }, 2500);
+                    })
+                    .catch(async (error) => {
+                        let errorMsg = "Error al restablecer contraseña.";
+
+                        if (error instanceof Response) {
+                            errorMsg = await error.text();
+                        } else if (error.message) {
+                            errorMsg = error.message;
+                        }
+
+                        $('#errorCodigo').text(errorMsg).show();
+                    });
+            });
+        });
+    </script>
 </body>
 </html>

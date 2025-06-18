@@ -12,7 +12,7 @@ namespace CounterTexFront.Controllers
 {
     public class UsuariosController : BaseController
     {
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+        public readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
         public async Task<ActionResult> Index()
         {

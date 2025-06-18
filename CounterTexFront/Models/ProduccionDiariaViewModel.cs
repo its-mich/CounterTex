@@ -15,7 +15,7 @@ namespace CounterTexFront.Models
         {
             ProduccionDetalles = new List<ProduccionDetalleViewModel>();
             UsuariosDisponibles = new List<UsuarioViewModel>();
-            PrendasDisponibles = new List<PrendaViewModel>();
+            PrendasDisponibles = new List<PrendasEntregadasViewModel>();
             OperacionesDisponibles = new List<OperacionViewModel>();
         }
 
@@ -34,36 +34,25 @@ namespace CounterTexFront.Models
         [Display(Name = "Prenda")]
         public int PrendaId { get; set; }
 
-        // ¡DESCOMENTAR O AÑADIR ESTA PROPIEDAD!
-        // Tu API devuelve 'totalValor' en el JSON de detalle, por eso la vista lo espera.
         public decimal TotalValor { get; set; }
-
-        // Importante: El nombre de la propiedad debe coincidir con el nombre de la colección en tu entidad 'Produccion' en la API
         public List<ProduccionDetalleViewModel> ProduccionDetalles { get; set; }
 
         // Propiedades para rellenar DropDownLists en la vista (no se envían a la API)
         public IEnumerable<UsuarioViewModel> UsuariosDisponibles { get; set; }
-        public IEnumerable<PrendaViewModel> PrendasDisponibles { get; set; }
+        public IEnumerable<PrendasEntregadasViewModel> PrendasDisponibles { get; set; }
         public IEnumerable<OperacionViewModel> OperacionesDisponibles { get; set; }
 
         // Propiedades de navegación para la vista de Detalles (si la API las devuelve)
         // Basado en el JSON que me mostraste, tu API sí devuelve estos objetos completos.
         public UsuarioViewModel Usuario { get; set; }
-        public PrendaViewModel Prenda { get; set; }
+        public PrendasEntregadasViewModel Prenda { get; set; }
     }
-    public class PrendaViewModel
-    {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-        // Añade otras propiedades si tu API las devuelve y las necesitas (ej. Genero, Color)
-        public string Genero { get; set; }
-        public string Color { get; set; }
-    }
-
     public class OperacionViewModel
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
+
+        [Display(Name = "Valor Unitario")]
         public decimal? ValorUnitario { get; set; }
     }
 }

@@ -1,0 +1,22 @@
+﻿@model CounterTexFront.Models.SolicitudRecuperacionViewModel
+
+@{
+    ViewBag.Title = "Recuperar contraseña";
+}
+
+<h2>Recuperar Contraseña</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.LabelFor(m => m.Correo)
+    @Html.TextBoxFor(m => m.Correo, new { @class = "form-control" })
+    @Html.ValidationMessageFor(m => m.Correo)
+
+    <br />
+    <button type="submit" class="btn btn-primary">Enviar código</button>
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}

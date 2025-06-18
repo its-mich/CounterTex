@@ -27,8 +27,8 @@ namespace CounterTexFront.Controllers
 
                 var prendasResponse = await client.GetAsync($"{apiUrl}/Prendas");
                 model.PrendasDisponibles = prendasResponse.IsSuccessStatusCode
-                    ? JsonConvert.DeserializeObject<List<PrendaViewModel>>(await prendasResponse.Content.ReadAsStringAsync())
-                    : new List<PrendaViewModel>();
+                    ? JsonConvert.DeserializeObject<List<PrendasEntregadasViewModel>>(await prendasResponse.Content.ReadAsStringAsync())
+                    : new List<PrendasEntregadasViewModel>();
 
                 var operacionesResponse = await client.GetAsync($"{apiUrl}/Operacion");
                 model.OperacionesDisponibles = operacionesResponse.IsSuccessStatusCode

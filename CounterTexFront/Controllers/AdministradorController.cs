@@ -97,6 +97,7 @@ namespace CounterTexFront.Controllers
 
         // EDITAR ROL - POST
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditarRol(CambiarRolViewModel model)
         {
@@ -155,77 +156,5 @@ namespace CounterTexFront.Controllers
 
             return RedirectToAction("Index");
         }
-
-        // RECUPERAR CONTRASEÑA - GET
-        public ActionResult RecuperarContrasena()
-        {
-            return View();
-        }
-
-        // RECUPERAR CONTRASEÑA - POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RecuperarContrasena(string correo)
-        {
-            if (string.IsNullOrWhiteSpace(correo))
-            {
-                TempData["Mensaje"] = "Debe ingresar un correo válido.";
-                return View();
-            }
-
-            using (var client = GetClient())
-            {
-                var json = JsonConvert.SerializeObject(new { Correo = correo });
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var response = await client.PostAsync("api/Usuarios/RecuperarContrasena", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    TempData["Mensaje"] = "Correo de recuperación enviado correctamente.";
-                }
-                else
-                {
-                    TempData["Mensaje"] = "No se pudo enviar el correo. Verifique el email.";
-                }
-            }
-
-            return View();
-        }
-
-        // REINICIAR CONTRASEÑA - GET
-        public ActionResult ReiniciarContrasena()
-        {
-            return View();
-        }
-
-        // REINICIAR CONTRASEÑA - POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ReiniciarContrasena(ReiniciarContrasenaViewModel modelo)
-        {
-            if (!ModelState.IsValid)
-                return View(modelo);
-
-            using (var client = GetClient())
-            {
-                var json = JsonConvert.SerializeObject(modelo);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage resp = await client.PostAsync("api/Usuarios/ReiniciarContrasena", content);
-                if (resp.IsSuccessStatusCode)
-                {
-                    TempData["Mensaje"] = "Contraseña restablecida correctamente.";
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    TempData["Mensaje"] = "Error al restablecer la contraseña.";
-                }
-            }
-
-            return View(modelo);
-        }
-
-
     }
 }

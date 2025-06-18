@@ -188,8 +188,9 @@
     <Compile Include="Models\ProduccionDtoViewModel.cs" />
     <Compile Include="Models\ProduccionListViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
+    <Compile Include="Models\SolicitudRecuperacionViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
-    <Compile Include="Models\ReiniciarContrasenaViewModel.cs" />
+    <Compile Include="Models\RestablecerContraseñaViewModel.cs" />
     <Compile Include="Models\RolViewModel.cs" />
     <Compile Include="Models\SateliteViewModel.cs" />
     <Compile Include="Models\Tokens.cs" />
@@ -265,7 +266,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Shared\_LayoutProveedor.cshtml" />
-    <Content Include="Views\Shared\Welcome.cshtml" />
+    <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Auth\Registro.cshtml" />
     <Content Include="Views\ControlHorarios\ControlHorarios.cshtml" />
     <Content Include="Views\ControlPagos\ControlPagos.cshtml" />
@@ -288,8 +289,9 @@
     <Content Include="Views\Proveedor\IndexEntregas.cshtml" />
     <Content Include="Views\Proveedor\CreateEntrega.cshtml" />
     <Content Include="Views\Proveedor\EditEntrega.cshtml" />
-    <Content Include="Views\Administrador\RecuperarContrasena.cshtml" />
-    <Content Include="Views\Administrador\ReiniciarContrasena.cshtml" />
+    <Content Include="Views\Auth\RecuperarContraseña.cshtml" />
+    <Content Include="Views\Auth\Confirmacion.cshtml" />
+    <Content Include="Views\Auth\ConfirmarCodigo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

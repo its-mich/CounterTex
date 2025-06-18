@@ -15,9 +15,9 @@ namespace CounterTexFront.Controllers
 
             // Excluir acciones públicas
             bool esAccionPublica =
-        (controller == "auth" &&
-            (action == "login" || action == "registro" || action == "recuperar")) ||
-        (controller == "home" && action == "welcome");
+                (controller == "auth" &&
+                    (action == "login" || action == "registro" || action == "recuperar" || action == "confirmarcodigo")) ||
+                (controller == "home" && action == "welcome");
 
             // ⚠️ Verificar que haya token
             if (!esAccionPublica && Session["Bearertoken"] == null)

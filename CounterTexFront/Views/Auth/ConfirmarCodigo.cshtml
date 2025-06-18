@@ -1,0 +1,196 @@
+﻿@model CounterTexFront.Models.RestablecerContraseñaViewModel
+@{
+    Layout = null;
+    ViewBag.Title = "Restablecer Contraseña";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Restablecer Contraseña - CounterTex</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #F2F2F2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+            .background-container .bg {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+                background-size: cover;
+                background-position: center;
+                opacity: 0;
+                animation: fadeImages 24s infinite;
+            }
+
+        .bg1 {
+            background-image: url('../../images/fondo.jpg');
+            animation-delay: 0s;
+        }
+
+        .bg2 {
+            background-image: url('../../images/fondo-login.jpg');
+            animation-delay: 8s;
+        }
+
+        .bg3 {
+            background-image: url('../../images/fondo3.jpg');
+            animation-delay: 16s;
+        }
+
+        @@keyframes fadeImages {
+            0% {
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            40% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .login-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(160, 204, 242, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            color: #F2F2F2;
+        }
+
+        .logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-weight: 700;
+            color: #F2F2F2;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+            .form-group label {
+                font-weight: bold;
+                color: #A0CCF2;
+            }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #A0CCF2;
+            border-radius: 8px;
+            padding: 12px;
+            color: #F2F2F2;
+        }
+
+            .form-control::placeholder {
+                color: #A0CCF2;
+            }
+
+        .btn-primary {
+            background-color: #A0CCF2;
+            color: #404040;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .text-danger {
+            color: #ef4444;
+        }
+
+        .custom-alert {
+            background-color: #fdecea;
+            color: #a94442;
+            border: 1px solid #dc3545;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <div class="bg bg1"></div>
+        <div class="bg bg2"></div>
+        <div class="bg bg3"></div>
+    </div>
+
+    <div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+        <div class="login-card">
+            <img src="~/images/logoredondo.png" class="logo" />
+            <h3>Restablecer Contraseña</h3>
+
+            @using (Html.BeginForm("ConfirmarCodigo", "Auth", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.Correo)
+                @Html.HiddenFor(m => m.Codigo)
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.NuevaContraseña)
+                    @Html.PasswordFor(m => m.NuevaContraseña, new { @class = "form-control", placeholder = "Nueva contraseña" })
+                    @Html.ValidationMessageFor(m => m.NuevaContraseña, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ConfirmarContraseña)
+                    @Html.PasswordFor(m => m.ConfirmarContraseña, new { @class = "form-control", placeholder = "Confirmar contraseña" })
+                    @Html.ValidationMessageFor(m => m.ConfirmarContraseña, "", new { @class = "text-danger" })
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Guardar Nueva Contraseña</button>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="custom-alert">@ViewBag.Error</div>
+            }
+        </div>
+    </div>
+</body>
+</html>

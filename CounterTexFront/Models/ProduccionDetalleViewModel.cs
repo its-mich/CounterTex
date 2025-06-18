@@ -17,7 +17,11 @@ namespace CounterTexFront.Models
         // Propiedad de navegación para el detalle (si la API la devuelve)
         public OperacionViewModel Operacion { get; set; }
 
+        [Display(Name = "Valor Unitario")]
+        public decimal? ValorUnitario { get; set; }
+
         // Si tu API calcula y devuelve un ValorTotal para cada detalle, inclúyelo aquí
+        [Display(Name = "Valor Total")]
         public decimal ValorTotal { get; set; }
     }
 }
