@@ -22,34 +22,43 @@ namespace CounterTexFront.Controllers
             if (string.IsNullOrEmpty(apiUrl))
                 throw new InvalidOperationException("No se encontró la configuración 'Api' en Web.config.");
         }
-        public async Task<ActionResult> Index()
-        {
-            var empleados = await ObtenerEmpleados();
-            ViewBag.Empleados = empleados;
-            ViewBag.EmpleadosJson = JsonConvert.SerializeObject(empleados); // ← ESTO FALTABA
-            return View();
-        }
+        //public async Task<ActionResult> Index()
+        //{
+        //    var empleados = await ObtenerEmpleadoActual();
+        //    ViewBag.Empleados = empleados;
+        //    ViewBag.EmpleadosJson = JsonConvert.SerializeObject(empleados); // ← ESTO FALTABA
+        //    return View();
+        //}
 
-        private async Task<List<PerfilEmpleadoViewModel>> ObtenerEmpleados()
+        private async Task<PerfilEmpleadoViewModel> ObtenerEmpleadoActual()
         {
+            var usuarioId = Session["UsuarioId"]?.ToString(); // O usa ViewBag.UsuarioId, TempData, etc.
+
+            if (string.IsNullOrEmpty(usuarioId))
+                return null;
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
-                var response = await client.GetAsync("api/usuarios");
+
+                var response = await client.GetAsync($"api/Usuarios/GetUsuarioPorId/{usuarioId}");
 
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    var usuarios = JsonConvert.DeserializeObject<List<PerfilEmpleadoViewModel>>(json);
+                    var usuario = JsonConvert.DeserializeObject<PerfilEmpleadoViewModel>(json);
 
-                    // Suponiendo que tienes un campo Tipo o Rol
-                    return usuarios.Where(u => u.Rol == "empleado").ToList();
+                    // Validar que sea empleado
+                    if (usuario != null && usuario.Rol == "empleado")
+                    {
+                        return usuario;
+                    }
                 }
             }
 
-
-            return new List<PerfilEmpleadoViewModel>();
+            return null;
         }
+
 
         [HttpGet]
         public ActionResult Create()
@@ -64,15 +73,21 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    string fechaActual = DateTime.Today.ToString("yyyy-MM-dd");
 
-                    var response = await client.GetAsync($"api/horarios?fecha={fechaActual}");
+                    var response = await client.GetAsync("api/Horarios/GetHorarios"); // sin filtro, trae todos
 
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        var registros = JsonConvert.DeserializeObject<List<HorarioViewModel>>(json);
-                        return Json(registros, JsonRequestBehavior.AllowGet);
+                        var todosLosRegistros = JsonConvert.DeserializeObject<List<HorarioViewModel>>(json);
+
+                        // Filtrar por fecha actual (solo la parte de la fecha, ignorando la hora)
+                        var fechaActual = DateTime.Today;
+                        var registrosDeHoy = todosLosRegistros
+                            .Where(r => r.Fecha.Date == fechaActual)
+                            .ToList();
+
+                        return Json(registrosDeHoy, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
@@ -85,6 +100,7 @@ namespace CounterTexFront.Controllers
                 return Json(new { exito = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+
 
         [HttpPost]
         public async Task<ActionResult> Create(HorarioViewModel model)
@@ -117,6 +133,58 @@ namespace CounterTexFront.Controllers
             {
                 return Json(new { exito = false, mensaje = "Excepción: " + ex.Message });
             }
+        }
+
+        public async Task<ActionResult> Index()
+        {
+
+            if (Session["EmpleadoId"] == null)
+            {
+                ViewBag.Error = "Empleado no autenticado.";
+                return View(new List<HorarioViewModel>());
+            }
+
+            int empleadoId = (int)Session["EmpleadoId"];
+
+            //if (empleadoId == 0)
+            //{
+            //    return RedirectToAction("Login", "Auth");
+            //}
+
+            List<HorarioViewModel> horarios = new List<HorarioViewModel>();
+
+            using (var client = new HttpClient())
+            {
+                string endpoint = $"{apiUrl}/api/Horarios?empleadoId={empleadoId}";
+
+
+
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(endpoint);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string json = await response.Content.ReadAsStringAsync();
+                        ViewBag.RawJson = json; // ← para mostrarlo en la vista y depurar
+                        horarios = JsonConvert.DeserializeObject<List<HorarioViewModel>>(json);
+
+                    }
+                    else
+                    {
+                        string errorDetail = await response.Content.ReadAsStringAsync();
+                        ViewBag.Error = $"No se pudieron obtener los horarios. Código: {response.StatusCode}. Detalle: {errorDetail}";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Error al conectar con la API: " + ex.Message;
+                }
+
+
+            }
+
+            return View(horarios);
         }
     }
 }

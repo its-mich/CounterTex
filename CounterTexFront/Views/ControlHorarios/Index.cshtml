@@ -1,186 +1,95 @@
-﻿@model CounterTexFront.Models.HorarioViewModel
+﻿
+@model List<CounterTexFront.Models.HorarioViewModel>
+
+
+
 @{
     ViewBag.Title = "Control de Horarios";
     Layout = ViewBag.Layout;
-    var empleadosJson = ViewBag.EmpleadosJson ?? "[]";
+    var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Empleado";
+    ViewBag.UsuarioId = Session["UsuarioId"];
+
 }
 
-<h2 class="mb-4"><i class="fas fa-clock me-2"></i>Control de Horarios</h2>
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary"><i class="fas fa-clock me-2"></i>Control de Horarios</h2>
 
-<!-- Estadísticas rápidas (simuladas por ahora) -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Total Empleados</h5>
-                <p class="card-text display-6">@((ViewBag.Empleados as List<CounterTexFront.Models.PerfilEmpleadoViewModel>)?.Count ?? 0)</p>
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3 shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Empleados</h5>
+                    <p class="display-6">48</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3 shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Presentes Hoy</h5>
+                    <p class="display-6">42</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3 shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Ausentes Hoy</h5>
+                    <p class="display-6">6</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark mb-3 shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Atrasados Hoy</h5>
+                    <p class="display-6">5</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Registros de Hoy -->
-<h4 class="mb-3"><i class="fas fa-list-check me-2"></i>Registros de Hoy</h4>
-<div class="row" id="registroContainer"></div>
+    <!-- Registros del día -->
+    <h4 class="mb-3"><i class="fas fa-list-check me-2"></i>Registros de Hoy</h4>
+    <div class="row" id="registroContainer"></div>
 
-<!-- Botón para nuevo registro -->
-<div class="text-center mt-4">
-    <button class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addTimeRecordModal">
-        <i class="fas fa-plus me-2"></i>Agregar Registro Manual
-    </button>
-</div>
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
 
-<!-- Modal de registro manual -->
-<div class="modal fade" id="addTimeRecordModal" tabindex="-1" aria-labelledby="addTimeRecordModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="addTimeRecordModalLabel">Agregar Registro Manual</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formRegistroManual">
-                    <div class="mb-3">
-                        <label for="EmpleadoId" class="form-label">Empleado</label>
-                        <select class="form-select" id="EmpleadoId" name="EmpleadoId" required>
-                            <option value="" disabled selected>Seleccionar empleado</option>
-                            @foreach (var emp in ViewBag.Empleados as List<CounterTexFront.Models.PerfilEmpleadoViewModel>)
-                            {
-                                <option value="@emp.Id">@emp.Nombre</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="TipoRegistro" class="form-label">Tipo de Registro</label>
-                        <select class="form-select" id="TipoRegistro" name="TipoRegistro" required>
-                            <option value="entrada">Entrada</option>
-                            <option value="salida">Salida</option>
-                            <option value="descanso">Descanso</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="Hora" class="form-label">Hora</label>
-                        <input type="time" class="form-control" id="Hora" name="Hora" required />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Guardar Registro</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        const empleados = @Html.Raw(Json.Encode(ViewBag.Empleados));
-
-        function obtenerNombreEmpleado(id) {
-            const emp = empleados.find(e => e.Id === id);
-            return emp ? emp.Nombre : `Empleado #${id}`;
-        }
-
-        function cargarRegistrosHoy() {
-            $.ajax({
-                url: '@Url.Action("ObtenerRegistrosHoy", "ControlHorarios")',
-                type: 'GET',
-                success: function (data) {
-                    const container = $("#registroContainer");
-                    container.empty();
-
-                    if (!Array.isArray(data)) {
-                        alert("Error al cargar registros.");
-                        return;
-                    }
-
-                    data.forEach(registro => {
-                        let badge = '';
-                        let claseBorde = '';
-
-                        switch (registro.Tipo) {
-                            case 'entrada':
-                                if (registro.Hora > '07:00:00') {
-                                    badge = '<span class="badge bg-danger">Tardanza</span>';
-                                    claseBorde = 'border-danger';
-                                } else {
-                                    badge = '<span class="badge bg-success">A tiempo</span>';
-                                    claseBorde = 'border-success';
-                                }
-                                break;
-                            case 'salida':
-                                badge = '<span class="badge bg-primary">Salida</span>';
-                                claseBorde = 'border-primary';
-                                break;
-                            case 'descanso':
-                                badge = '<span class="badge bg-info text-dark">Descanso</span>';
-                                claseBorde = 'border-warning';
-                                break;
-                        }
-
-                        const nombreEmpleado = obtenerNombreEmpleado(registro.EmpleadoId);
-
-                        const html = `
-                            <div class="col-md-6">
-                                <div class="card border-start ${claseBorde} mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${nombreEmpleado}</h5>
-                                        <p class="card-subtitle text-muted">${registro.Tipo}</p>
-                                        <p><strong>Hora:</strong> ${registro.Hora}</p>
-                                        ${badge}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        container.append(html);
-                    });
-                },
-                error: function () {
-                    alert("Error al cargar registros.");
+    @if (Model != null && Model.Count > 0)
+    {
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Hora</th>
+                    <th>Fecha</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var horario in Model)
+                {
+                    <tr>
+                        <td>@horario.Tipo</td>
+                        <td>@horario.Hora</td>
+                        <td>@horario.Fecha.ToString("yyyy-MM-dd")</td>
+                        <td>@horario.Observaciones</td>
+                    </tr>
                 }
-            });
-        }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No hay horarios disponibles.</p>
+    }
 
-        $("#formRegistroManual").submit(function (e) {
-            e.preventDefault();
+    @if (ViewBag.RawJson != null)
+    {
+        <pre>@ViewBag.RawJson</pre>
+    }
 
-            const empleadoId = $("#EmpleadoId").val();
-            const tipo = $("#TipoRegistro").val();
-            const hora = $("#Hora").val() + ":00"; // convertir a formato completo
-
-            if (!empleadoId || !tipo || !hora) {
-                alert("Todos los campos son obligatorios.");
-                return;
-            }
-
-            const data = {
-                EmpleadoId: parseInt(empleadoId),
-                Tipo: tipo,
-                Hora: hora,
-                Fecha: new Date().toISOString().substring(0, 10),
-                Observaciones: ""
-            };
-
-            $.ajax({
-                url: '@Url.Action("Create", "ControlHorarios")',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function (response) {
-                    if (response.exito) {
-                        alert(response.mensaje);
-                        $("#addTimeRecordModal").modal("hide");
-                        $("#formRegistroManual")[0].reset();
-                        cargarRegistrosHoy();
-                    } else {
-                        alert("Error: " + response.mensaje);
-                    }
-                },
-                error: function (xhr) {
-                    alert("Error al guardar el registro: " + xhr.responseText);
-                }
-            });
-        });
-
-        $(document).ready(function () {
-            cargarRegistrosHoy();
-        });
-    </script>
-}

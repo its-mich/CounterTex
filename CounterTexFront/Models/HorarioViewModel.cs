@@ -8,12 +8,12 @@ namespace CounterTexFront.Models
 {
 	public class HorarioViewModel
 	{
+        public int HorarioId { get; set; }
         public int EmpleadoId { get; set; }
 
         public string Tipo { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:hh\\:mm\\:ss}", ApplyFormatInEditMode = true)]
-        public TimeSpan Hora { get; set; }
+        public string Hora { get; set; }
 
         public DateTime Fecha { get; set; }
 
