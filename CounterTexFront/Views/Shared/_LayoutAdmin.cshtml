@@ -194,20 +194,16 @@
         </div>
         <nav class="nav flex-column">
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ProduccionDiaria" ? "active" : "")"
-               href="@Url.Action("Index", "ProduccionDiaria")">
+               href="@Url.Action("ProduccionDiaria", "Administrador")">
                 <i class="fas fa-calendar-day"></i> Producción Diaria
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ControlHorarios" ? "active" : "")"
-               href="@Url.Action("Index", "ControlHorarios")">
+               href="@Url.Action("ControlHorarios", "Administrador")">
                 <i class="fas fa-clock"></i> Control de Horarios
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ResumenProduccion" ? "active" : "")"
                href="@Url.Action("Index", "ResumenProduccion")">
                 <i class="fas fa-chart-bar"></i> Resumen Producción Mensual
-            </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ControlPrendas" ? "active" : "")"
-               href="@Url.Action("Index", "ControlPrendas")">
-                <i class="fas fa-tshirt"></i> Control de Prendas
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Contacto" ? "active" : "")"
                href="@Url.Action("Contacto", "Contacto")">
@@ -217,11 +213,6 @@
             <span id="chatNotificacionWrapper">
                 @Html.Partial("_ChatAccess")
             </span>
-
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Revision" ? "active" : "")"
-               href="@Url.Action("Index", "Revision")">
-                <i class="fas fa-check-circle"></i> Revisión Prendas
-            </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Asignacion" ? "active" : "")"
                href="@Url.Action("Index", "Asignacion")">
                 <i class="fas fa-tasks"></i> Asignación de Prendas
