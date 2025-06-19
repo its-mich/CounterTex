@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using CounterTexFront.Models;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using CounterTexFront.Models;
-using Newtonsoft.Json;
+using CounterTexFront.Models.DTOs;
 
 namespace CounterTexFront.Controllers
 {
@@ -15,251 +17,276 @@ namespace CounterTexFront.Controllers
     {
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
-        // Helper para cargar datos de DropDownLists
-        private async Task<ProduccionDiariaViewModel> LoadFormData(ProduccionDiariaViewModel model)
+        public async Task<ActionResult> Index()
         {
-            using (var client = new HttpClient())
+            ProduccionDiariaViewModel model = new ProduccionDiariaViewModel();
+
+            try
             {
-                var usuariosResponse = await client.GetAsync($"{apiUrl}/Usuarios");
-                model.UsuariosDisponibles = usuariosResponse.IsSuccessStatusCode
-                    ? JsonConvert.DeserializeObject<List<UsuarioViewModel>>(await usuariosResponse.Content.ReadAsStringAsync())
-                    : new List<UsuarioViewModel>();
-
-                var prendasResponse = await client.GetAsync($"{apiUrl}/Prendas");
-                model.PrendasDisponibles = prendasResponse.IsSuccessStatusCode
-                    ? JsonConvert.DeserializeObject<List<PrendasEntregadasViewModel>>(await prendasResponse.Content.ReadAsStringAsync())
-                    : new List<PrendasEntregadasViewModel>();
-
-                var operacionesResponse = await client.GetAsync($"{apiUrl}/Operacion");
-                model.OperacionesDisponibles = operacionesResponse.IsSuccessStatusCode
-                    ? JsonConvert.DeserializeObject<List<OperacionViewModel>>(await operacionesResponse.Content.ReadAsStringAsync())
-                    : new List<OperacionViewModel>();
-            }
-            return model;
-        }
-
-        // GET: ProduccionDiaria (Para la lista de producciones con paginación)
-        public async Task<ActionResult> Index(int page = 1) // Añadir parámetro de página
-        {
-            List<ProduccionDtoViewModel> produccionesCompletas = new List<ProduccionDtoViewModel>();
-            int pageSize = 10; // Define el tamaño de página, puedes hacerlo configurable
-
-            using (var client = new HttpClient())
-            {
-                try
+                model.Fecha = DateTime.Now;
+                model.Usuarios = await ObtenerUsuarios();
+                model.Prendas = await ObtenerPrendas();
+                model.Operaciones = await ObtenerOperaciones();
+                model.ProduccionDetalles = new List<ProduccionDiariaDetalleViewModel>
                 {
-                    var response = await client.GetAsync($"{apiUrl}/Produccion");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        produccionesCompletas = JsonConvert.DeserializeObject<List<ProduccionDtoViewModel>>(json);
-
-                        int totalRegistros = produccionesCompletas.Count;
-                        int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
-
-                        var produccionesPaginadas = produccionesCompletas.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-                        var model = new ProduccionListViewModel
-                        {
-                            ListaProducciones = produccionesPaginadas,
-                            PaginaActual = page,
-                            TotalPaginas = totalPaginas,
-                            TamanoPagina = pageSize,
-                            TotalRegistros = totalRegistros
-                        };
-                        return View(model);
-                    }
-                    else
-                    {
-                        string errorContent = await response.Content.ReadAsStringAsync();
-                        ViewBag.Error = $"Error al cargar producciones: {response.StatusCode} - {errorContent}";
-                        return View(new ProduccionListViewModel { ListaProducciones = new List<ProduccionDtoViewModel>(), PaginaActual = page, TotalPaginas = 1 });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Error = "Excepción al cargar producciones: " + ex.Message;
-                    return View(new ProduccionListViewModel { ListaProducciones = new List<ProduccionDtoViewModel>(), PaginaActual = page, TotalPaginas = 1 });
-                }
+                    new ProduccionDiariaDetalleViewModel()
+                };
             }
-        }
-
-        // GET: ProduccionDiaria/Create
-        public async Task<ActionResult> Create()
-        {
-            var model = new ProduccionDiariaViewModel
+            catch (Exception ex)
             {
-                Fecha = DateTime.Today,
-                ProduccionDetalles = new List<ProduccionDetalleViewModel>()
-            };
-            model = await LoadFormData(model);
+                ModelState.AddModelError("", "Error al cargar el formulario: " + ex.Message);
+            }
+
             return View(model);
         }
 
-        // POST: ProduccionDiaria/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(ProduccionDiariaViewModel model)
+        // [ValidateAntiForgeryToken] // Puedes dejarlo comentado si aún no usas el token
+        public async Task<ActionResult> Index(ProduccionDiariaViewModel model)
         {
-            // Aseguramos que ProduccionDetalles no sea null
-            if (model.ProduccionDetalles == null)
-            {
-                model.ProduccionDetalles = new List<ProduccionDetalleViewModel>();
-            }
-
-            model = await LoadFormData(model);
-
             if (!ModelState.IsValid)
             {
-                return View(model);
-            }
-
-            if (model.ProduccionDetalles == null || !model.ProduccionDetalles.Any())
-            {
-                ModelState.AddModelError("ProduccionDetalles", "Debe agregar al menos un detalle de producción.");
-                return View(model);
-            }
-
-            model.ProduccionDetalles.RemoveAll(d => d.Cantidad <= 0 || d.OperacionId <= 0);
-
-            if (!model.ProduccionDetalles.Any())
-            {
-                ModelState.AddModelError("ProduccionDetalles", "Ningún detalle de producción es válido. Verifique las cantidades y operaciones.");
+                model.Usuarios = await ObtenerUsuarios();
+                model.Prendas = await ObtenerPrendas();
+                model.Operaciones = await ObtenerOperaciones();
+                TempData["ErrorMessage"] = "❌ Por favor completa todos los campos requeridos correctamente.";
                 return View(model);
             }
 
             try
             {
-                var produccionParaApi = new ProduccionCreateDto
-                {
-                    Fecha = model.Fecha,
-                    UsuarioId = model.UsuarioId,
-                    PrendaId = model.PrendaId,
-                    ProduccionDetalles = model.ProduccionDetalles.Select(d => new ProduccionDetalleCreateDto
-                    {
-                        Cantidad = d.Cantidad,
-                        OperacionId = d.OperacionId
-                    }).ToList()
-                };
-
                 using (var client = new HttpClient())
                 {
-                    var json = JsonConvert.SerializeObject(produccionParaApi);
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    string json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.PostAsync($"{apiUrl}/Produccion", content);
+                    HttpResponseMessage response = await client.PostAsync("api/Produccion", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        TempData["ErrorMessage"] = "❌ Error al guardar la producción diaria.";
+                        model.Usuarios = await ObtenerUsuarios();
+                        model.Prendas = await ObtenerPrendas();
+                        model.Operaciones = await ObtenerOperaciones();
+                        return View(model);
+                    }
+                }
+
+                TempData["SuccessMessage"] = "✅ Producción registrada correctamente.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "⚠️ Error inesperado: " + ex.Message;
+                model.Usuarios = await ObtenerUsuarios();
+                model.Prendas = await ObtenerPrendas();
+                model.Operaciones = await ObtenerOperaciones();
+                return View(model);
+            }
+        }
+
+
+        // --- Métodos auxiliares para obtener listas desde la API ---
+
+        private async Task<IEnumerable<SelectListItem>> ObtenerUsuarios()
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    HttpResponseMessage response = await client.GetAsync("api/Usuarios/GetUsuarios");
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // ¡CAMBIO AQUÍ! Añadir mensaje de éxito a TempData
-                        TempData["SuccessMessage"] = "Producción guardada exitosamente.";
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        string resp = await response.Content.ReadAsStringAsync();
-                        try
+                        var json = await response.Content.ReadAsStringAsync();
+                        var usuarios = JsonConvert.DeserializeObject<List<Usuario>>(json);
+
+                        return usuarios.Select(u => new SelectListItem
                         {
-                            var errorObj = JsonConvert.DeserializeObject<dynamic>(resp);
-                            ViewBag.Error = $"Error al guardar: {response.StatusCode} - {errorObj?.title ?? errorObj?.message ?? resp}";
-                        }
-                        catch
-                        {
-                            ViewBag.Error = $"Error al guardar: {response.StatusCode} - {resp}";
-                        }
+                            Text = u.Nombre,
+                            Value = u.Id.ToString()
+                        });
                     }
                 }
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "Excepción al guardar la producción: " + ex.Message;
+                ModelState.AddModelError("", "Error al obtener usuarios: " + ex.Message);
             }
 
-            return View(model);
+            return new List<SelectListItem>();
         }
 
-        // GET: ProduccionDiaria/Details/5
-        public async Task<ActionResult> Details(int id)
+        private async Task<IEnumerable<SelectListItem>> ObtenerPrendas()
         {
-            ProduccionDiariaViewModel produccion = null;
-
-            using (var client = new HttpClient())
+            try
             {
-                try
+                using (var client = new HttpClient())
                 {
-                    var response = await client.GetAsync($"{apiUrl}/Produccion/{id}");
+                    client.BaseAddress = new Uri(apiUrl);
+                    HttpResponseMessage response = await client.GetAsync("api/Prendas");
+
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        produccion = JsonConvert.DeserializeObject<ProduccionDiariaViewModel>(json);
+                        var prendas = JsonConvert.DeserializeObject<List<Prenda>>(json);
+
+                        return prendas.Select(p => new SelectListItem
+                        {
+                            Text = p.Nombre,
+                            Value = p.Id.ToString()
+                        });
                     }
-                    else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                    {
-                        return HttpNotFound($"No se encontró la producción con ID: {id}");
-                    }
-                    else
-                    {
-                        string errorContent = await response.Content.ReadAsStringAsync();
-                        ViewBag.Error = $"Error al cargar los detalles de la producción: {response.StatusCode} - {errorContent}";
-                        return View("Error");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Error = "Excepción al cargar los detalles de la producción: " + ex.Message;
-                    return View("Error");
                 }
             }
-
-            if (produccion == null)
+            catch (Exception ex)
             {
-                return HttpNotFound($"La producción con ID: {id} no pudo ser cargada o no existe.");
+                ModelState.AddModelError("", "Error al obtener prendas: " + ex.Message);
             }
 
-            return View(produccion);
+            return new List<SelectListItem>();
         }
 
-        // GET: ProduccionDiaria/Delete/5
-        public async Task<ActionResult> Delete(int id)
+        private async Task<IEnumerable<SelectListItem>> ObtenerOperaciones()
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                try
+                using (var client = new HttpClient())
                 {
-                    var response = await client.DeleteAsync($"{apiUrl}/Produccion/{id}");
-                    if (!response.IsSuccessStatusCode)
+                    client.BaseAddress = new Uri(apiUrl);
+                    HttpResponseMessage response = await client.GetAsync("api/Operacion");
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        string errorContent = await response.Content.ReadAsStringAsync();
-                        ViewBag.Error = $"Error al eliminar: {response.StatusCode} - {errorContent}";
+                        var json = await response.Content.ReadAsStringAsync();
+                        var operaciones = JsonConvert.DeserializeObject<List<Operacion>>(json);
+
+                        return operaciones.Select(o => new SelectListItem
+                        {
+                            Text = o.Nombre,
+                            Value = o.Id.ToString()
+                        });
                     }
                 }
-                catch (Exception ex)
-                {
-                    ViewBag.Error = "Excepción al eliminar: " + ex.Message;
-                }
             }
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al obtener operaciones: " + ex.Message);
+            }
+
+            return new List<SelectListItem>();
         }
 
-        // ACCIÓN: Para cargar la vista parcial de un detalle de producción dinámicamente
-        public async Task<ActionResult> GetProduccionDetallePartial(int index)
+
+
+        public async Task<ActionResult> ObtenerRegistrosPorUsuario(int usuarioId)
         {
-            var model = new ProduccionDetalleViewModel();
-            IEnumerable<OperacionViewModel> operaciones = new List<OperacionViewModel>();
+            string endpoint = $"{apiUrl}/produccion/empleado/{usuarioId}";
 
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync($"{apiUrl}/Operacion");
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    operaciones = JsonConvert.DeserializeObject<List<OperacionViewModel>>(await response.Content.ReadAsStringAsync());
+                    var response = await client.GetAsync(endpoint);
+
+                    if (!response.IsSuccessStatusCode)
+                        return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+
+                    var json = await response.Content.ReadAsStringAsync();
+
+                    // Asegúrate de que ProduccionApiDto esté definido correctamente en tu proyecto
+                    var producciones = JsonConvert.DeserializeObject<List<ProduccionApiDto>>(json);
+
+                    var resultado = producciones.Select(p => new
+                    {
+                        Id = p.Id,
+                        Fecha = p.Fecha.ToString("yyyy-MM-dd"),
+                        PrendaNombre = p.Prenda?.Nombre ?? "N/A",
+                        TotalCantidad = p.ProduccionDetalles?.Sum(d => d.Cantidad) ?? 0,
+                        TotalValor = p.TotalValor ?? 0 // <-- esto estaba faltando
+                    });
+
+
+                    return Json(resultado, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = "Error al conectar con la API: " + ex.Message }, JsonRequestBehavior.AllowGet);
                 }
             }
-
-            ViewData["index"] = index;
-            ViewData["operaciones"] = operaciones;
-
-            return PartialView("_ProduccionDetallePartial", model);
         }
+
+
+        [HttpGet]
+        public async Task<ActionResult> Editar(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                var response = await client.GetAsync($"api/Produccion/{id}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["ErrorMessage"] = "⚠️ No se pudo cargar la producción.";
+                    return RedirectToAction("Index");
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                var produccion = JsonConvert.DeserializeObject<ProduccionDiariaViewModel>(json);
+
+                produccion.Usuarios = await ObtenerUsuarios();
+                produccion.Prendas = await ObtenerPrendas();
+                produccion.Operaciones = await ObtenerOperaciones();
+
+                return View("Editar", produccion); // Vista Razor llamada Editar.cshtml
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Editar(ProduccionDiariaViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Usuarios = await ObtenerUsuarios();
+                model.Prendas = await ObtenerPrendas();
+                model.Operaciones = await ObtenerOperaciones();
+                TempData["ErrorMessage"] = "❌ Completa los datos correctamente.";
+                return View(model);
+            }
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PutAsync($"api/Produccion/{model.Id}", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        TempData["ErrorMessage"] = "❌ No se pudo actualizar la producción.";
+                        return View(model);
+                    }
+
+                    TempData["SuccessMessage"] = "✅ Producción actualizada correctamente.";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "⚠️ Error al actualizar: " + ex.Message;
+                return View(model);
+            }
+        }
+
+
     }
 }

@@ -195,20 +195,25 @@
             <a class="nav-link" href="@Url.Action("Index", "ControlHorarios")">
                 <i class="fas fa-clock"></i> Control de Horarios
             </a>
+            <a class="nav-link" href="@Url.Action("Index", "Meta")">
+                <i class="fas fa-clock"></i> METAS
+            </a>
+
+
 
             <span id="chatNotificacionWrapper">
                 @Html.Partial("_ChatAccess")
             </span>
 
-            <a class="nav-link" href="@Url.Action("Revision", "Revision")">
-                <i class="fas fa-clipboard-check"></i> Revisión Prendas
-            </a>
-            <a class="nav-link" href="@Url.Action("DetallePrenda", "Detalle")">
-                <i class="fas fa-info-circle"></i> Detalle Prenda
-            </a>
-            <a class="nav-link" href="@Url.Action("Asignacion", "Asignacion")">
-                <i class="fas fa-tasks"></i> Asignación de Prenda
-            </a>
+            @*<a class="nav-link" href="@Url.Action("Revision", "Revision")">
+            <i class="fas fa-clipboard-check"></i> Revisión Prendas
+        </a>
+        <a class="nav-link" href="@Url.Action("DetallePrenda", "Detalle")">
+            <i class="fas fa-info-circle"></i> Detalle Prenda
+        </a>
+        <a class="nav-link" href="@Url.Action("Asignacion", "Asignacion")">
+            <i class="fas fa-tasks"></i> Asignación de Prenda
+        </a>*@
             @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
             {
                 @Html.AntiForgeryToken()

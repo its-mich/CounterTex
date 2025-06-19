@@ -1,0 +1,101 @@
+﻿@model CounterTexFront.Models.MetaYHorarioViewModel
+
+@{
+    ViewBag.Title = "Metas y Horarios";
+    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+}
+
+<h2>Metas y Horarios</h2>
+
+<p>
+    @Html.ActionLink("Crear Nueva Meta", "Crear", "Meta", null, new { @class = "btn btn-primary" })
+</p>
+
+<!-- Tabs de Bootstrap -->
+<ul class="nav nav-tabs" id="metaTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="metas-tab" data-bs-toggle="tab" data-bs-target="#metas" type="button" role="tab" aria-controls="metas" aria-selected="true">
+            Metas
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="horarios-tab" data-bs-toggle="tab" data-bs-target="#horarios" type="button" role="tab" aria-controls="horarios" aria-selected="false">
+            Horarios
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content mt-3" id="metaTabsContent">
+    <!-- TAB DE METAS -->
+    <div class="tab-pane fade show active" id="metas" role="tabpanel" aria-labelledby="metas-tab">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Meta Corte</th>
+                    <th>Producción Real</th>
+                    <th>Fecha y Hora</th>
+                    <th>Mensaje</th>
+                    <th>Usuario ID</th>
+                    <th>Remitente ID</th>
+                    <th>Destinatario ID</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var meta in Model.Metas)
+                {
+                    <tr>
+                        <td>@meta.Fecha.ToShortDateString()</td>
+                        <td>@meta.MetaCorte</td>
+                        <td>@meta.ProduccionReal</td>
+                        <td>@meta.FechaHora.ToString("g")</td>
+                        <td>@meta.Mensaje</td>
+                        <td>@meta.UsuarioId</td>
+                        <td>@meta.RemitenteId</td>
+                        <td>@meta.DestinatarioId</td>
+                        <td>
+                            @Html.ActionLink("Eliminar", "Eliminar", new { id = meta.Id }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('¿Está seguro de eliminar esta meta?');" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB DE HORARIOS -->
+    <div class="tab-pane fade" id="horarios" role="tabpanel" aria-labelledby="horarios-tab">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var horario in Model.Horarios)
+                {
+                    <tr>
+                        <td>@horario.Tipo</td>
+                        <td>@horario.Hora.ToString(@"hh\:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Activar la primera pestaña (por si acaso)
+        var triggerTabList = [].slice.call(document.querySelectorAll('#metaTabs button'))
+        triggerTabList.forEach(function (triggerEl) {
+            var tabTrigger = new bootstrap.Tab(triggerEl)
+
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault()
+                tabTrigger.show()
+            })
+        })
+    </script>
+}
