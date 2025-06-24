@@ -24,64 +24,111 @@ namespace CounterTexFront.Controllers
         }
         public async Task<ActionResult> Index()
         {
-            ViewBag.Empleados = await ObtenerEmpleados();
-            return View();
+            try
+            {
+                string fechaActual = DateTime.Today.ToString("yyyy-MM-dd");
+
+                var empleadoActual = await ObtenerEmpleadoLogeado();
+                if (empleadoActual == null)
+                {
+                    ViewBag.MensajeError = "No se pudo obtener la información del empleado.";
+                    return View(new List<HorarioViewModel>());
+                }
+
+                ViewBag.EmpleadoActual = empleadoActual;
+
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    var response = await client.GetAsync($"api/Horarios/GetHorariosPorFecha?fecha={fechaActual}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        var todosLosRegistros = JsonConvert.DeserializeObject<List<HorarioViewModel>>(json);
+
+                        // Filtrar solo los del empleado logeado
+                        var registros = todosLosRegistros
+                            .Where(r => r.EmpleadoId == empleadoActual.Id)
+                            .ToList();
+
+                        // Estadísticas para ese empleado
+                        ViewBag.TotalEmpleados = 1;
+                        ViewBag.PresentesHoy = registros.Any(r => r.Tipo.ToLower() == "entrada") ? 1 : 0;
+                        ViewBag.AusentesHoy = ViewBag.TotalEmpleados - ViewBag.PresentesHoy;
+                        ViewBag.AtrasadosHoy = registros.Count(r => r.Tipo.ToLower() == "entrada" && r.Hora > new TimeSpan(8, 0, 0));
+
+                        return View(registros);
+                    }
+
+                    ViewBag.MensajeError = "No se pudieron cargar los registros.";
+                    return View(new List<HorarioViewModel>());
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.MensajeError = "Error: " + ex.Message;
+                return View(new List<HorarioViewModel>());
+            }
         }
-        private async Task<List<PerfilEmpleadoViewModel>> ObtenerEmpleados()
+
+        [HttpPost]
+        public async Task<ActionResult> RegistrarHorarioManual(HorarioViewModel model)
         {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Index");
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
-                var response = await client.GetAsync("api/usuarios");
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("api/Horarios/PostHorario", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["MensajeExito"] = "Registro guardado correctamente.";
+                }
+                else
+                {
+                    TempData["MensajeError"] = "Ocurrió un error al guardar el registro.";
+                }
+
+                return RedirectToAction("Index");
+            }
+        }
+
+        private async Task<PerfilEmpleadoViewModel> ObtenerEmpleadoLogeado()
+        {
+            var empleadoIdCookie = Request.Cookies["EmpleadoId"]?.Value;
+            if (string.IsNullOrEmpty(empleadoIdCookie))
+                return null;
+
+            int empleadoId = int.Parse(empleadoIdCookie);
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                var response = await client.GetAsync($"api/Usuarios/GetUsuariosId/{empleadoId}");
 
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    var usuarios = JsonConvert.DeserializeObject<List<PerfilEmpleadoViewModel>>(json);
-
-                    // Suponiendo que tienes un campo Tipo o Rol
-                    return usuarios.Where(u => u.Rol == "Empleado").ToList();
+                    var usuario = JsonConvert.DeserializeObject<PerfilEmpleadoViewModel>(json);
+                    return usuario;
                 }
             }
 
-
-            return new List<PerfilEmpleadoViewModel>();
+            return null;
         }
+
 
         [HttpGet]
         public ActionResult Create()
         {
             return View();
         }
-        [HttpGet]
-        public async Task<JsonResult> ObtenerRegistrosHoy()
-        {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    string fechaActual = DateTime.Today.ToString("yyyy-MM-dd");
-
-                    var response = await client.GetAsync($"api/horarios?fecha={fechaActual}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var registros = JsonConvert.DeserializeObject<List<HorarioViewModel>>(json);
-                        return Json(registros, JsonRequestBehavior.AllowGet);
-                    }
-                    else
-                    {
-                        return Json(new { exito = false, mensaje = "Error al obtener los registros." }, JsonRequestBehavior.AllowGet);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { exito = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
+        
 
         [HttpPost]
         public async Task<ActionResult> Create(HorarioViewModel model)
@@ -97,7 +144,7 @@ namespace CounterTexFront.Controllers
                     var json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.PostAsync("api/horarios", content);
+                    var response = await client.PostAsync("api/Horarios/PostHorario", content);
 
                     if (response.IsSuccessStatusCode)
                     {

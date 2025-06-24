@@ -161,6 +161,14 @@ namespace CounterTexFront.Controllers
                     Session["UserRole"] = loginResponse.Rol;
                     Session["NombreUsuario"] = loginResponse.Nombres;
 
+                    Response.Cookies.Add(new HttpCookie("EmpleadoId", loginResponse.Id.ToString())
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Lax,
+                        Expires = DateTime.Now.AddHours(1)
+                    });
+
                     // Crear el ticket de autenticación
                     var authTicket = new FormsAuthenticationTicket(
                         1,
@@ -216,5 +224,9 @@ namespace CounterTexFront.Controllers
             FormsAuthentication.SignOut();
             return RedirectToAction("Welcome", "Home");
         }
+
+
+
+
     }
 }
