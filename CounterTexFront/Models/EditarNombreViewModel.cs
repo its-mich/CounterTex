@@ -1,20 +1,17 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
 namespace CounterTexFront.Models
 {
-	public class LoginResponse
+	public class EditarNombreViewModel
 	{
-        public string Token { get; set; }
-        public string Rol { get; set; }  // Cambio aquí
+
         public int Id { get; set; }
         public string Nombres { get; set; }
-
-   
-        public string Correo { get; set; }   // <<--- Asegúrate de tener esta
+        public string Correo { get; set; }
         public string Contraseña { get; set; }
         public int RolId { get; set; }
         public int Edad { get; set; }

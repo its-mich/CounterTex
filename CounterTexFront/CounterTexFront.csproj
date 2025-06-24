@@ -176,6 +176,7 @@
     </Compile>
     <Compile Include="Models\CambiarRolViewModel.cs" />
     <Compile Include="Models\ChatViewModel.cs" />
+    <Compile Include="Models\EditarNombreViewModel.cs" />
     <Compile Include="Models\HorarioViewModel.cs" />
     <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
@@ -295,6 +296,7 @@
     <Content Include="Views\ProduccionDiaria\Editar.cshtml" />
     <Content Include="Views\Meta\Index.cshtml" />
     <Content Include="Views\Meta\Crear.cshtml" />
+    <Content Include="Views\Usuarios\EditarNombre.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -303,7 +305,6 @@
     <Folder Include="Views\Login\" />
     <Folder Include="Views\Registro\" />
     <Folder Include="Views\Satelite\" />
-    <Folder Include="Views\Usuarios\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
