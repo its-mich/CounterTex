@@ -9,15 +9,21 @@ namespace CounterTexFront.Models
     {
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "La fecha es obligatoria.")]
         [Display(Name = "Fecha")]
+        [DataType(DataType.Date)]
         public DateTime Fecha { get; set; }
 
+        [Required(ErrorMessage = "El total es obligatorio.")]
         [Display(Name = "Total Valor")]
+        [Range(0, double.MaxValue, ErrorMessage = "El total debe ser un valor positivo.")]
         public decimal TotalValor { get; set; }
 
+        [Required(ErrorMessage = "Debe seleccionar un empleado.")]
         [Display(Name = "Empleado")]
         public int UsuarioId { get; set; }
 
+        [Required(ErrorMessage = "Debe seleccionar una prenda.")]
         [Display(Name = "Prenda")]
         public int PrendaId { get; set; }
 
@@ -32,30 +38,40 @@ namespace CounterTexFront.Models
     {
         public int Id { get; set; }
 
-        [Display(Name = "Cantidad de operacion")]
+        [Required(ErrorMessage = "La cantidad es obligatoria.")]
+        [Display(Name = "Cantidad de operación")]
+        [Range(1, int.MaxValue, ErrorMessage = "La cantidad debe ser mayor que cero.")]
         public int Cantidad { get; set; }
 
-        [Display(Name = " Nombre de la Operación")]
+        [Required(ErrorMessage = "Debe seleccionar una operación.")]
+        [Display(Name = "Nombre de la Operación")]
         public int OperacionId { get; set; }
     }
 
     public class Usuario
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "El nombre del usuario es obligatorio.")]
+        [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
         public string Nombre { get; set; }
     }
 
     public class Prenda
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "El nombre de la prenda es obligatorio.")]
+        [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
         public string Nombre { get; set; }
     }
 
     public class Operacion
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "El nombre de la operación es obligatorio.")]
+        [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
         public string Nombre { get; set; }
     }
-
-
 }

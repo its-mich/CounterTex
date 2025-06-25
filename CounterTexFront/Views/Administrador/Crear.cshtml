@@ -1,0 +1,85 @@
+﻿@model CounterTexFront.Models.MetaViewModel
+
+@{
+    ViewBag.Title = "Crear Meta";
+    Layout = ViewBag.Layout;
+}
+
+<h2>Crear Meta</h2>
+
+<!-- Mensajes de éxito o error -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.Fecha)
+            @Html.TextBoxFor(m => m.Fecha, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Fecha, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.MetaCorte)
+            @Html.TextBoxFor(m => m.MetaCorte, new { @class = "form-control", type = "number", min = "0" })
+            @Html.ValidationMessageFor(m => m.MetaCorte, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.ProduccionReal)
+            @Html.TextBoxFor(m => m.ProduccionReal, new { @class = "form-control", type = "number", min = "0" })
+            @Html.ValidationMessageFor(m => m.ProduccionReal, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.FechaHora)
+            @Html.TextBoxFor(m => m.FechaHora, "{0:yyyy-MM-ddTHH:mm}", new { @type = "datetime-local", @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.FechaHora, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.Mensaje)
+            @Html.TextBoxFor(m => m.Mensaje, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Mensaje, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.UsuarioId)
+            @Html.TextBoxFor(m => m.UsuarioId, new { @class = "form-control", type = "number", min = "1" })
+            @Html.ValidationMessageFor(m => m.UsuarioId, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.RemitenteId)
+            @Html.TextBoxFor(m => m.RemitenteId, new { @class = "form-control", type = "number", min = "1" })
+            @Html.ValidationMessageFor(m => m.RemitenteId, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.DestinatarioId)
+            @Html.TextBoxFor(m => m.DestinatarioId, new { @class = "form-control", type = "number", min = "1" })
+            @Html.ValidationMessageFor(m => m.DestinatarioId, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            @Html.ActionLink("Volver", "Index", null, new { @class = "btn btn-secondary ms-2" })
+        </div>
+    </div>
+}

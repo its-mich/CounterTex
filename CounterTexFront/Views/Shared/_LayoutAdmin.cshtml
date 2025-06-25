@@ -218,10 +218,10 @@
                 @Html.Partial("_ChatAccess")
             </span>
 
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Revision" ? "active" : "")"
-               href="@Url.Action("Index", "Revision")">
-                <i class="fas fa-check-circle"></i> Revisión Prendas
+            <a class="nav-link" href="@Url.Action("Crear", "Administrador")">
+                <i class="fas fa-clock"></i> Metas por Corte
             </a>
+
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Asignacion" ? "active" : "")"
                href="@Url.Action("Index", "Asignacion")">
                 <i class="fas fa-tasks"></i> Asignación de Prendas

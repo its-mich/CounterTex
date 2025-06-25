@@ -1,129 +1,53 @@
 ﻿@model CounterTexFront.Models.MetaYHorarioViewModel
 
 @{
-    ViewBag.Title = "Metas y Horarios";
-    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+    ViewBag.Title = "Metas del Usuario";
+    Layout = ViewBag.Layout;
 }
 
+<h2>Metas del Usuario</h2>
 
-
-<p>
-    @Html.ActionLink("Crear Nueva Meta", "Crear", "Meta", null, new { @class = "btn btn-primary mb-3" })
-</p>
-
-<!-- Tabs -->
-<ul class="nav nav-tabs" id="metaTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="metas-tab" data-bs-toggle="tab" data-bs-target="#metas" type="button" role="tab" aria-controls="metas" aria-selected="true">
-            Metas
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link" id="horarios-tab" data-bs-toggle="tab" data-bs-target="#horarios" type="button" role="tab" aria-controls="horarios" aria-selected="false">
-            Horarios
-        </button>
-    </li>
-</ul>
-
-<div class="tab-content mt-3" id="metaTabsContent">
-
-    <!-- TAB DE METAS -->
-    <div class="tab-pane fade show active" id="metas" role="tabpanel" aria-labelledby="metas-tab">
-
-        <div class="form-group mb-3">
-            <label for="metaSelector">Selecciona una meta:</label>
-            <select id="metaSelector" class="form-control">
-                <option value="">-- Selecciona --</option>
-                @{
-                    int index = 0;
-                    foreach (var meta in Model.Metas)
-                    {
-                        <option value="@index">@meta.Fecha.ToShortDateString()</option>
-                        index++;
-                    }
-                }
-            </select>
-        </div>
-
-        <div id="metaDetalle" style="display:none;" class="mb-4">
-            <h4>Detalle de la Meta Seleccionada</h4>
-            <p><strong>Fecha:</strong> <span id="metaFecha"></span></p>
-            <p><strong>Meta Corte:</strong> <span id="metaCorte"></span></p>
-            <p><strong>Producción Real:</strong> <span id="metaReal"></span></p>
-            <p><strong>Mensaje:</strong> <span id="metaMensaje"></span></p>
-
-            <canvas id="metaChart" width="400" height="200"></canvas>
-        </div>
-
-        <table class="table table-striped table-bordered mt-4">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Meta Corte</th>
-                    <th>Producción Real</th>
-                    <th>Fecha y Hora</th>
-                    <th>Mensaje</th>
-                    <th>Usuario ID</th>
-                    <th>Remitente ID</th>
-                    <th>Destinatario ID</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int i = 0;
-                    foreach (var meta in Model.Metas)
-                    {
-                        <tr>
-                            <td>@meta.Fecha.ToShortDateString()</td>
-                            <td>@meta.MetaCorte</td>
-                            <td>@meta.ProduccionReal</td>
-                            <td>@meta.FechaHora.ToString("g")</td>
-                            <td>@meta.Mensaje</td>
-                            <td>@meta.UsuarioId</td>
-                            <td>@meta.RemitenteId</td>
-                            <td>@meta.DestinatarioId</td>
-                            <td>
-                                @Html.ActionLink("Eliminar", "Eliminar", new { id = meta.Id }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('¿Está seguro de eliminar esta meta?');" })
-                            </td>
-                        </tr>
-                        <!-- Guardar los datos para JS en elementos ocultos -->
-                        <input type="hidden" id="fecha_@i" value="@meta.Fecha.ToShortDateString()" />
-                        <input type="hidden" id="metaCorte_@i" value="@meta.MetaCorte" />
-                        <input type="hidden" id="metaReal_@i" value="@meta.ProduccionReal" />
-                        <input type="hidden" id="mensaje_@i" value="@meta.Mensaje" />
-                        i++;
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <!-- TAB DE HORARIOS -->
-    <div class="tab-pane fade" id="horarios" role="tabpanel" aria-labelledby="horarios-tab">
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Tipo</th>
-                    <th>Hora</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var horario in Model.Horarios)
+@if (Model.Metas != null && Model.Metas.Any())
+{
+    <div class="form-group mb-4">
+        <label for="metaSelector">Selecciona una meta:</label>
+        <select id="metaSelector" class="form-control">
+            <option value="">-- Selecciona --</option>
+            @{
+                int index = 0;
+                foreach (var meta in Model.Metas)
                 {
-                    <tr>
-                        <td>@horario.Tipo</td>
-                        <td>@horario.Hora.ToString(@"hh\:mm")</td>
-                    </tr>
+                    <option value="@index">@meta.Fecha.ToString("yyyy-MM-dd")</option>
+                    index++;
                 }
-            </tbody>
-        </table>
+            }
+        </select>
     </div>
-</div>
 
-@section Scripts {
+    <div id="metaDetalle" style="display:none;" class="mb-4">
+        <h4>Detalle de la Meta Seleccionada</h4>
+        <p><strong>Fecha:</strong> <span id="metaFecha"></span></p>
+        <p><strong>Meta Corte:</strong> <span id="metaCorte"></span></p>
+        <p><strong>Producción Real:</strong> <span id="metaReal"></span></p>
+        <p><strong>Mensaje:</strong> <span id="metaMensaje"></span></p>
+        <canvas id="metaChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Datos ocultos para cada meta -->
+    {
+        int i = 0;
+        foreach (var meta in Model.Metas)
+        {
+            <input type="hidden" id="fecha_@i" value="@meta.Fecha.ToString("yyyy-MM-dd")" />
+            <input type="hidden" id="metaCorte_@i" value="@meta.MetaCorte" />
+            <input type="hidden" id="metaReal_@i" value="@meta.ProduccionReal" />
+            <input type="hidden" id="mensaje_@i" value="@meta.Mensaje" />
+            i++;
+        }
+
+    }
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
         document.getElementById('metaSelector').addEventListener('change', function () {
             const index = this.value;
@@ -144,7 +68,7 @@
 
             document.getElementById('metaDetalle').style.display = 'block';
 
-            // Destruir gráfico previo si existe
+            // Destruir gráfico anterior
             if (window.metaChartInstance) {
                 window.metaChartInstance.destroy();
             }
@@ -163,22 +87,14 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            display: false
-                        }
+                        legend: { display: false }
                     }
                 }
             });
         });
-
-        // Activar tabs
-        var triggerTabList = [].slice.call(document.querySelectorAll('#metaTabs button'))
-        triggerTabList.forEach(function (triggerEl) {
-            var tabTrigger = new bootstrap.Tab(triggerEl)
-            triggerEl.addEventListener('click', function (event) {
-                event.preventDefault()
-                tabTrigger.show()
-            })
-        });
     </script>
+}
+else
+{
+    <div class="alert alert-warning">No se encontraron metas registradas para este usuario.</div>
 }

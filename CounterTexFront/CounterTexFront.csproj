@@ -297,6 +297,7 @@
     <Content Include="Views\Meta\Index.cshtml" />
     <Content Include="Views\Meta\Crear.cshtml" />
     <Content Include="Views\Usuarios\EditarNombre.cshtml" />
+    <Content Include="Views\Administrador\Crear.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
