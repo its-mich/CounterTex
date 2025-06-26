@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using CounterTexFront.Models;
 using Newtonsoft.Json;
 using System;
+using Rotativa;
 
 namespace CounterTexFront.Controllers
 {
@@ -94,5 +95,110 @@ namespace CounterTexFront.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<ActionResult> MisPagos()
+        {
+            var usuario = Session["Usuario"] as LoginResponse;
+
+            if (usuario == null)
+            {
+                TempData["ErrorMessage"] = "Sesión expirada. Por favor, inicia sesión nuevamente.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            // Log de depuración del ID
+            System.Diagnostics.Debug.WriteLine($"🟡 ID del usuario autenticado: {usuario.Id}");
+
+            var pagos = new List<PagoViewModel>();
+
+            using (var client = new HttpClient())
+            {
+                // ✅ Elimina /api del baseAddress si ya está en la ruta del endpoint
+                var baseUri = apiUrl.Replace("/api", "").TrimEnd('/');
+                client.BaseAddress = new Uri(baseUri);
+
+                // ✅ Autenticación con Bearer token si aplica
+                if (Session["BearerToken"] != null)
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Session["BearerToken"].ToString());
+                }
+
+                try
+                {
+                    var endpoint = $"/api/Pagos/usuario/{usuario.Id}";
+                    var response = await client.GetAsync(endpoint);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        pagos = JsonConvert.DeserializeObject<List<PagoViewModel>>(json);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = $"Error al obtener sus pagos. Código: {response.StatusCode}";
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    TempData["ErrorMessage"] = "Error de conexión con el servidor: " + ex.Message;
+                }
+            }
+
+            return View("MisPagos", pagos);
+        }
+
+        public async Task<ActionResult> ExportarPdf()
+        {
+            var usuario = Session["Usuario"] as LoginResponse;
+
+            if (usuario == null)
+            {
+                TempData["ErrorMessage"] = "Sesión expirada. Por favor, inicia sesión nuevamente.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pagos = new List<PagoViewModel>();
+
+            using (var client = new HttpClient())
+            {
+                var baseUri = apiUrl.Replace("/api", "").TrimEnd('/');
+                client.BaseAddress = new Uri(baseUri);
+
+                if (Session["BearerToken"] != null)
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Session["BearerToken"].ToString());
+                }
+
+                try
+                {
+                    var endpoint = $"/api/Pagos/usuario/{usuario.Id}";
+                    var response = await client.GetAsync(endpoint);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        pagos = JsonConvert.DeserializeObject<List<PagoViewModel>>(json);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = $"Error al obtener sus pagos. Código: {response.StatusCode}";
+                        return RedirectToAction("MisPagos");
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    TempData["ErrorMessage"] = "Error de conexión con el servidor: " + ex.Message;
+                    return RedirectToAction("MisPagos");
+                }
+            }
+
+            return new ViewAsPdf("MisPagosPdf", pagos)
+            {
+                FileName = $"Nomina_{DateTime.Now:yyyyMMdd}.pdf",
+                PageSize = Rotativa.Options.Size.A4,
+                PageOrientation = Rotativa.Options.Orientation.Portrait
+            };
+        }
     }
 }
