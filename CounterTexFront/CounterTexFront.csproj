@@ -187,7 +187,6 @@
     <Compile Include="Models\PrendasEntregadasViewModel.cs" />
     <Compile Include="Models\ProduccionApiDto.cs" />
     <Compile Include="Models\ProduccionCreateDto.cs" />
-    <Compile Include="Models\ProduccionDetalleViewModel.cs" />
     <Compile Include="Models\ProduccionDiariaViewModel.cs" />
     <Compile Include="Models\ProduccionDtoViewModel.cs" />
     <Compile Include="Models\ProduccionListViewModel.cs" />

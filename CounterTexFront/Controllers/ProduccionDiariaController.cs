@@ -15,7 +15,7 @@ namespace CounterTexFront.Controllers
 {
     public class ProduccionDiariaController : BaseController
     {
-        private readonly string baseUrl = ConfigurationManager.AppSettings["Api"];
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
         public async Task<ActionResult> Index()
         {
