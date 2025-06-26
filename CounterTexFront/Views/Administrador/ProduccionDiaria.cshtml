@@ -1,0 +1,127 @@
+﻿@model List<CounterTexFront.Models.ProduccionViewModel>
+
+@{
+    ViewBag.Title = "Producción Diaria";
+    Layout = ViewBag.Layout;
+}
+
+@section Styles {
+    <style>
+        .accordion-item-custom {
+            background-color: #2a2a3c;
+            border: 1px solid rgba(160, 204, 242, 0.1);
+            margin-bottom: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .accordion-header-custom .accordion-button {
+            background-color: #2a2a3c;
+            color: #F2F2F2;
+            border-bottom: 1px solid rgba(160, 204, 242, 0.15);
+            font-weight: 500;
+            padding: 15px 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+            .accordion-header-custom .accordion-button:not(.collapsed) {
+                background-color: #35354a;
+                color: #A0CCF2;
+                box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .accordion-header-custom .accordion-button:focus {
+                border-color: #A0CCF2;
+                box-shadow: 0 0 0 0.25rem rgba(160, 204, 242, 0.25);
+            }
+
+            .accordion-header-custom .accordion-button::after {
+                filter: invert(1) grayscale(100%) brightness(200%);
+                transition: transform 0.3s ease;
+            }
+
+            .accordion-header-custom .accordion-button:not(.collapsed)::after {
+                filter: invert(1) grayscale(100%) brightness(200%);
+                transform: rotate(-180deg);
+            }
+
+        .accordion-body-custom {
+            background-color: #1e1e2f;
+            color: #F2F2F2;
+            padding: 20px;
+        }
+
+            .accordion-body-custom .btn {
+                margin-right: 10px;
+            }
+    </style>
+}
+
+<h2 class="mb-4">Producción Diaria</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else
+{
+    <div class="accordion" id="accordionProduccion">
+        @if (Model != null && Model.Any())
+        {
+            int i = 0;
+            foreach (var p in Model)
+            {
+                string collapseId = $"collapse_{p.Id}_{i}";
+                string headingId = $"heading_{p.Id}_{i}";
+
+                <div class="accordion-item accordion-item-custom">
+                    <h2 class="accordion-header accordion-header-custom" id="@headingId">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+                            <strong>ID:</strong> @p.Id -
+                            <strong>Fecha:</strong> @p.Fecha.ToShortDateString() -
+                            <strong>Total:</strong> @p.TotalValor.ToString("C") -
+                            <strong>Usuario:</strong> @p.NombreUsuario -
+                            <strong>Prenda:</strong> @p.NombrePrenda
+                        </button>
+                    </h2>
+                    <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#accordionProduccion">
+                        <div class="accordion-body accordion-body-custom">
+                            <p><strong>ID Producción:</strong> @p.Id</p>
+                            <p><strong>Fecha:</strong> @p.Fecha</p>
+                            <p><strong>Total Valor:</strong> @p.TotalValor.ToString("C")</p>
+                            <p><strong>Usuario:</strong> @p.NombreUsuario</p>
+                            <p><strong>Prenda:</strong> @p.NombrePrenda</p>
+
+                            <hr />
+                            <h5>Operaciones:</h5>
+
+                            @if (p.ProduccionDetalles != null && p.ProduccionDetalles.Any())
+                            {
+                                <ul>
+                                    @foreach (var d in p.ProduccionDetalles)
+                                    {
+                                        <li>
+                                            <strong>Operación:</strong> @d.NombreOperacion,
+                                            <strong>Cantidad:</strong> @d.Cantidad,
+                                            <strong>Valor Unitario:</strong> @(d.ValorOperacion?.ToString("C") ?? "N/A"),
+                                            <strong>Subtotal:</strong> @d.ValorTotal.ToString("C")
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p>No hay operaciones registradas.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                i++;
+            }
+        }
+        else
+        {
+            <div class="alert alert-info mt-3">No hay producciones registradas.</div>
+        }
+    </div>
+}

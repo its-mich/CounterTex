@@ -191,7 +191,13 @@
     <Compile Include="Models\ProduccionDiariaViewModel.cs" />
     <Compile Include="Models\ProduccionDtoViewModel.cs" />
     <Compile Include="Models\ProduccionListViewModel.cs" />
+    <Compile Include="Models\OperacionViewModel.cs" />
+    <Compile Include="Models\PerfilAdministradorViewModel.cs" />
+    <Compile Include="Models\PerfilEmpleadoViewModel.cs" />
+    <Compile Include="Models\PrendasEntregadasViewModel.cs" />
+    <Compile Include="Models\ProduccionViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
+    <Compile Include="Models\ResumenMensualViewModel.cs" />
     <Compile Include="Models\SolicitudRecuperacionViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
     <Compile Include="Models\RestablecerContraseñaViewModel.cs" />
@@ -274,13 +280,17 @@
     <Content Include="Views\Shared\_LayoutProveedor.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Auth\Registro.cshtml" />
-    <Content Include="Views\ControlHorarios\ControlHorarios.cshtml" />
+    <Content Include="Views\Administrador\ControlHorarios.cshtml" />
     <Content Include="Views\ControlPagos\ControlPagos.cshtml" />
     <Content Include="Views\ControlHorarios\Index.cshtml" />
     <Content Include="Views\ControlHorarios\Create.cshtml" />
     <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
     <Content Include="Views\Administrador\Index.cshtml" />
     <Content Include="Views\ProduccionDiaria\Index.cshtml" />
+    <Content Include="Views\ProduccionDiaria\ProduccionDiaria.cshtml" />
+    <Content Include="Views\ProduccionDiaria\Create.cshtml" />
+    <Content Include="Views\ProduccionDiaria\Details.cshtml" />
+    <Content Include="Views\ProduccionDiaria\Delete.cshtml" />
     <Content Include="Views\Proveedor\Index.cshtml" />
     <Content Include="Views\Empleado\Index.cshtml" />
     <Content Include="Views\ResumenProduccion\Index.cshtml" />
@@ -298,6 +308,7 @@
     <Content Include="Views\Meta\Crear.cshtml" />
     <Content Include="Views\Usuarios\EditarNombre.cshtml" />
     <Content Include="Views\Administrador\Crear.cshtml" />
+    <Content Include="Views\Administrador\ProduccionDiaria.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

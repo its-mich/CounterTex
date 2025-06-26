@@ -97,7 +97,6 @@ namespace CounterTexFront.Controllers
 
         // EDITAR ROL - POST
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditarRol(CambiarRolViewModel model)
         {
@@ -157,7 +156,6 @@ namespace CounterTexFront.Controllers
             return RedirectToAction("Index");
         }
 
-
         // GET: Meta/Crear
         public ActionResult Crear()
         {
@@ -215,6 +213,148 @@ namespace CounterTexFront.Controllers
             }
         }
 
-       
+        public async Task<ActionResult> ProduccionDiaria()
+        {
+
+            List<ProduccionViewModel> listaProduccion = new List<ProduccionViewModel>();
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+
+                try
+                {
+                    // 1. Obtener producciones
+                    HttpResponseMessage response = await client.GetAsync("api/Produccion");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonProduccion = await response.Content.ReadAsStringAsync();
+                        listaProduccion = JsonConvert.DeserializeObject<List<ProduccionViewModel>>(jsonProduccion);
+                    }
+
+                    // 2. Obtener detalles de producción
+                    var detalles = await GetFromApi<List<ProduccionDetalleViewModel>>(client, "api/ProduccionDetalle") ?? new List<ProduccionDetalleViewModel>();
+
+                    // 3. Obtener usuarios, prendas, operaciones
+                    var usuarios = await GetFromApi<List<UsuarioViewModel>>(client, "api/Usuarios/GetUsuarios") ?? new List<UsuarioViewModel>();
+
+                    if (usuarios == null || !usuarios.Any())
+                    {
+                        System.Diagnostics.Debug.WriteLine("❌ No se recibieron usuarios o la lista está vacía.");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("✅ Usuarios cargados desde la API:");
+                        foreach (var u in usuarios)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Id: {u.Id}, Nombre: {u.Nombre}");
+                        }
+                    }
+
+                    var prendas = await GetFromApi<List<PrendasEntregadasViewModel>>(client, "api/Prendas") ?? new List<PrendasEntregadasViewModel>();
+                    var operaciones = await GetFromApi<List<OperacionViewModel>>(client, "api/Operacion") ?? new List<OperacionViewModel>();
+
+                    // 4. Asignar detalles a cada producción
+                    foreach (var prod in listaProduccion)
+                    {
+                        prod.ProduccionDetalles = detalles.Where(d => d.ProduccionId == prod.Id).ToList();
+
+
+                        System.Diagnostics.Debug.WriteLine($"Producción ID: {prod.Id} - UsuarioId: {prod.UsuarioId}");
+
+                        var usuario = usuarios.FirstOrDefault(u => u.Id == prod.UsuarioId);
+
+                        if (usuario != null)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"➡️ Coincidencia encontrada: {usuario.Nombre}");
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine("❗UsuarioId no coincide con ningún Id en la lista de usuarios.");
+                        }
+
+
+                        prod.NombreUsuario = usuarios.FirstOrDefault(u => u.Id == prod.UsuarioId)?.Nombre ?? "Desconocido";
+                        prod.NombrePrenda = prendas.FirstOrDefault(p => p.Id == prod.PrendaId)?.Nombre ?? "Sin nombre";
+
+                        foreach (var detalle in prod.ProduccionDetalles)
+                        {
+                            var operacion = operaciones.FirstOrDefault(o => o.Id == detalle.OperacionId);
+                            if (operacion != null)
+                            {
+                                detalle.NombreOperacion = operacion.Nombre;
+                                detalle.ValorOperacion = operacion.ValorUnitario;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Error al cargar los datos de producción: " + ex.Message;
+                }
+            }
+
+            return View(listaProduccion);
+        }
+
+
+        // GET: Vista de control de horarios
+        public async Task<ActionResult> ControlHorarios()
+        {
+            List<HorarioViewModel> horarios = new List<HorarioViewModel>();
+
+            try
+            {
+                using (var client = GetClient())
+                {
+                    var response = await client.GetAsync("api/Usuarios/GetUsuarios");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        var usuarios = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(json);
+
+                        ViewBag.Usuarios = usuarios;
+                        ViewBag.EmpleadosJson = JsonConvert.SerializeObject(usuarios);
+                        return View(new List<HorarioViewModel>());
+                    }
+
+                    ViewBag.Usuarios = new List<UsuarioViewModel>();
+                    ViewBag.EmpleadosJson = "[]";
+                    TempData["Error"] = "No se pudieron obtener los empleados.";
+                    return View(new List<HorarioViewModel>());
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Usuarios = new List<UsuarioViewModel>();
+                ViewBag.EmpleadosJson = "[]";
+                TempData["Error"] = $"Error inesperado: {ex.Message}";
+                return View(new List<HorarioViewModel>());
+            }
+        }
+
+        // POST: Crear horario
+        [HttpPost]
+        public async Task<ActionResult> CreateHorario(HorarioViewModel model)
+        {
+            try
+            {
+                using (var client = GetClient())
+                {
+                    var json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync("api/Horarios/PostHorario", content);
+
+                    if (!response.IsSuccessStatusCode)
+                        return Json(new { exito = false, mensaje = "Error al crear el registro." });
+
+                    return Json(new { exito = true, mensaje = "Registro creado correctamente." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { exito = false, mensaje = "Error: " + ex.Message });
+            }
+        }
     }
 }

@@ -1,50 +1,52 @@
-﻿@model CounterTexFront.Models.HorarioViewModel
-@{
+﻿@{
     ViewBag.Title = "Control de Horarios";
     Layout = ViewBag.Layout;
 }
 
-@*<h2 class="mb-4"><i class="fas fa-clock me-2"></i>Control de Horarios</h2>*@
+@functions {
+    CounterTexFront.Models.PerfilEmpleadoViewModel EmpleadoActual => (CounterTexFront.Models.PerfilEmpleadoViewModel)ViewBag.EmpleadoActual;
+}
 
-<!-- Estadísticas rápidas -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Total Empleados</h5>
-                <p class="card-text display-6">48</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Presentes Hoy</h5>
-                <p class="card-text display-6">42</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-danger text-white mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Ausentes Hoy</h5>
-                <p class="card-text display-6">6</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-dark mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Atrasados Hoy</h5>
-                <p class="card-text display-6">5</p>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Registros de Hoy -->
+
 <h4 class="mb-3"><i class="fas fa-list-check me-2"></i>Registros de Hoy</h4>
-<div class="row" id="registroContainer"></div>
+
+@if (!string.IsNullOrEmpty(ViewBag.MensajeError))
+{
+    <div class="alert alert-danger">@ViewBag.MensajeError</div>
+}
+else if (Model != null && Model.Count > 0)
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+            <tr>
+                <th>ID</th>
+                <th>Empleado ID</th>
+                <th>Tipo</th>
+                <th>Hora</th>
+                <th>Fecha</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.EmpleadoId</td>
+                    <td>@item.EmpleadoId</td>
+                    <td>@item.Tipo</td>
+                    <td>@(item.Hora.ToString(@"hh\:mm") ?? "N/A")</td>
+                    <td>@item.Fecha.ToString("yyyy-MM-dd")</td>
+                    <td>@(string.IsNullOrWhiteSpace(item.Observaciones) ? "Sin observaciones" : item.Observaciones)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">No hay registros para hoy.</div>
+}
 
 <!-- Botón para nuevo registro -->
 <div class="text-center mt-4">
@@ -57,25 +59,28 @@
 <div class="modal fade" id="addTimeRecordModal" tabindex="-1" aria-labelledby="addTimeRecordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="addTimeRecordModalLabel">Agregar Registro Manual</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formRegistroManual">
+            <form method="post" action="@Url.Action("RegistrarHorarioManual", "ControlHorarios")">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Agregar Registro Manual</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    @if (EmpleadoActual != null)
+                    {
+                        <input type="hidden" name="EmpleadoId" value="@EmpleadoActual.Id" />
+                        <div class="mb-3">
+                            <label class="form-label">Empleado</label>
+                            <div class="form-control-plaintext">@EmpleadoActual.Nombre</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">No se encontró el empleado logueado.</div>
+                    }
+
                     <div class="mb-3">
-                        <label for="EmpleadoId" class="form-label">Empleado</label>
-                        <select class="form-select" id="EmpleadoId" name="EmpleadoId" required>
-                            <option value="" disabled selected>Seleccionar empleado</option>
-                            @foreach (var emp in ViewBag.Empleados)
-                            {
-                                <option value="@emp.Id">@emp.Nombre</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="TipoRegistro" class="form-label">Tipo de Registro</label>
-                        <select class="form-select" id="TipoRegistro" name="TipoRegistro" required>
+                        <label for="Tipo" class="form-label">Tipo de Registro</label>
+                        <select class="form-select" id="Tipo" name="Tipo" required>
                             <option value="entrada">Entrada</option>
                             <option value="salida">Salida</option>
                             <option value="descanso">Descanso</option>
@@ -85,127 +90,28 @@
                         <label for="Hora" class="form-label">Hora</label>
                         <input type="time" class="form-control" id="Hora" name="Hora" required />
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha</label>
+                        <input type="text" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" disabled />
+                        <input type="hidden" name="Fecha" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Observaciones" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="Observaciones" name="Observaciones" rows="3" placeholder="Escribe una observación (opcional)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Guardar Registro</button>
-                </form>
-            </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        const empleados = @Html.Raw(ViewBag.EmpleadosJson);
 
-        function obtenerNombreEmpleado(id) {
-            const emp = empleados.find(e => e.Id === id);
-            return emp?.Nombre ?? `Empleado #${id}`;
-        }
-
-        function cargarRegistrosHoy() {
-            $.ajax({
-                url: `/api/Horarios?fecha=${new Date().toISOString().substring(0, 10)}`,
-                type: 'GET',
-                success: function (data) {
-                    if (!Array.isArray(data)) {
-                        alert("Error al cargar registros");
-                        return;
-                    }
-
-                    const container = $("#registroContainer");
-                    container.empty();
-
-                    data.forEach(registro => {
-                        let badge = '';
-                        let claseBorde = '';
-
-                        switch (registro.Tipo) {
-                            case 'entrada':
-                                if (registro.Hora > '07:00:00') {
-                                    badge = '<span class="badge bg-danger">Tardanza</span>';
-                                    claseBorde = 'border-danger';
-                                } else {
-                                    badge = '<span class="badge bg-success">A tiempo</span>';
-                                    claseBorde = 'border-success';
-                                }
-                                break;
-                            case 'salida':
-                                badge = '<span class="badge bg-primary">Salida</span>';
-                                claseBorde = 'border-primary';
-                                break;
-                            case 'descanso':
-                                badge = '<span class="badge bg-info text-dark">Descanso</span>';
-                                claseBorde = 'border-warning';
-                                break;
-                        }
-
-                        const nombreEmpleado = obtenerNombreEmpleado(registro.EmpleadoId);
-
-                        const html = `
-                            <div class="col-md-6">
-                                <div class="card border-start ${claseBorde} mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${nombreEmpleado}</h5>
-                                        <p class="card-subtitle text-muted">${registro.Tipo.charAt(0).toUpperCase() + registro.Tipo.slice(1)}</p>
-                                        <p><strong>Hora:</strong> ${registro.Hora}</p>
-                                        ${badge}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        container.append(html);
-                    });
-                },
-                error: function () {
-                    alert("Error al cargar registros.");
-                }
-            });
-        }
-
-        $("#formRegistroManual").submit(function (e) {
-            e.preventDefault();
-
-            const empleadoId = $("#EmpleadoId").val();
-            if (!empleadoId) {
-                alert("Debes seleccionar un empleado.");
-                return;
-            }
-
-            const horaInput = $("#Hora").val();
-            const horaConSegundos = horaInput + ":00";
-
-            const data = {
-                EmpleadoId: parseInt(empleadoId),
-                Tipo: $("#TipoRegistro").val(),
-                Hora: horaConSegundos,
-                Fecha: new Date().toISOString().substring(0, 10),
-                Observaciones: ""
-            };
-
-            $.ajax({
-                url: '/ControlHorarios/Create',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function (response) {
-                    if (response.exito) {
-                        alert(response.mensaje);
-                        $("#addTimeRecordModal").modal('hide');
-                        $("#formRegistroManual")[0].reset();
-                        $("#EmpleadoId").val("");
-                        cargarRegistrosHoy();
-                    } else {
-                        alert("Error: " + response.mensaje);
-                    }
-                },
-                error: function (xhr) {
-                    alert("Ocurrió un error al enviar los datos: " + xhr.responseText);
-                }
-            });
-        });
-
-        // Cargar registros al inicio
-        $(document).ready(function () {
-            cargarRegistrosHoy();
-        });
     </script>
 }

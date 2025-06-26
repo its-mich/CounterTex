@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -44,6 +47,17 @@ namespace CounterTexFront.Controllers
             ViewBag.NombreUsuario = Session["NombreUsuario"]?.ToString();
 
             base.OnActionExecuting(filterContext);
+        }
+        protected async Task<T> GetFromApi<T>(HttpClient client, string endpoint)
+        {
+            HttpResponseMessage response = await client.GetAsync(endpoint);
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+
+            return default(T);
         }
     }
 }

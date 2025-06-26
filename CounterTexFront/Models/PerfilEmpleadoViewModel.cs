@@ -70,6 +70,7 @@ namespace CounterTexFront.Models
         public int IdUsuario { get; set; }
 
         public UsuarioViewModel Usuario { get; set; }
+
         public string Rol { get; set; }
     }
 }
