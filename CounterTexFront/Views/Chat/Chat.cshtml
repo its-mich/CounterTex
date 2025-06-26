@@ -6,25 +6,123 @@
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 
+<style>
+    body {
+        background-color: #0d1b2a;
+        color: #ffffff;
+    }
+
+    .chat-card {
+        background-color: #1b263b;
+        color: #ffffff;
+    }
+
+    .chat-header {
+        background-color: #415a77;
+        color: white;
+    }
+
+    .chat-box {
+        background-color: #0d1b2a;
+        color: white;
+        border: 1px solid #415a77;
+    }
+
+    .form-select,
+    .form-control {
+        background-color: #1b263b;
+        color: white;
+        border: 1px solid #415a77;
+    }
+
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
+
+    .mensaje-enviado, .mensaje-recibido {
+        max-width: 75%;
+        padding: 12px 15px;
+        border-radius: 15px;
+        display: inline-block;
+        word-wrap: break-word;
+    }
+
+    .mensaje-enviado {
+        background-color: #1c7ed6;
+        color: white;
+        align-self: flex-end;
+    }
+
+    .mensaje-recibido {
+        background-color: #dee2e6;
+        color: #212529;
+        align-self: flex-start;
+    }
+
+    .mensaje-wrapper {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .mensaje-usuario-icono {
+        margin-right: 10px;
+        align-self: flex-end;
+    }
+
+    .mensaje-info {
+        font-size: 0.75rem;
+        color: #ced4da;
+        margin-top: 4px;
+    }
+
+    .typing-indicator,
+    .online-indicator {
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+
+    .typing-indicator {
+        font-style: italic;
+        color: #adb5bd;
+    }
+
+    .online-indicator span {
+        color: #2b9348;
+        font-weight: bold;
+    }
+
+    .input-group .btn-success {
+        background-color: #2b9348;
+        border-color: #2b9348;
+    }
+
+        .input-group .btn-success:hover {
+            background-color: #238636;
+            border-color: #238636;
+        }
+</style>
+
 <div class="container mt-5">
-    <div class="card shadow-lg rounded">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div class="card shadow-lg rounded chat-card">
+        <div class="card-header chat-header d-flex justify-content-between align-items-center">
             <h4 class="mb-0"><i class="fas fa-comments me-2"></i>Chat Interno</h4>
         </div>
 
         <div class="card-body">
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-md-4">
                     <label class="form-label"><strong><i class="fas fa-users me-2"></i>Usuarios</strong></label>
                     @Html.DropDownList("DestinatarioId", (SelectList)ViewBag.Usuarios, "Selecciona un usuario", new { @class = "form-select", id = "destinatarioSelect" })
+                    <div class="online-indicator mt-1">Estado: <span id="estadoUsuario">Desconectado</span></div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <div id="chatBox" class="border rounded p-3 bg-light text-dark" style="height: 400px; overflow-y: auto;">
-                        <!-- Mensajes dinámicos -->
+                    <div id="chatBox" class="rounded p-3 chat-box" style="height: 400px; overflow-y: auto;">
+                        <!-- Mensajes -->
                     </div>
+                    <div id="typingIndicator" class="typing-indicator d-none">El usuario está escribiendo...</div>
 
                     <div class="input-group mt-3">
                         <input type="text" id="mensajeInput" class="form-control" placeholder="Escribe tu mensaje..." />
@@ -39,52 +137,101 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        const remitenteId = parseInt('@ViewBag.RemitenteId');
-        let ultimoMensajeId = 0;
+    const remitenteId = parseInt('@ViewBag.RemitenteId');
+    let ultimoMensajeId = 0;
+    let typingTimeout;
 
-        function notificarNuevoMensaje() {
-            $("#chatNotificacionWrapper a").addClass("text-warning fw-bold");
-        }
+    function cargarMensajes() {
+        const destinatarioId = $("#destinatarioSelect").val();
+        if (!destinatarioId) return;
 
-        function cargarMensajes() {
-            const destinatarioId = $("#destinatarioSelect").val();
-            if (!destinatarioId) return;
+        $.get(`/Chat/ObtenerMensajes?remitenteId=${remitenteId}&destinatarioId=${destinatarioId}`, function (data) {
+            $("#chatBox").empty();
+            let nuevoUltimo = ultimoMensajeId;
 
-            $.get(`/Chat/ObtenerMensajes?remitenteId=${remitenteId}&destinatarioId=${destinatarioId}`, function (data) {
-                $("#chatBox").empty();
-                let nuevoUltimo = ultimoMensajeId;
+            data.forEach(msg => {
+                const esRemitente = msg.RemitenteId === remitenteId;
+                const clase = esRemitente ? 'mensaje-enviado' : 'mensaje-recibido';
+                const alineacion = esRemitente ? 'justify-content-end' : 'justify-content-start';
+                const icono = esRemitente ? 'fa-user-tie' : 'fa-user';
 
-                data.forEach(msg => {
-                    const clase = msg.RemitenteId === remitenteId ? 'bg-primary text-white text-end align-self-end' : 'bg-white text-dark text-start';
-                    const estilo = msg.RemitenteId === remitenteId ? 'ms-auto' : 'me-auto';
-                    const rawTicks = msg.fechaHora || msg.FechaHora;
-                    const timestamp = parseInt(rawTicks.replace(/[^0-9]/g, ''));
-                    const fecha = new Date(timestamp);
-                    const fechaFormateada = fecha.toLocaleString();
+                const rawTicks = msg.fechaHora || msg.FechaHora;
+                const timestamp = parseInt(rawTicks.replace(/[^0-9]/g, ''));
+                const fecha = new Date(timestamp);
+                const fechaFormateada = fecha.toLocaleString();
 
-                    $("#chatBox").append(`
-                        <div class="d-flex flex-column ${estilo} mb-2" style="max-width: 75%;">
-                            <div class="p-2 rounded shadow-sm ${clase}">
-                                <div><small>${msg.Mensaje}</small></div>
-                                <div><small class="text-muted">${fechaFormateada}</small></div>
-                            </div>
+                $("#chatBox").append(`
+                    <div class="mensaje-wrapper ${alineacion}">
+                        <div class="mensaje-usuario-icono">
+                            <i class="fas ${icono} fa-lg text-info"></i>
                         </div>
-                    `);
-                    if (msg.id > nuevoUltimo) nuevoUltimo = msg.id;
-                });
+                        <div>
+                            <div class="${clase}">${msg.Mensaje}</div>
+                            <div class="mensaje-info">${fechaFormateada}</div>
+                        </div>
+                    </div>
+                `);
 
-                if (nuevoUltimo > ultimoMensajeId) {
-                    notificarNuevoMensaje();
-                    if (Notification.permission === "granted") {
-                        new Notification("Nuevo mensaje recibido");
-                    }
-                }
-
-                ultimoMensajeId = nuevoUltimo;
-                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+                if (msg.id > nuevoUltimo) nuevoUltimo = msg.id;
             });
+
+            if (nuevoUltimo > ultimoMensajeId) {
+                if (Notification.permission === "granted") {
+                    new Notification("Nuevo mensaje recibido");
+                }
+            }
+
+            ultimoMensajeId = nuevoUltimo;
+            $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+        });
+    }
+
+    function enviarMensaje() {
+        const mensajeTexto = $("#mensajeInput").val().trim();
+        const destinatarioId = $("#destinatarioSelect").val();
+        if (!mensajeTexto || !destinatarioId) return;
+
+        $.ajax({
+            url: "/Chat/EnviarMensaje",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                id: 0,
+                mensaje: mensajeTexto,
+                remitenteId: remitenteId,
+                destinatarioId: parseInt(destinatarioId),
+                fechaHora: new Date().toISOString()
+            })
+        }).done(function (ok) {
+            if (ok) {
+                $("#mensajeInput").val("");
+                cargarMensajes();
+            }
+        }).fail(function (xhr) {
+            console.error("Error al enviar mensaje:", xhr.status, xhr.responseText);
+        });
+    }
+
+    function mostrarEscribiendo() {
+        $("#typingIndicator").removeClass("d-none");
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            $("#typingIndicator").addClass("d-none");
+        }, 2000);
+    }
+
+    function actualizarEstadoUsuario() {
+        const destinatarioId = $("#destinatarioSelect").val();
+        if (!destinatarioId) {
+            $("#estadoUsuario").text("Desconectado");
+            return;
         }
 
+        // Aquí puedes cambiar esta lógica por una llamada real
+        $("#estadoUsuario").text("En línea");
+    }
+
+    $(document).ready(function () {
         if (Notification && Notification.permission !== "granted") {
             Notification.requestPermission();
         }
@@ -93,41 +240,27 @@
             const destinatarioId = $("#destinatarioSelect").val();
             if (destinatarioId) {
                 cargarMensajes();
+                actualizarEstadoUsuario();
             }
         }, 5000);
 
         $("#destinatarioSelect").change(function () {
             cargarMensajes();
+            actualizarEstadoUsuario();
         });
 
         $("#enviarBtn").click(function () {
-            const mensajeTexto = $("#mensajeInput").val().trim();
-            const destinatarioId = $("#destinatarioSelect").val();
-            if (!mensajeTexto || !destinatarioId) return;
-
-            $.ajax({
-                url: "/Chat/EnviarMensaje",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    id: 0,
-                    mensaje: mensajeTexto,
-                    remitenteId: remitenteId,
-                    destinatarioId: parseInt(destinatarioId),
-                    fechaHora: new Date().toISOString()
-                })
-            }).done(function (ok) {
-                if (ok) {
-                    $("#mensajeInput").val("");
-                    cargarMensajes();
-                }
-            }).fail(function (xhr) {
-                console.error("Error al enviar mensaje:", xhr.status, xhr.responseText);
-            });
+            enviarMensaje();
         });
 
-        $(document).on("click", "#chatNotificacionWrapper a", function () {
-            $(this).removeClass("text-warning fw-bold");
+        $("#mensajeInput").keypress(function (e) {
+            if (e.which === 13 && !e.shiftKey) {
+                e.preventDefault();
+                enviarMensaje();
+            } else {
+                mostrarEscribiendo();
+            }
         });
+    });
     </script>
 }
