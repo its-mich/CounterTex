@@ -201,21 +201,14 @@
                 <i class="fas fa-clock"></i> Metas por Corte
             </a>
 
-
-
             <span id="chatNotificacionWrapper">
                 @Html.Partial("_ChatAccess")
             </span>
 
-            @*<a class="nav-link" href="@Url.Action("Revision", "Revision")">
-                    <i class="fas fa-clipboard-check"></i> Revisión Prendas
-                </a>
-                <a class="nav-link" href="@Url.Action("DetallePrenda", "Detalle")">
-                    <i class="fas fa-info-circle"></i> Detalle Prenda
-                </a>
-                <a class="nav-link" href="@Url.Action("Asignacion", "Asignacion")">
-                    <i class="fas fa-tasks"></i> Asignación de Prenda
-                </a>*@
+            <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "MisPagos" ? "active" : "")" href="@Url.Action("MisPagos", "Pagos")">
+                <i class="fas fa-money-bill-wave"></i> Mi Nómina
+            </a>
+
             @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
             {
                 @Html.AntiForgeryToken()

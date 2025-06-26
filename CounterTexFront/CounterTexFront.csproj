@@ -310,6 +310,7 @@
     <Content Include="Views\Administrador\Crear.cshtml" />
     <Content Include="Views\Administrador\ProduccionDiaria.cshtml" />
     <Content Include="Views\Pagos\Index.cshtml" />
+    <Content Include="Views\Pagos\MisPagos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
