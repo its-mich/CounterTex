@@ -1,6 +1,8 @@
 ﻿@{
     Layout = null;
-    var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Empleado";
+
+    var usuario = Session["Usuario"] as CounterTexFront.Models.LoginResponse;
+    var nombreUsuario = usuario?.Nombres ?? "Empleado";
 }
 
 <!DOCTYPE html>
@@ -16,174 +18,174 @@
 
     @RenderSection("Styles", required: false)
 
-<style>
-    body {
-        font-family: 'Roboto', sans-serif;
-        background-color: #1e1e2f;
-        color: #F2F2F2;
-        margin: 0;
-    }
+    <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                background-color: #1e1e2f;
+                color: #F2F2F2;
+                margin: 0;
+            }
 
-    .admin-sidebar {
-        background: linear-gradient(180deg,#2d3a4a 0%, #1a1a1a 100%);
-        color: white;
-        min-height: 100vh;
-        width: 250px;
-        position: fixed;
-        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-    }
+            .admin-sidebar {
+                background: linear-gradient(180deg,#2d3a4a 0%, #1a1a1a 100%);
+                color: white;
+                min-height: 100vh;
+                width: 250px;
+                position: fixed;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+            }
 
-    .sidebar-header {
-        color: white;
-        text-decoration: none;
-        padding: 20px;
-        text-align: center;
-        background-color: rgba(255, 255, 255, 0.05);
-    }
+            .sidebar-header {
+                color: white;
+                text-decoration: none;
+                padding: 20px;
+                text-align: center;
+                background-color: rgba(255, 255, 255, 0.05);
+            }
 
-    .logo-img {
-        width: 80px;
-        height: auto;
-        margin-bottom: 5px;
-    }
+            .logo-img {
+                width: 80px;
+                height: auto;
+                margin-bottom: 5px;
+            }
 
-    .sidebar-profile {
-        background-color: rgba(255, 255, 255, 0.03);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
+            .sidebar-profile {
+                background-color: rgba(255, 255, 255, 0.03);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
 
-        .sidebar-profile .admin-img {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 2px solid #A0CCF2;
-            object-fit: cover;
-        }
+                .sidebar-profile .admin-img {
+                    width: 70px;
+                    height: 70px;
+                    border-radius: 50%;
+                    border: 2px solid #A0CCF2;
+                    object-fit: cover;
+                }
 
-    .sidebar-header img {
-        width: 80px;
-        height: auto;
-        margin-bottom: 10px;
-    }
+            .sidebar-header img {
+                width: 80px;
+                height: auto;
+                margin-bottom: 10px;
+            }
 
-    .sidebar-header h4 {
-        margin: 0;
-        font-weight: bold;
-        font-size: 1.3rem;
-        color: #ffffff;
-    }
+            .sidebar-header h4 {
+                margin: 0;
+                font-weight: bold;
+                font-size: 1.3rem;
+                color: #ffffff;
+            }
 
-    .admin-sidebar .nav-link {
-        color: rgba(255, 255, 255, 0.85);
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-        border-left: 4px solid transparent;
-        transition: all 0.3s ease;
-    }
+            .admin-sidebar .nav-link {
+                color: rgba(255, 255, 255, 0.85);
+                padding: 12px 20px;
+                display: flex;
+                align-items: center;
+                border-left: 4px solid transparent;
+                transition: all 0.3s ease;
+            }
 
-        .admin-sidebar .nav-link:hover,
+                .admin-sidebar .nav-link:hover,
+                .admin-sidebar .nav-link.active {
+                    background-color: rgba(255, 255, 255, 0.08);
+                    border-left-color: #A0CCF2;
+                    color: #ffffff;
+                    text-decoration: none;
+                }
+
+                .admin-sidebar .nav-link i {
+                    margin-right: 12px;
+                    font-size: 1.2rem;
+                }
+
+            .main-content {
+                margin-left: 250px;
+                padding: 30px;
+                background: #1e1e2f;
+                min-height: 100vh;
+            }
+
+            .admin-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+                .user-info img {
+                    width: 45px;
+                    height: 45px;
+                    border-radius: 50%;
+                    border: 2px solid #A0CCF2;
+                }
+
+            footer {
+                background-color: rgba(15, 23, 42, 0.85);
+                padding: 20px 0;
+                font-size: 0.9rem;
+                color: #F2F2F2;
+            }
+
+            .social-icon {
+                color: #A0CCF2;
+                font-size: 26px;
+                margin: 0 12px;
+                transition: transform 0.4s ease, color 0.4s ease;
+            }
+
+                .social-icon:hover {
+                    transform: scale(1.4) rotate(10deg);
+                    color: #ffffff;
+                }
+
+            a {
+                color: #A0CCF2;
+                text-decoration: none;
+            }
+
+                a:hover {
+                    text-decoration: underline;
+                }
+
+            .card-dark {
+                background-color: #2a2a3c;
+                border: none;
+                border-radius: 12px;
+                color: #F2F2F2;
+            }
+
+                .card-dark .card-title {
+                    color: #A0CCF2;
+                }
+
+            .shadow-hover:hover {
+                box-shadow: 0 4px 12px rgba(160, 204, 242, 0.3);
+                transform: translateY(-3px);
+                transition: all 0.3s ease;
+            }
+
+            /*.admin-sidebar .nav-link:hover,
         .admin-sidebar .nav-link.active {
             background-color: rgba(255, 255, 255, 0.08);
             border-left-color: #A0CCF2;
             color: #ffffff;
-            text-decoration: none;
-        }
-
-        .admin-sidebar .nav-link i {
-            margin-right: 12px;
-            font-size: 1.2rem;
-        }
-
-    .main-content {
-        margin-left: 250px;
-        padding: 30px;
-        background: #1e1e2f;
-        min-height: 100vh;
-    }
-
-    .admin-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-        .user-info img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 2px solid #A0CCF2;
-        }
-
-    footer {
-        background-color: rgba(15, 23, 42, 0.85);
-        padding: 20px 0;
-        font-size: 0.9rem;
-        color: #F2F2F2;
-    }
-
-    .social-icon {
-        color: #A0CCF2;
-        font-size: 26px;
-        margin: 0 12px;
-        transition: transform 0.4s ease, color 0.4s ease;
-    }
-
-        .social-icon:hover {
-            transform: scale(1.4) rotate(10deg);
-            color: #ffffff;
-        }
-
-    a {
-        color: #A0CCF2;
-        text-decoration: none;
-    }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-    .card-dark {
-        background-color: #2a2a3c;
-        border: none;
-        border-radius: 12px;
-        color: #F2F2F2;
-    }
-
-        .card-dark .card-title {
-            color: #A0CCF2;
-        }
-
-    .shadow-hover:hover {
-        box-shadow: 0 4px 12px rgba(160, 204, 242, 0.3);
-        transform: translateY(-3px);
-        transition: all 0.3s ease;
-    }
-
-    /*.admin-sidebar .nav-link:hover,
-    .admin-sidebar .nav-link.active {
-        background-color: rgba(255, 255, 255, 0.08);
-        border-left-color: #A0CCF2;
-        color: #ffffff;
-        text-shadow: 0 0 8px rgba(160, 204, 242, 0.8);
-        transition: all 0.2s ease-in-out;
-    }*/
-</style>
+            text-shadow: 0 0 8px rgba(160, 204, 242, 0.8);
+            transition: all 0.2s ease-in-out;
+        }*/
+    </style>
 </head>
 <body>
 
     <!-- Sidebar -->
     <div class="admin-sidebar">
         <div class="sidebar-header">
-            <a href="@Url.Action("Index", "Administrador")" style="text-decoration: none;">
+            <a href="@Url.Action("Index", "Empleado")" style="text-decoration: none;">
                 <img src="~/images/logoredondo.png" alt="Logo CounterTex" class="logo-img" />
                 <h3>Empleado</h3>
             </a>
@@ -195,20 +197,25 @@
             <a class="nav-link" href="@Url.Action("Index", "ControlHorarios")">
                 <i class="fas fa-clock"></i> Control de Horarios
             </a>
+            <a class="nav-link" href="@Url.Action("Index", "Meta")">
+                <i class="fas fa-clock"></i> Metas por Corte
+            </a>
+
+
 
             <span id="chatNotificacionWrapper">
                 @Html.Partial("_ChatAccess")
             </span>
 
-            <a class="nav-link" href="@Url.Action("Revision", "Revision")">
-                <i class="fas fa-clipboard-check"></i> Revisión Prendas
-            </a>
-            <a class="nav-link" href="@Url.Action("DetallePrenda", "Detalle")">
-                <i class="fas fa-info-circle"></i> Detalle Prenda
-            </a>
-            <a class="nav-link" href="@Url.Action("Asignacion", "Asignacion")">
-                <i class="fas fa-tasks"></i> Asignación de Prenda
-            </a>
+            @*<a class="nav-link" href="@Url.Action("Revision", "Revision")">
+                    <i class="fas fa-clipboard-check"></i> Revisión Prendas
+                </a>
+                <a class="nav-link" href="@Url.Action("DetallePrenda", "Detalle")">
+                    <i class="fas fa-info-circle"></i> Detalle Prenda
+                </a>
+                <a class="nav-link" href="@Url.Action("Asignacion", "Asignacion")">
+                    <i class="fas fa-tasks"></i> Asignación de Prenda
+                </a>*@
             @using (Html.BeginForm("LogOff", "Auth", FormMethod.Post, new { id = "logoutForm" }))
             {
                 @Html.AntiForgeryToken()
@@ -223,10 +230,27 @@
     <div class="main-content">
         <div class="admin-header">
             <h2>@ViewBag.Title</h2>
-            <div class="user-info">
-                <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="Empleado" />
-                <span>@nombreUsuario</span>
+            <div class="dropdown user-info">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="Empleado" />
+                    <span class="ms-2">@nombreUsuario</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUserMenu">
+                    <li>
+                        <a class="dropdown-item" href="@Url.Action("EditarNombre", "Usuarios")">
+                            <i class="fas fa-user-edit me-2"></i> Editar Perfil
+                        </a>
+
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit();">
+                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                </ul>
             </div>
+
         </div>
 
         @RenderBody()

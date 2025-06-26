@@ -1,0 +1,68 @@
+﻿@model CounterTexFront.Models.MetaViewModel
+
+@{
+    ViewBag.Title = "Crear Meta";
+    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+}
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Fecha)
+            @Html.TextBoxFor(m => m.Fecha, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Fecha)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.MetaCorte)
+            @Html.TextBoxFor(m => m.MetaCorte, new { @class = "form-control", type = "number" })
+            @Html.ValidationMessageFor(m => m.MetaCorte)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.ProduccionReal)
+            @Html.TextBoxFor(m => m.ProduccionReal, new { @class = "form-control", type = "number" })
+            @Html.ValidationMessageFor(m => m.ProduccionReal)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.FechaHora)
+            @Html.TextBoxFor(m => m.FechaHora, "{0:yyyy-MM-ddTHH:mm}", new { @type = "datetime-local", @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.FechaHora)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Mensaje)
+            @Html.TextBoxFor(m => m.Mensaje, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Mensaje)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.UsuarioId)
+            @Html.TextBoxFor(m => m.UsuarioId, new { @class = "form-control", type = "number" })
+            @Html.ValidationMessageFor(m => m.UsuarioId)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.RemitenteId)
+            @Html.TextBoxFor(m => m.RemitenteId, new { @class = "form-control", type = "number" })
+            @Html.ValidationMessageFor(m => m.RemitenteId)
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.DestinatarioId)
+            @Html.TextBoxFor(m => m.DestinatarioId, new { @class = "form-control", type = "number" })
+            @Html.ValidationMessageFor(m => m.DestinatarioId)
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar</button>
+        @Html.ActionLink("Volver", "Index", null, new { @class = "btn btn-secondary" })
+    </div>
+}
