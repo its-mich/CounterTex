@@ -197,7 +197,6 @@
     <Compile Include="Models\PrendasEntregadasViewModel.cs" />
     <Compile Include="Models\ProduccionViewModel.cs" />
     <Compile Include="Models\ProveedorViewModel.cs" />
-    <Compile Include="Models\ResumenMensualViewModel.cs" />
     <Compile Include="Models\SolicitudRecuperacionViewModel.cs" />
     <Compile Include="Models\RegistroViewModel.cs" />
     <Compile Include="Models\RestablecerContraseñaViewModel.cs" />
