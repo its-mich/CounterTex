@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace CounterTexFront.Controllers
 {
@@ -77,5 +79,70 @@ namespace CounterTexFront.Controllers
             }
             return RedirectToAction("Index");
         }
+
+
+
+        [HttpGet]
+        public ActionResult EditarNombre()
+        {
+            var usuario = Session["Usuario"] as LoginResponse;
+            if (usuario == null)
+                return RedirectToAction("Login", "Auth");
+
+            var model = new EditarNombreViewModel
+            {
+                Id = usuario.Id,
+                Nombres = usuario.Nombres
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> EditarNombre(EditarNombreViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var usuario = Session["Usuario"] as LoginResponse;
+            if (usuario == null)
+                return RedirectToAction("Login", "Auth");
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ConfigurationManager.AppSettings["Api"]);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var dto = new { Nombre = model.Nombres };
+
+                var content = new StringContent(
+                    new JavaScriptSerializer().Serialize(dto),
+                    Encoding.UTF8,
+                    "application/json"
+                );
+
+                var response = await client.PutAsync($"api/Usuarios/ActualizarNombre/{usuario.Id}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    usuario.Nombres = model.Nombres;
+                    Session["Usuario"] = usuario;
+                    TempData["Success"] = "Nombre actualizado correctamente.";
+                    return RedirectToAction("EditarNombre");
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    TempData["Error"] = "Error al actualizar el nombre. Detalle: " + error;
+                    return View(model);
+                }
+            }
+        }
+
+
+
+
     }
 }

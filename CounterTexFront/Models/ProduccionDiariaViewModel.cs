@@ -1,58 +1,77 @@
-﻿using Newtonsoft.Json;        // Para JsonConvert y serialización/deserialización
-using Newtonsoft.Json.Linq;   // Para JObject, JArray, etc. si lo necesitas
-using System.Linq;            // Para LINQ
-using System;                 // Para tipos básicos como DateTime
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Web;
+using System.Web.Mvc;
 
 namespace CounterTexFront.Models
 {
     public class ProduccionDiariaViewModel
     {
-        //constructor por defecto
-        public ProduccionDiariaViewModel()
-        {
-            ProduccionDetalles = new List<ProduccionDetalleViewModel>();
-            UsuariosDisponibles = new List<UsuarioViewModel>();
-            PrendasDisponibles = new List<PrendasEntregadasViewModel>();
-            OperacionesDisponibles = new List<OperacionViewModel>();
-        }
-
         public int Id { get; set; }
 
         [Required(ErrorMessage = "La fecha es obligatoria.")]
-        [DataType(DataType.Date)] // Para que el input de fecha se muestre mejor
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Fecha")]
+        [DataType(DataType.Date)]
         public DateTime Fecha { get; set; }
 
-        [Required(ErrorMessage = "El usuario es obligatorio.")]
-        [Display(Name = "Usuario")]
+        [Required(ErrorMessage = "El total es obligatorio.")]
+        [Display(Name = "Total Valor")]
+        [Range(0, double.MaxValue, ErrorMessage = "El total debe ser un valor positivo.")]
+        public decimal TotalValor { get; set; }
+
+        [Required(ErrorMessage = "Debe seleccionar un empleado.")]
+        [Display(Name = "Empleado")]
         public int UsuarioId { get; set; }
 
-        [Required(ErrorMessage = "La prenda es obligatoria.")]
+        [Required(ErrorMessage = "Debe seleccionar una prenda.")]
         [Display(Name = "Prenda")]
         public int PrendaId { get; set; }
 
-        public decimal TotalValor { get; set; }
-        public List<ProduccionDetalleViewModel> ProduccionDetalles { get; set; }
+        public List<ProduccionDiariaDetalleViewModel> ProduccionDetalles { get; set; } = new List<ProduccionDiariaDetalleViewModel>();
 
-        // Propiedades para rellenar DropDownLists en la vista (no se envían a la API)
-        public IEnumerable<UsuarioViewModel> UsuariosDisponibles { get; set; }
-        public IEnumerable<PrendasEntregadasViewModel> PrendasDisponibles { get; set; }
-        public IEnumerable<OperacionViewModel> OperacionesDisponibles { get; set; }
-
-        // Propiedades de navegación para la vista de Detalles (si la API las devuelve)
-        // Basado en el JSON que me mostraste, tu API sí devuelve estos objetos completos.
-        public UsuarioViewModel Usuario { get; set; }
-        public PrendasEntregadasViewModel Prenda { get; set; }
+        public IEnumerable<SelectListItem> Usuarios { get; set; }
+        public IEnumerable<SelectListItem> Prendas { get; set; }
+        public IEnumerable<SelectListItem> Operaciones { get; set; }
     }
-    public class OperacionViewModel
+
+    public class ProduccionDiariaDetalleViewModel
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
 
-        [Display(Name = "Valor Unitario")]
-        public decimal? ValorUnitario { get; set; }
+        [Required(ErrorMessage = "La cantidad es obligatoria.")]
+        [Display(Name = "Cantidad de operación")]
+        [Range(1, int.MaxValue, ErrorMessage = "La cantidad debe ser mayor que cero.")]
+        public int Cantidad { get; set; }
+
+        [Required(ErrorMessage = "Debe seleccionar una operación.")]
+        [Display(Name = "Nombre de la Operación")]
+        public int OperacionId { get; set; }
+    }
+
+    public class Usuario
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "El nombre del usuario es obligatorio.")]
+        [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
+        public string Nombre { get; set; }
+    }
+
+    public class Prenda
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "El nombre de la prenda es obligatorio.")]
+        [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
+        public string Nombre { get; set; }
+    }
+
+    public class Operacion
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "El nombre de la operación es obligatorio.")]
+        [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
+        public string Nombre { get; set; }
     }
 }

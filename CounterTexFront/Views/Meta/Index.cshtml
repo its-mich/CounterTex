@@ -1,0 +1,100 @@
+﻿@model CounterTexFront.Models.MetaYHorarioViewModel
+
+@{
+    ViewBag.Title = "Metas del Usuario";
+    Layout = ViewBag.Layout;
+}
+
+<h2>Metas del Usuario</h2>
+
+@if (Model.Metas != null && Model.Metas.Any())
+{
+    <div class="form-group mb-4">
+        <label for="metaSelector">Selecciona una meta:</label>
+        <select id="metaSelector" class="form-control">
+            <option value="">-- Selecciona --</option>
+            @{
+                int index = 0;
+                foreach (var meta in Model.Metas)
+                {
+                    <option value="@index">@meta.Fecha.ToString("yyyy-MM-dd")</option>
+                    index++;
+                }
+            }
+        </select>
+    </div>
+
+    <div id="metaDetalle" style="display:none;" class="mb-4">
+        <h4>Detalle de la Meta Seleccionada</h4>
+        <p><strong>Fecha:</strong> <span id="metaFecha"></span></p>
+        <p><strong>Meta Corte:</strong> <span id="metaCorte"></span></p>
+        <p><strong>Producción Real:</strong> <span id="metaReal"></span></p>
+        <p><strong>Mensaje:</strong> <span id="metaMensaje"></span></p>
+        <canvas id="metaChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Datos ocultos para cada meta -->
+    {
+        int i = 0;
+        foreach (var meta in Model.Metas)
+        {
+            <input type="hidden" id="fecha_@i" value="@meta.Fecha.ToString("yyyy-MM-dd")" />
+            <input type="hidden" id="metaCorte_@i" value="@meta.MetaCorte" />
+            <input type="hidden" id="metaReal_@i" value="@meta.ProduccionReal" />
+            <input type="hidden" id="mensaje_@i" value="@meta.Mensaje" />
+            i++;
+        }
+
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.getElementById('metaSelector').addEventListener('change', function () {
+            const index = this.value;
+            if (index === "") {
+                document.getElementById('metaDetalle').style.display = 'none';
+                return;
+            }
+
+            const fecha = document.getElementById('fecha_' + index).value;
+            const corte = document.getElementById('metaCorte_' + index).value;
+            const real = document.getElementById('metaReal_' + index).value;
+            const mensaje = document.getElementById('mensaje_' + index).value;
+
+            document.getElementById('metaFecha').textContent = fecha;
+            document.getElementById('metaCorte').textContent = corte;
+            document.getElementById('metaReal').textContent = real;
+            document.getElementById('metaMensaje').textContent = mensaje;
+
+            document.getElementById('metaDetalle').style.display = 'block';
+
+            // Destruir gráfico anterior
+            if (window.metaChartInstance) {
+                window.metaChartInstance.destroy();
+            }
+
+            const ctx = document.getElementById('metaChart').getContext('2d');
+            window.metaChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Meta Corte', 'Producción Real'],
+                    datasets: [{
+                        label: 'Comparativa',
+                        data: [parseInt(corte), parseInt(real)],
+                        backgroundColor: ['#007bff', '#28a745']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        });
+    </script>
+}
+else
+{
+    <div class="alert alert-warning">No se encontraron metas registradas para este usuario.</div>
+}

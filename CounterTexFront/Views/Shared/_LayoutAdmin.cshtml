@@ -213,6 +213,10 @@
             <span id="chatNotificacionWrapper">
                 @Html.Partial("_ChatAccess")
             </span>
+
+            <a class="nav-link" href="@Url.Action("Crear", "Administrador")">
+                <i class="fas fa-clock"></i> Metas por Corte
+            </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Asignacion" ? "active" : "")"
                href="@Url.Action("Index", "Asignacion")">
                 <i class="fas fa-tasks"></i> Asignación de Prendas

@@ -14,7 +14,7 @@ namespace CounterTexFront.Controllers
 {
     public class EmpleadoController : BaseController
     {
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+       private string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
         public async Task<ActionResult> Index()
         {
@@ -24,6 +24,7 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
+
                     HttpResponseMessage response = await client.GetAsync("api/Empleado/GetEmpleado");
 
                     if (response.IsSuccessStatusCode)

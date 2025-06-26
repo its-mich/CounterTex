@@ -1,0 +1,105 @@
+﻿@model CounterTexFront.Models.ProduccionDiariaViewModel
+
+@{
+    ViewBag.Title = "Editar Producción Diaria";
+    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+}
+
+@section Styles {
+    <style>
+        body {
+            color: white;
+        }
+
+        .form-section {
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .detalle-item {
+            background-color: #f2f2f2;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+    </style>
+}
+
+<div class="container mt-4">
+    <div class="form-section bg-dark text-white">
+        <h2><i class="fas fa-edit"></i> Editar Producción Diaria</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mt-3">@TempData["ErrorMessage"]</div>
+        }
+
+        @using (Html.BeginForm("Editar", "ProduccionDiaria", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Fecha)
+                @Html.TextBoxFor(m => m.Fecha, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.UsuarioId)
+                @Html.DropDownListFor(m => m.UsuarioId, Model.Usuarios, "-- Seleccione Usuario --", new { @class = "form-control" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.PrendaId)
+                @Html.DropDownListFor(m => m.PrendaId, Model.Prendas, "-- Seleccione Prenda --", new { @class = "form-control" })
+            </div>
+
+    
+
+
+            <h4 class="mt-4">Detalles de Producción</h4>
+
+            <div id="detalles">
+                @for (int i = 0; i < Model.ProduccionDetalles.Count; i++)
+                {
+                    <div class="detalle-item">
+                        @Html.HiddenFor(m => m.ProduccionDetalles[i].Id)
+
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ProduccionDetalles[i].Cantidad)
+                            @Html.TextBoxFor(m => m.ProduccionDetalles[i].Cantidad, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                min = "1"
+                            })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ProduccionDetalles[i].OperacionId)
+                            @Html.DropDownListFor(m => m.ProduccionDetalles[i].OperacionId, Model.Operaciones, "-- Seleccione Operación --", new
+                            {
+                                @class = "form-control"
+                            })
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary ml-2">Cancelar</a>
+            </div>
+        }
+    </div>
+</div>
