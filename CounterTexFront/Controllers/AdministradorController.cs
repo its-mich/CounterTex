@@ -144,7 +144,9 @@ namespace CounterTexFront.Controllers
                     }
                     else
                     {
-                        TempData["Mensaje"] = "Error al eliminar el usuario.";
+                        var errorDetail = await resp.Content.ReadAsStringAsync();
+                        TempData["Mensaje"] = $"Error al eliminar el usuario: {resp.StatusCode} - {errorDetail}";
+
                     }
                 }
             }
