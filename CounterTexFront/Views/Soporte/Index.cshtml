@@ -1,0 +1,89 @@
+﻿@model List<CounterTexFront.Models.ContactoViewModel>
+
+@{
+    ViewBag.Title = "Soporte";
+    Layout = ViewBag.Layout;
+}
+
+<style>
+    .form-container {
+        background-color: #1e2b2e;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .form-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #A0CCF2;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        color: #d0d0d0;
+        font-weight: 500;
+    }
+
+    .custom-dark-table th {
+        background-color: #344045;
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .custom-dark-table td {
+        background-color: #2b353a;
+        color: #F2F2F2;
+    }
+
+    .custom-dark-table tr:hover td {
+        background-color: #3e4b50;
+    }
+</style>
+
+<div class="container mt-4 text-light">
+    <div class="form-container">
+        <div class="form-title">
+            <i class="fas fa-comments"></i> Soporte Técnico
+        </div>
+
+        @using (Html.BeginForm("RegistrarContacto", "Soporte", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                @Html.Label("Asunto", new { @class = "form-label" })
+                @Html.TextBox("Asunto", null, new { @class = "form-control", placeholder = "Ingrese el asunto" })
+            </div>
+
+            <div class="mb-3">
+                @Html.Label("Mensaje", new { @class = "form-label" })
+                @Html.TextArea("Mensaje", null, new { @class = "form-control", rows = 4, placeholder = "Describa su problema o consulta" })
+            </div>
+
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Enviar</button>
+        }
+
+        <hr />
+
+        <h4 class="mt-4 text-info">Historial de Consultas</h4>
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered table-hover custom-dark-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Asunto</th>
+                        <th>Mensaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var contacto in Model)
+                    {
+                        <tr>
+                            <td>@contacto.Asunto</td>
+                            <td>@contacto.Mensaje</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

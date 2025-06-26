@@ -217,9 +217,9 @@
             <a class="nav-link" href="@Url.Action("Crear", "Administrador")">
                 <i class="fas fa-clock"></i> Metas por Corte
             </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Asignacion" ? "active" : "")"
-               href="@Url.Action("Index", "Asignacion")">
-                <i class="fas fa-tasks"></i> Asignación de Prendas
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Soporte" ? "active" : "")"
+               href="@Url.Action("Index", "Soporte")">
+                <i class="fas fa-headset"></i> Soporte Técnico
             </a>
 
             <!-- Opciones administrativas solo para administradores -->
@@ -233,6 +233,7 @@
                    href="@Url.Action("EliminarUsuario", "Administrador")">
                     <i class="fas fa-user-slash"></i> Eliminar Usuario
                 </a>
+
             }
 
             <!-- Cerrar sesión -->
