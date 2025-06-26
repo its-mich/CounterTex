@@ -7,8 +7,6 @@
     CounterTexFront.Models.PerfilEmpleadoViewModel EmpleadoActual => (CounterTexFront.Models.PerfilEmpleadoViewModel)ViewBag.EmpleadoActual;
 }
 
-
-
 <h4 class="mb-3"><i class="fas fa-list-check me-2"></i>Registros de Hoy</h4>
 
 @if (!string.IsNullOrEmpty(ViewBag.MensajeError))
@@ -69,7 +67,7 @@ else
                     {
                         <input type="hidden" name="EmpleadoId" value="@EmpleadoActual.Id" />
                         <div class="mb-3">
-                            <label class="form-label">Empleado</label>
+                            <label class="form-label fw-bold text-dark">Empleado</label>
                             <div class="form-control-plaintext">@EmpleadoActual.Nombre</div>
                         </div>
                     }
@@ -79,25 +77,27 @@ else
                     }
 
                     <div class="mb-3">
-                        <label for="Tipo" class="form-label">Tipo de Registro</label>
+                        <label for="Tipo" class="form-label fw-bold text-dark">Tipo de Registro</label>
                         <select class="form-select" id="Tipo" name="Tipo" required>
                             <option value="entrada">Entrada</option>
                             <option value="salida">Salida</option>
                             <option value="descanso">Descanso</option>
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label for="Hora" class="form-label">Hora</label>
+                        <label for="Hora" class="form-label fw-bold text-dark">Hora</label>
                         <input type="time" class="form-control" id="Hora" name="Hora" required />
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Fecha</label>
+                        <label class="form-label fw-bold text-dark">Fecha</label>
                         <input type="text" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" disabled />
                         <input type="hidden" name="Fecha" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                     </div>
 
                     <div class="mb-3">
-                        <label for="Observaciones" class="form-label">Observaciones</label>
+                        <label for="Observaciones" class="form-label fw-bold text-dark">Observaciones</label>
                         <textarea class="form-control" id="Observaciones" name="Observaciones" rows="3" placeholder="Escribe una observación (opcional)"></textarea>
                     </div>
                 </div>
@@ -112,6 +112,25 @@ else
 
 @section Scripts {
     <script>
-
+        // Puedes añadir aquí scripts para validaciones si lo necesitas
     </script>
+}
+
+@section Styles {
+    <style>
+        .modal input,
+        .modal textarea,
+        .modal select {
+            color: #212529 !important;
+            background-color: #ffffff !important;
+        }
+
+        .modal .form-control-plaintext {
+            color: #212529 !important;
+        }
+
+        .modal label {
+            font-weight: 600;
+        }
+    </style>
 }

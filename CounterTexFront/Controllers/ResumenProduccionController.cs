@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -16,22 +17,37 @@ namespace CounterTexFront.Controllers
         public async Task<ActionResult> Index()
         {
             List<UsuarioViewModel> empleados = new List<UsuarioViewModel>();
+            List<string> tiposPrenda = new List<string>();
 
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.GetAsync("api/Usuarios");
 
-                    if (response.IsSuccessStatusCode)
+                    // Obtener empleados desde la API
+                    var responseEmpleados = await client.GetAsync("api/Usuarios/GetUsuarios");
+                    if (responseEmpleados.IsSuccessStatusCode)
                     {
-                        var json = await response.Content.ReadAsStringAsync();
-                        empleados = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(json);
+                        var json = await responseEmpleados.Content.ReadAsStringAsync();
+                        var todos = JsonConvert.DeserializeObject<List<UsuarioViewModel>>(json);
+                        empleados = todos.Where(u => u.RolNombre == "Empleado").ToList();
                     }
                     else
                     {
-                        ViewBag.Error = "No se pudo cargar la lista de empleados.";
+                        ViewBag.Error = "No se pudieron cargar los empleados.";
+                    }
+
+                    // Obtener tipos de prenda desde la API
+                    var responsePrendas = await client.GetAsync("api/Produccion/GetTiposPrenda");
+                    if (responsePrendas.IsSuccessStatusCode)
+                    {
+                        var jsonTipos = await responsePrendas.Content.ReadAsStringAsync();
+                        tiposPrenda = JsonConvert.DeserializeObject<List<string>>(jsonTipos);
+                    }
+                    else
+                    {
+                        ViewBag.Error = "No se pudieron cargar los tipos de prenda.";
                     }
                 }
             }
@@ -41,6 +57,7 @@ namespace CounterTexFront.Controllers
             }
 
             ViewBag.Empleados = empleados;
+            ViewBag.TiposPrenda = tiposPrenda;
             ViewBag.Layout = Session["Layout"];
             return View();
         }

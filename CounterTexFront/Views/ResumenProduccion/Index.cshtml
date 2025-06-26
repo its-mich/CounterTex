@@ -1,6 +1,8 @@
 ﻿@{
     ViewBag.Title = "Resumen de Producción Mensual";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var empleados = ViewBag.Empleados as List<CounterTexFront.Models.UsuarioViewModel>;
+    var tipos = ViewBag.TiposPrenda as List<string>;
 }
 
 @if (ViewBag.Error != null)
@@ -28,14 +30,29 @@
             <label for="usuarioId">Empleado:</label>
             <select id="usuarioId" class="form-control">
                 <option value="">Todos</option>
+                @if (empleados != null)
+                {
+                    foreach (var emp in empleados)
+                    {
+                        if (emp.RolNombre == "Empleado")
+                        {
+                            <option value="@emp.Id">@emp.Nombre</option>
+                        }
+                    }
+                }
             </select>
         </div>
         <div class="col-md-3">
             <label for="tipoPrenda">Tipo de prenda:</label>
             <select id="tipoPrenda" class="form-control">
                 <option value="">Todas</option>
-                <option value="Camisa">Camisa</option>
-                <option value="Pantalón">Pantalón</option>
+                @if (tipos != null)
+                {
+                    foreach (var tipo in tipos)
+                    {
+                        <option value="@tipo">@tipo</option>
+                    }
+                }
             </select>
         </div>
         <div class="col-md-1 d-flex align-items-end">
@@ -157,35 +174,15 @@
         grafico = new Chart(ctx, config);
     }
 
-    function cargarUsuarios() {
-        fetch('https://localhost:7030/api/Usuarios')
-            .then(response => response.json())
-            .then(data => {
-                const select = document.getElementById("usuarioId");
-                select.innerHTML = '<option value="">Todos</option>';
-                data.filter(u => u.rol === "Empleado")
-                    .forEach(u => {
-                        const opt = document.createElement("option");
-                        opt.value = u.id;
-                        opt.textContent = u.nombre;
-                        select.appendChild(opt);
-                    });
-                cargarResumen();
-            })
-            .catch(error => {
-                console.error("Error cargando usuarios:", error);
-            });
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-        cargarUsuarios();
+        cargarResumen();
     });
 </script>
 
 <style>
     #estadisticas {
-        background-color: #2c2c2c; /* Fondo oscuro */
-        color: #f2f2f2; /* Texto claro */
+        background-color: #2c2c2c;
+        color: #f2f2f2;
         border: 1px solid #444;
         border-radius: 12px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
@@ -197,7 +194,7 @@
             border-bottom: 1px solid #444;
             padding-bottom: 8px;
             margin-bottom: 12px;
-            color: #A0CCF2; /* Azul claro */
+            color: #A0CCF2;
         }
 
     #listaEstadisticas {
@@ -206,8 +203,7 @@
 
         #listaEstadisticas li {
             margin-bottom: 6px;
-            color: #f2f2f2; /* Color blanco suave */
+            color: #f2f2f2;
             font-size: 1rem;
         }
 </style>
-

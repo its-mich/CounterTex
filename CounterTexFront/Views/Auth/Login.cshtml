@@ -205,6 +205,16 @@
             transform: scale(1.04); /* Aumenta la escala en un 5% - puedes ajustar este valor */
             transform-origin: center center; /* Asegura que la escala se aplique desde el centro */
         }
+
+        .modal input::placeholder {
+            color: #6c757d !important;
+            opacity: 1;
+        }
+
+        .modal input {
+            color: #212529; /* color típico del texto oscuro de Bootstrap */
+            background-color: #fff; /* asegura buen contraste */
+        }
     </style>
 
 
@@ -235,12 +245,6 @@
                 }
             }
 
-            @if (TempData["MensajeLogin"] != null)
-            {
-                <div class="alert alert-success text-left">
-                    <strong>Éxito:</strong> @TempData["MensajeLogin"]
-                </div>
-            }
 
             @using (Html.BeginForm("Login", "Auth", FormMethod.Post, new { id = "loginForm" }))
             {
@@ -349,15 +353,22 @@
                         return response.text();
                     })
                     .then(data => {
-                        $('#mensajeRecuperacion').text("Código enviado al correo.").show();
+                        // Mostrar mensaje con Toastr
+                        toastr.success("Código enviado correctamente al correo ingresado.", "✔️ Listo", {
+                            timeOut: 2000,
+                            progressBar: true,
+                            positionClass: "toast-top-right"
+                        });
 
-                        // Oculta el primer modal
-                        $('#recuperarModal').modal('hide');
+                        // Cerrar el primer modal después de un breve retraso
+                        setTimeout(() => {
+                            $('#recuperarModal').modal('hide');
+                        }, 1000);
 
-                        // Espera un poco antes de mostrar el segundo modal
+                        // Abrir el segundo modal después de que el mensaje se haya mostrado
                         setTimeout(() => {
                             $('#codigoModal').modal('show');
-                        }, 500); // medio segundo para asegurar la transición
+                        }, 2200);
                     })
                     .catch(async (error) => {
                         let errMsg = "Ocurrió un error inesperado.";
@@ -423,6 +434,24 @@
                     });
             });
         });
+    </script>
+    <!-- Toastr.js CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+    $(function () {
+        var mensaje = '@TempData["MensajeLogin"]';
+        if (mensaje && mensaje !== '') {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "5000"
+            };
+            toastr.success(mensaje, '✅ Éxito');
+        }
+    });
     </script>
 </body>
 </html>

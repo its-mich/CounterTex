@@ -18,6 +18,11 @@ namespace CounterTexFront.Controllers
 
         public ActionResult Login()
         {
+            if (TempData["MensajeRegistro"] != null)
+            {
+                TempData["MensajeLogin"] = TempData["MensajeRegistro"];
+            }
+
             return View();
         }
 

@@ -79,7 +79,7 @@ else
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
                             <strong>ID:</strong> @p.Id -
                             <strong>Fecha:</strong> @p.Fecha.ToShortDateString() -
-                            <strong>Total:</strong> @p.TotalValor.ToString("C") -
+                            <strong>Total:</strong> @p.TotalValor.ToString("C", new System.Globalization.CultureInfo("es-CO")) -
                             <strong>Usuario:</strong> @p.NombreUsuario -
                             <strong>Prenda:</strong> @p.NombrePrenda
                         </button>
@@ -88,7 +88,7 @@ else
                         <div class="accordion-body accordion-body-custom">
                             <p><strong>ID Producción:</strong> @p.Id</p>
                             <p><strong>Fecha:</strong> @p.Fecha</p>
-                            <p><strong>Total Valor:</strong> @p.TotalValor.ToString("C")</p>
+                            <p><strong>Total Valor:</strong> @p.TotalValor.ToString("C", new System.Globalization.CultureInfo("es-CO"))</p>
                             <p><strong>Usuario:</strong> @p.NombreUsuario</p>
                             <p><strong>Prenda:</strong> @p.NombrePrenda</p>
 
@@ -103,8 +103,8 @@ else
                                         <li>
                                             <strong>Operación:</strong> @d.NombreOperacion,
                                             <strong>Cantidad:</strong> @d.Cantidad,
-                                            <strong>Valor Unitario:</strong> @(d.ValorOperacion?.ToString("C") ?? "N/A"),
-                                            <strong>Subtotal:</strong> @d.ValorTotal.ToString("C")
+                                            <strong>Valor Unitario:</strong> @(d.ValorOperacion?.ToString("C", new System.Globalization.CultureInfo("es-CO")) ?? "N/A"),
+                                            <strong>Subtotal:</strong> @d.ValorTotal.ToString("C", new System.Globalization.CultureInfo("es-CO"))
                                         </li>
                                     }
                                 </ul>
