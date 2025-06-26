@@ -142,8 +142,8 @@
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Entrega de Prendas" ? "active" : "")" href="@Url.Action("IndexEntregas", "Proveedor")">
                 <i class="fas fa-box"></i> Prendas Entregadas
             </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Contacto" ? "active" : "")" href="@Url.Action("Index", "Contacto")">
-                <i class="fas fa-dollar-sign"></i> Pagos
+            <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "RegistrarPago" ? "active" : "")" href="@Url.Action("RegistrarPago", "Proveedor")">
+                <i class="fas fa-credit-card"></i> Registrar Pago
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Soporte" ? "active" : "")" href="@Url.Action("Index", "Soporte")">
                 <i class="fas fa-comments"></i> Soporte

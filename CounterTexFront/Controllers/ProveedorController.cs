@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Net.Http.Headers;
 
 namespace CounterTexFront.Controllers
 {
@@ -284,6 +285,83 @@ namespace CounterTexFront.Controllers
             catch (Exception ex)
             {
                 return new HttpStatusCodeResult(500, "Error interno: " + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> RegistrarPago()
+        {
+            var model = new PagoProveedorViewModel();
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    HttpResponseMessage response = await client.GetAsync("api/Prendas");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        var prendas = JsonConvert.DeserializeObject<List<PrendasEntregadasViewModel>>(json);
+                        model.PrendasDisponibles = prendas.Select(p => new SelectListItem
+                        {
+                            Value = p.Id.ToString(),
+                            Text = p.Nombre
+                        }).ToList();
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "No se pudo cargar la lista de prendas.";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error al cargar prendas: " + ex.Message;
+            }
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult> RegistrarPago(PagoProveedorViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var usuario = Session["Usuario"] as LoginResponse;
+            if (usuario == null)
+            {
+                TempData["ErrorMessage"] = "Sesión expirada.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ConfigurationManager.AppSettings["Api"]);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var dto = new
+                {
+                    ProveedorId = usuario.Id,
+                    PrendaId = model.PrendaId,
+                    CantidadPrendas = model.CantidadPrendas,
+                    PrecioUnitario = model.PrecioUnitario,
+                    Observaciones = model.Observaciones
+                };
+
+                var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("/api/Pagos/proveedor", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Pago registrado correctamente.";
+                    return RedirectToAction("RegistrarPago");
+                }
+
+                ModelState.AddModelError("", "Ocurrió un error al registrar el pago.");
+                return View(model);
             }
         }
 

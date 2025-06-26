@@ -186,6 +186,7 @@
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\MetaViewModel.cs" />
     <Compile Include="Models\MetaYHorarioViewModel.cs" />
+    <Compile Include="Models\PagoProveedorViewModel.cs" />
     <Compile Include="Models\PagoViewModel.cs" />
     <Compile Include="Models\PerfilAdministradorViewModel.cs" />
     <Compile Include="Models\PerfilEmpleadoViewModel.cs" />
@@ -320,6 +321,7 @@
     <Content Include="Views\Pagos\Index.cshtml" />
     <Content Include="Views\Pagos\MisPagos.cshtml" />
     <Content Include="Views\Pagos\MisPagosPdf.cshtml" />
+    <Content Include="Views\Proveedor\RegistrarPago.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
