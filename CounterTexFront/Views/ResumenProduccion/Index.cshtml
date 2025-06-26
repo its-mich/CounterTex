@@ -108,11 +108,22 @@
         const prendaMin = etiquetas[cantidades.indexOf(min)];
 
         document.getElementById("listaEstadisticas").innerHTML = `
-            <li><strong>Total unidades producidas:</strong> ${totalUnidades}</li>
-            <li><strong>Prenda más producida:</strong> ${prendaMax} (${max} unidades)</li>
-            <li><strong>Prenda menos producida:</strong> ${prendaMin} (${min} unidades)</li>
-        `;
+        <li><strong>Total unidades producidas:</strong> ${totalUnidades}</li>
+        <li><strong>Prenda más producida:</strong> ${prendaMax} (${max} unidades)</li>
+        <li><strong>Prenda menos producida:</strong> ${prendaMin} (${min} unidades)</li>
+    `;
 
+        const colores = [
+            'rgba(0, 123, 255, 0.7)',   // Azul
+            'rgba(40, 167, 69, 0.7)',   // Verde
+            'rgba(255, 193, 7, 0.7)',   // Amarillo
+            'rgba(220, 53, 69, 0.7)',   // Rojo
+            'rgba(108, 117, 125, 0.7)'  // Gris oscuro
+        ];
+
+        const coloresBarras = cantidades.map((_, index) => colores[index % colores.length]);
+
+        
         const config = {
             type: 'bar',
             data: {
@@ -120,11 +131,13 @@
                 datasets: [{
                     label: 'Unidades producidas',
                     data: cantidades,
-                    backgroundColor: 'rgba(160, 204, 242, 0.7)',
-                    borderColor: '#404040',
+                    backgroundColor: 'rgba(0, 123, 255, 0.7)', // Azul vivo
+                    backgroundColor: coloresBarras,
                     borderWidth: 2,
                     borderRadius: 10,
-                    barThickness: 40
+                    barThickness: 60,
+                    maxBarThickness: 80,
+                    minBarLength: 5
                 }]
             },
             options: {
@@ -133,23 +146,23 @@
                     legend: {
                         position: 'top',
                         labels: {
-                            color: '#404040',
+                            color: '#F2F2F2', // Texto claro
                             font: { weight: 'bold' }
                         }
                     },
                     title: {
                         display: true,
                         text: 'Resumen de Producción por Prenda',
-                        color: '#404040',
+                        color: '#A0CCF2',
                         font: {
                             size: 20,
                             weight: 'bold'
                         }
                     },
                     tooltip: {
-                        backgroundColor: '#404040',
-                        titleColor: '#A0CCF2',
-                        bodyColor: '#F2F2F2',
+                        backgroundColor: '#1a1a1a',
+                        titleColor: '#00BFFF',
+                        bodyColor: '#FFFFFF',
                         callbacks: {
                             label: function (context) {
                                 return ` ${context.dataset.label}: ${context.raw} unidades`;
@@ -159,11 +172,13 @@
                 },
                 scales: {
                     x: {
-                        ticks: { color: '#404040', font: { weight: 'bold' } }
+                        ticks: { color: '#F2F2F2', font: { weight: 'bold' } },
+                        grid: { color: '#333' }
                     },
                     y: {
                         beginAtZero: true,
-                        ticks: { color: '#404040', font: { weight: 'bold' } }
+                        ticks: { color: '#F2F2F2', font: { weight: 'bold' } },
+                        grid: { color: '#333' }
                     }
                 }
             }
