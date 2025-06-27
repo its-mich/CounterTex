@@ -36,5 +36,8 @@ namespace CounterTexFront.Models
         /// Observaciones adicionales relacionadas al registro de horario.
         /// </summary>
         public string Observaciones { get; set; }
+
+        public string EmpleadoNombre { get; set; }
+
     }
 }

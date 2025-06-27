@@ -36,6 +36,13 @@ namespace CounterTexFront.Models.DTOs
         /// Valor total de la producción calculado a partir de los detalles.
         /// </summary>
         public decimal? TotalValor { get; set; }
+
+     
+        public string PrendaNombre { get; set; }  // <-- Esto es lo que necesitabas
+
+
+       
+
     }
 
     /// <summary>
@@ -48,6 +55,8 @@ namespace CounterTexFront.Models.DTOs
         /// </summary>
         [Required(ErrorMessage = "El nombre de la prenda es obligatorio.")]
         public string Nombre { get; set; }
+
+     
     }
 
     /// <summary>
