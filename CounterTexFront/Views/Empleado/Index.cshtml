@@ -6,34 +6,13 @@
 }
 
 <h2>Bienvenido Empleado</h2>
-<p>Usuario: <strong>@nombreUsuario</strong></p>
+<p> <strong>@nombreUsuario</strong></p>
 
 @if (Model == null || !Model.Any())
 {
-    <p>No hay empleados registrados.</p>
+    <p></p>
 }
 else
 {
-    <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse;">
-        <thead style="background-color:#A0CCF2;">
-            <tr>
-                <th>Id</th>
-                <th>Nombre</th>
-                <th>Cargo</th>
-                <th>Departamento</th>
-                <!-- Agrega más columnas según tu modelo -->
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var empleado in Model)
-            {
-                <tr>
-                    <td>@empleado.IdUsuario</td>
-                    <td>@empleado.Nombre</td>
-                    <td>@empleado.Rol</td>
-                    <td>@empleado.Correo</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+  
 }

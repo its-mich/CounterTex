@@ -18,5 +18,8 @@ namespace CounterTexFront.Models
         public DateTime Fecha { get; set; }
 
         public string Observaciones { get; set; }
+
+        public string EmpleadoNombre { get; set; }
+
     }
 }

@@ -198,18 +198,16 @@ namespace CounterTexFront.Controllers
 
                     var json = await response.Content.ReadAsStringAsync();
 
-                    // Asegúrate de que ProduccionApiDto esté definido correctamente en tu proyecto
                     var producciones = JsonConvert.DeserializeObject<List<ProduccionApiDto>>(json);
 
                     var resultado = producciones.Select(p => new
                     {
                         Id = p.Id,
-                        Fecha = p.Fecha.ToString("yyyy-MM-dd"),
-                        PrendaNombre = p.Prenda?.Nombre ?? "N/A",
+                        Fecha = p.Fecha.ToString("yyyy-MM-dd"), // ✅ esto es correcto si Fecha es DateTime
+                        PrendaNombre = p.PrendaNombre ?? "N/A",
                         TotalCantidad = p.ProduccionDetalles?.Sum(d => d.Cantidad) ?? 0,
-                        TotalValor = p.TotalValor ?? 0 // <-- esto estaba faltando
+                        TotalValor = p.TotalValor ?? 0
                     });
-
 
                     return Json(resultado, JsonRequestBehavior.AllowGet);
                 }
@@ -219,6 +217,7 @@ namespace CounterTexFront.Controllers
                 }
             }
         }
+
 
 
         [HttpGet]

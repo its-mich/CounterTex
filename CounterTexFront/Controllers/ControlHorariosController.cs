@@ -52,7 +52,13 @@ namespace CounterTexFront.Controllers
                             .Where(r => r.EmpleadoId == empleadoActual.Id)
                             .ToList();
 
-                        // Estadísticas para ese empleado
+                        // ✅ Asignar el nombre del empleado manualmente
+                        foreach (var r in registros)
+                        {
+                            r.EmpleadoNombre = empleadoActual.Nombre;
+                        }
+
+                        // Estadísticas
                         ViewBag.TotalEmpleados = 1;
                         ViewBag.PresentesHoy = registros.Any(r => r.Tipo.ToLower() == "entrada") ? 1 : 0;
                         ViewBag.AusentesHoy = ViewBag.TotalEmpleados - ViewBag.PresentesHoy;
