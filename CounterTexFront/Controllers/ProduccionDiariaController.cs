@@ -185,7 +185,8 @@ namespace CounterTexFront.Controllers
 
         public async Task<ActionResult> ObtenerRegistrosPorUsuario(int usuarioId)
         {
-            string endpoint = $"{apiUrl}/produccion/empleado/{usuarioId}";
+            string endpoint = $"{apiUrl.Replace("/api", "")}/api/produccion/empleado/{usuarioId}";
+
 
             using (var client = new HttpClient())
             {
