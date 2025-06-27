@@ -1,6 +1,14 @@
 ﻿@{
     Layout = null;
-    var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Administrador";
+
+    var usuario = Session["Usuario"] as CounterTexFront.Models.LoginResponse;
+    var nombreUsuario = usuario?.Nombres ?? ViewBag.NombreUsuario ?? User.Identity.Name ?? "Administrador";
+
+    var nombresFemeninos = new[] { "maría", "viviana", "yessica", "fernanda", "daniela", "maria", "jessica", "claudia" };
+    var esFemenino = nombresFemeninos.Any(n => (nombreUsuario ?? "").ToLower().Contains(n));
+    var fotoPerfil = esFemenino
+        ? "https://randomuser.me/api/portraits/women/33.jpg"
+        : "https://randomuser.me/api/portraits/men/33.jpg";
 }
 
 <!DOCTYPE html>
@@ -251,10 +259,26 @@
     <div class="main-content">
         <div class="admin-header">
             <h2>@ViewBag.Title</h2>
-            <div class="user-info">
-                <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Admin" />
-                <span>@nombreUsuario</span>
+            <div class="dropdown user-info">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="@fotoPerfil" alt="Admin" />
+                    <span class="ms-2">@nombreUsuario</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUserMenu">
+                    <li>
+                        <a class="dropdown-item" href="@Url.Action("EditarPerfil", "Usuarios")">
+                            <i class="fas fa-user-edit me-2"></i> Editar Perfil
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit();">
+                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                </ul>
             </div>
+
         </div>
 
         <!-- Contenido adicional -->

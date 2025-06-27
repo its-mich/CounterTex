@@ -1,6 +1,14 @@
 ﻿@{
     Layout = null;
-    var nombreUsuario = ViewBag.NombreUsuario ?? User.Identity.Name ?? "Proveedor";
+    var usuario = Session["Usuario"] as CounterTexFront.Models.LoginResponse;
+    var nombreUsuario = usuario?.Nombres ?? "Proveedor";
+
+    // Lista simple de nombres femeninos (puedes ampliarla)
+    var nombresFemeninos = new[] { "maría", "viviana", "yessica", "fernanda", "daniela" };
+    var esFemenino = nombresFemeninos.Any(n => (nombreUsuario ?? "").ToLower().Contains(n));
+    var fotoPerfil = esFemenino
+        ? "https://randomuser.me/api/portraits/women/44.jpg"
+        : "https://randomuser.me/api/portraits/men/44.jpg";
 }
 
 <!DOCTYPE html>
@@ -139,7 +147,7 @@
             </a>
         </div>
         <nav class="nav flex-column">
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Entrega de Prendas" ? "active" : "")" href="@Url.Action("IndexEntregas", "Proveedor")">
+            <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "IndexEntregas" ? "active" : "")" href="@Url.Action("IndexEntregas", "Proveedor")">
                 <i class="fas fa-box"></i> Prendas Entregadas
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "RegistrarPago" ? "active" : "")" href="@Url.Action("RegistrarPago", "Proveedor")">
@@ -167,9 +175,24 @@
     <div class="main-content">
         <div class="admin-header">
             <h2>@ViewBag.Title</h2>
-            <div class="user-info">
-                <img src="https://randomuser.me/api/portraits/men/48.jpg" alt="Proveedor" />
-                <span>@nombreUsuario</span>
+            <div class="dropdown user-info">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="@fotoPerfil" alt="Foto de @nombreUsuario" />
+                    <span class="ms-2">@nombreUsuario</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUserMenu">
+                    <li>
+                        <a class="dropdown-item" href="@Url.Action("EditarPerfil", "Usuarios")">
+                            <i class="fas fa-user-edit me-2"></i> Editar Perfil
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit();">
+                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
 
@@ -190,31 +213,25 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-const chatUserId = @((Session["Usuario"] as CounterTexFront.Models.LoginResponse)?.Id ?? 0);
+        const chatUserId = @((Session["Usuario"] as CounterTexFront.Models.LoginResponse)?.Id ?? 0);
 
-function revisarNuevosMensajes() {
-    if (chatUserId === 0) return;
-
-    // Solicitamos mensajes donde el usuario actual es destinatario (remitenteId = 0)
-    $.get(`/Chat/ObtenerMensajes?remitenteId=0&destinatarioId=${chatUserId}`, function (data) {
-        const lastCount = parseInt(sessionStorage.getItem("chatLastCount") || "0");
-        const nuevos = data.length;
-
-        if (nuevos > lastCount) {
-            $("#chatBadge").removeClass("d-none");
+        function revisarNuevosMensajes() {
+            if (chatUserId === 0) return;
+            $.get(`/Chat/ObtenerMensajes?remitenteId=0&destinatarioId=${chatUserId}`, function (data) {
+                const lastCount = parseInt(sessionStorage.getItem("chatLastCount") || "0");
+                const nuevos = data.length;
+                if (nuevos > lastCount) {
+                    $("#chatBadge").removeClass("d-none");
+                }
+                sessionStorage.setItem("chatLastCount", nuevos);
+            });
         }
 
-        sessionStorage.setItem("chatLastCount", nuevos);
-    });
-}
+        if (window.location.pathname.toLowerCase().includes("/chat")) {
+            $("#chatBadge").addClass("d-none");
+        }
 
-// Ocultar la notificación si estás en la vista del chat
-if (window.location.pathname.toLowerCase().includes("/chat")) {
-    $("#chatBadge").addClass("d-none");
-}
-
-// Ejecutar revisión cada 5 segundos
-setInterval(revisarNuevosMensajes, 5000);
+        setInterval(revisarNuevosMensajes, 5000);
     </script>
 
     @RenderSection("Scripts", required: false)

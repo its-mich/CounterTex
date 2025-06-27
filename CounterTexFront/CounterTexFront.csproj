@@ -182,7 +182,7 @@
     <Compile Include="Models\CambiarRolViewModel.cs" />
     <Compile Include="Models\ChatViewModel.cs" />
     <Compile Include="Models\ContactoViewModel.cs" />
-    <Compile Include="Models\EditarNombreViewModel.cs" />
+    <Compile Include="Models\EditarPerfilViewModel.cs" />
     <Compile Include="Models\HorarioViewModel.cs" />
     <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
@@ -317,7 +317,7 @@
     <Content Include="Views\ProduccionDiaria\Editar.cshtml" />
     <Content Include="Views\Meta\Index.cshtml" />
     <Content Include="Views\Meta\Crear.cshtml" />
-    <Content Include="Views\Usuarios\EditarNombre.cshtml" />
+    <Content Include="Views\Usuarios\EditarPerfil.cshtml" />
     <Content Include="Views\Administrador\Crear.cshtml" />
     <Content Include="Views\Administrador\ProduccionDiaria.cshtml" />
     <Content Include="Views\Pagos\Index.cshtml" />

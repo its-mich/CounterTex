@@ -3,6 +3,13 @@
 
     var usuario = Session["Usuario"] as CounterTexFront.Models.LoginResponse;
     var nombreUsuario = usuario?.Nombres ?? "Empleado";
+
+    // Lista de nombres femeninos para detección básica
+    var nombresFemeninos = new[] { "maría", "viviana", "yessica", "fernanda", "daniela", "maria", "jessica", "claudia" };
+    var esFemenino = nombresFemeninos.Any(n => (nombreUsuario ?? "").ToLower().Contains(n));
+    var fotoPerfil = esFemenino
+        ? "https://randomuser.me/api/portraits/women/44.jpg"
+        : "https://randomuser.me/api/portraits/men/44.jpg";
 }
 
 <!DOCTYPE html>
@@ -19,158 +26,158 @@
     @RenderSection("Styles", required: false)
 
     <style>
-            body {
-                font-family: 'Roboto', sans-serif;
-                background-color: #1e1e2f;
-                color: #F2F2F2;
-                margin: 0;
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1e1e2f;
+            color: #F2F2F2;
+            margin: 0;
+        }
+
+        .admin-sidebar {
+            background: linear-gradient(180deg,#2d3a4a 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            width: 250px;
+            position: fixed;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            color: white;
+            text-decoration: none;
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .logo-img {
+            width: 80px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-profile {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+            .sidebar-profile .admin-img {
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                border: 2px solid #A0CCF2;
+                object-fit: cover;
             }
 
-            .admin-sidebar {
-                background: linear-gradient(180deg,#2d3a4a 0%, #1a1a1a 100%);
-                color: white;
-                min-height: 100vh;
-                width: 250px;
-                position: fixed;
-                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-                z-index: 1000;
-            }
+        .sidebar-header img {
+            width: 80px;
+            height: auto;
+            margin-bottom: 10px;
+        }
 
-            .sidebar-header {
-                color: white;
+        .sidebar-header h4 {
+            margin: 0;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #ffffff;
+        }
+
+        .admin-sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+            .admin-sidebar .nav-link:hover,
+            .admin-sidebar .nav-link.active {
+                background-color: rgba(255, 255, 255, 0.08);
+                border-left-color: #A0CCF2;
+                color: #ffffff;
                 text-decoration: none;
-                padding: 20px;
-                text-align: center;
-                background-color: rgba(255, 255, 255, 0.05);
             }
 
-            .logo-img {
-                width: 80px;
-                height: auto;
-                margin-bottom: 5px;
+            .admin-sidebar .nav-link i {
+                margin-right: 12px;
+                font-size: 1.2rem;
             }
 
-            .sidebar-profile {
-                background-color: rgba(255, 255, 255, 0.03);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            background: #1e1e2f;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .user-info img {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                border: 2px solid #A0CCF2;
             }
 
-                .sidebar-profile .admin-img {
-                    width: 70px;
-                    height: 70px;
-                    border-radius: 50%;
-                    border: 2px solid #A0CCF2;
-                    object-fit: cover;
-                }
+        footer {
+            background-color: rgba(15, 23, 42, 0.85);
+            padding: 20px 0;
+            font-size: 0.9rem;
+            color: #F2F2F2;
+        }
 
-            .sidebar-header img {
-                width: 80px;
-                height: auto;
-                margin-bottom: 10px;
-            }
+        .social-icon {
+            color: #A0CCF2;
+            font-size: 26px;
+            margin: 0 12px;
+            transition: transform 0.4s ease, color 0.4s ease;
+        }
 
-            .sidebar-header h4 {
-                margin: 0;
-                font-weight: bold;
-                font-size: 1.3rem;
+            .social-icon:hover {
+                transform: scale(1.4) rotate(10deg);
                 color: #ffffff;
             }
 
-            .admin-sidebar .nav-link {
-                color: rgba(255, 255, 255, 0.85);
-                padding: 12px 20px;
-                display: flex;
-                align-items: center;
-                border-left: 4px solid transparent;
-                transition: all 0.3s ease;
+        a {
+            color: #A0CCF2;
+            text-decoration: none;
+        }
+
+            a:hover {
+                text-decoration: underline;
             }
 
-                .admin-sidebar .nav-link:hover,
-                .admin-sidebar .nav-link.active {
-                    background-color: rgba(255, 255, 255, 0.08);
-                    border-left-color: #A0CCF2;
-                    color: #ffffff;
-                    text-decoration: none;
-                }
+        .card-dark {
+            background-color: #2a2a3c;
+            border: none;
+            border-radius: 12px;
+            color: #F2F2F2;
+        }
 
-                .admin-sidebar .nav-link i {
-                    margin-right: 12px;
-                    font-size: 1.2rem;
-                }
-
-            .main-content {
-                margin-left: 250px;
-                padding: 30px;
-                background: #1e1e2f;
-                min-height: 100vh;
-            }
-
-            .admin-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 30px;
-            }
-
-            .user-info {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-                .user-info img {
-                    width: 45px;
-                    height: 45px;
-                    border-radius: 50%;
-                    border: 2px solid #A0CCF2;
-                }
-
-            footer {
-                background-color: rgba(15, 23, 42, 0.85);
-                padding: 20px 0;
-                font-size: 0.9rem;
-                color: #F2F2F2;
-            }
-
-            .social-icon {
+            .card-dark .card-title {
                 color: #A0CCF2;
-                font-size: 26px;
-                margin: 0 12px;
-                transition: transform 0.4s ease, color 0.4s ease;
             }
 
-                .social-icon:hover {
-                    transform: scale(1.4) rotate(10deg);
-                    color: #ffffff;
-                }
+        .shadow-hover:hover {
+            box-shadow: 0 4px 12px rgba(160, 204, 242, 0.3);
+            transform: translateY(-3px);
+            transition: all 0.3s ease;
+        }
 
-            a {
-                color: #A0CCF2;
-                text-decoration: none;
-            }
-
-                a:hover {
-                    text-decoration: underline;
-                }
-
-            .card-dark {
-                background-color: #2a2a3c;
-                border: none;
-                border-radius: 12px;
-                color: #F2F2F2;
-            }
-
-                .card-dark .card-title {
-                    color: #A0CCF2;
-                }
-
-            .shadow-hover:hover {
-                box-shadow: 0 4px 12px rgba(160, 204, 242, 0.3);
-                transform: translateY(-3px);
-                transition: all 0.3s ease;
-            }
-
-            /*.admin-sidebar .nav-link:hover,
+        /*.admin-sidebar .nav-link:hover,
         .admin-sidebar .nav-link.active {
             background-color: rgba(255, 255, 255, 0.08);
             border-left-color: #A0CCF2;
@@ -230,15 +237,14 @@
             <h2>@ViewBag.Title</h2>
             <div class="dropdown user-info">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="Empleado" />
+                    <img src="@fotoPerfil" alt="Empleado" />
                     <span class="ms-2">@nombreUsuario</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUserMenu">
                     <li>
-                        <a class="dropdown-item" href="@Url.Action("EditarNombre", "Usuarios")">
+                        <a class="dropdown-item" href="@Url.Action("EditarPerfil", "Usuarios")">
                             <i class="fas fa-user-edit me-2"></i> Editar Perfil
                         </a>
-
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>

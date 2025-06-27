@@ -1,0 +1,63 @@
+﻿@model CounterTexFront.Models.EditarPerfilViewModel
+
+@{
+    ViewBag.Title = "Editar Perfil";
+    Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card card-dark shadow-hover p-4 mx-auto" style="max-width: 600px;">
+    <h4 class="card-title text-center mb-4">
+        <i class="fas fa-user-edit me-2"></i>Editar Perfil
+    </h4>
+
+    @using (Html.BeginForm("EditarPerfil", "Usuarios", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="mb-3">
+            <label class="form-label text-light"><i class="fas fa-id-card me-2"></i>@Html.DisplayNameFor(m => m.Documento)</label>
+            @Html.TextBoxFor(m => m.Documento, new { @class = "form-control bg-dark text-white border-secondary", @readonly = "readonly" })
+            @Html.HiddenFor(m => m.Documento)
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-light"><i class="fas fa-user me-2"></i>@Html.DisplayNameFor(m => m.Nombres)</label>
+            @Html.TextBoxFor(m => m.Nombres, new { @class = "form-control bg-dark text-white border-secondary" })
+            @Html.ValidationMessageFor(m => m.Nombres, null, new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-light"><i class="fas fa-envelope me-2"></i>@Html.DisplayNameFor(m => m.Correo)</label>
+            @Html.TextBoxFor(m => m.Correo, new { @class = "form-control bg-dark text-white border-secondary", type = "email" })
+            @Html.ValidationMessageFor(m => m.Correo, null, new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-light"><i class="fas fa-phone me-2"></i>@Html.DisplayNameFor(m => m.Telefono)</label>
+            @Html.TextBoxFor(m => m.Telefono, new { @class = "form-control bg-dark text-white border-secondary" })
+            @Html.ValidationMessageFor(m => m.Telefono, null, new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-light"><i class="fas fa-birthday-cake me-2"></i>@Html.DisplayNameFor(m => m.Edad)</label>
+            @Html.TextBoxFor(m => m.Edad, new { @class = "form-control bg-dark text-white border-secondary", type = "number" })
+            @Html.ValidationMessageFor(m => m.Edad, null, new { @class = "text-danger" })
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Guardar Cambios
+            </button>
+        </div>
+    }
+</div>

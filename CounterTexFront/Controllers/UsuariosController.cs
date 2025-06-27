@@ -83,16 +83,20 @@ namespace CounterTexFront.Controllers
 
 
         [HttpGet]
-        public ActionResult EditarNombre()
+        public ActionResult EditarPerfil()
         {
             var usuario = Session["Usuario"] as LoginResponse;
             if (usuario == null)
                 return RedirectToAction("Login", "Auth");
 
-            var model = new EditarNombreViewModel
+            var model = new EditarPerfilViewModel
             {
                 Id = usuario.Id,
-                Nombres = usuario.Nombres
+                Nombres = usuario.Nombres,
+                Correo = usuario.Correo,
+                Telefono = usuario.Telefono,
+                Edad = usuario.Edad,
+                Documento = usuario.Documento
             };
 
             return View(model);
@@ -100,7 +104,7 @@ namespace CounterTexFront.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditarNombre(EditarNombreViewModel model)
+        public async Task<ActionResult> EditarPerfil(EditarPerfilViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -112,37 +116,49 @@ namespace CounterTexFront.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(ConfigurationManager.AppSettings["Api"]);
-                client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var dto = new { Nombre = model.Nombres };
+                var token = Session["BearerToken"] as string;
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
 
-                var content = new StringContent(
-                    new JavaScriptSerializer().Serialize(dto),
-                    Encoding.UTF8,
-                    "application/json"
-                );
+                var dto = new
+                {
+                    id = model.Id,
+                    nombre = model.Nombres,
+                    correo = model.Correo,
+                    documento = model.Documento,
+                    contraseña = (string)null,   
+                    rolId = usuario.RolId,
+                    edad = model.Edad,
+                    telefono = model.Telefono,
+                    rolNombre = usuario.RolNombre
+                };
 
-                var response = await client.PutAsync($"api/Usuarios/ActualizarNombre/{usuario.Id}", content);
+                var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
+                var response = await client.PutAsync($"api/Usuarios/{model.Id}", content);
 
                 if (response.IsSuccessStatusCode)
                 {
+                    // Actualizar datos de sesión
                     usuario.Nombres = model.Nombres;
+                    usuario.Correo = model.Correo;
+                    usuario.Telefono = model.Telefono;
+                    usuario.Edad = model.Edad;
+                    usuario.Documento = model.Documento;
                     Session["Usuario"] = usuario;
-                    TempData["Success"] = "Nombre actualizado correctamente.";
-                    return RedirectToAction("EditarNombre");
+
+                    TempData["Success"] = "Perfil actualizado correctamente.";
+                    return RedirectToAction("EditarPerfil");
                 }
-                else
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    TempData["Error"] = "Error al actualizar el nombre. Detalle: " + error;
-                    return View(model);
-                }
+
+                // Obtener y mostrar el detalle del error
+                var errorContent = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = $"Error ({(int)response.StatusCode}): {await response.Content.ReadAsStringAsync()}";
+                return View(model);
             }
         }
-
-
-
-
     }
 }
