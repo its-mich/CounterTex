@@ -10,17 +10,24 @@ using Rotativa;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador encargado de gestionar pagos y generar reportes en PDF.
+    /// </summary>
     public class PagosController : BaseController
     {
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
+        /// <summary>
+        /// Muestra la lista completa de pagos.
+        /// </summary>
+        /// <returns>Vista con la lista de pagos.</returns>
         public async Task<ActionResult> Index()
         {
             var pagos = new List<PagoViewModel>();
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new System.Uri(apiUrl.TrimEnd('/'));
+                client.BaseAddress = new Uri(apiUrl.TrimEnd('/'));
 
                 try
                 {
@@ -28,24 +35,7 @@ namespace CounterTexFront.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-
                         pagos = JsonConvert.DeserializeObject<List<PagoViewModel>>(json);
-
-                        // 👉 Aquí revisas si la propiedad Usuario vino nula
-                        if (pagos.Count > 0)
-                        {
-                            foreach (var p in pagos)
-                            {
-                                if (p.Usuario == null)
-                                {
-                                    System.Diagnostics.Debug.WriteLine($"⚠️ Usuario NULL para pago con ID {p.Id}");
-                                }
-                                else
-                                {
-                                    System.Diagnostics.Debug.WriteLine($"✅ Usuario OK: {p.Usuario.Nombre}");
-                                }
-                            }
-                        }
                     }
                     else
                     {
@@ -61,6 +51,12 @@ namespace CounterTexFront.Controllers
             return View(pagos);
         }
 
+        /// <summary>
+        /// Genera la nómina de pagos entre dos fechas específicas.
+        /// </summary>
+        /// <param name="fechaInicio">Fecha de inicio del periodo.</param>
+        /// <param name="fechaFin">Fecha de fin del periodo.</param>
+        /// <returns>Redirecciona a la vista Index con mensaje.</returns>
         [HttpPost]
         public async Task<ActionResult> Generar(DateTime fechaInicio, DateTime fechaFin)
         {
@@ -68,55 +64,40 @@ namespace CounterTexFront.Controllers
             {
                 client.BaseAddress = new Uri(apiUrl.TrimEnd('/'));
 
-                var fechas = new
-                {
-                    FechaInicio = fechaInicio,
-                    FechaFin = fechaFin
-                };
+                var fechas = new { FechaInicio = fechaInicio, FechaFin = fechaFin };
 
-                var content = new StringContent(
-                    JsonConvert.SerializeObject(fechas),
-                    System.Text.Encoding.UTF8,
-                    "application/json"
-                );
-
+                var content = new StringContent(JsonConvert.SerializeObject(fechas), System.Text.Encoding.UTF8, "application/json");
                 var response = await client.PostAsync("/api/Pagos/generar", content);
 
                 if (response.IsSuccessStatusCode)
-                {
                     TempData["SuccessMessage"] = "✅ Nómina generada correctamente.";
-                }
                 else
-                {
                     TempData["ErrorMessage"] = $"❌ Error al generar nómina: {response.ReasonPhrase}";
-                }
             }
 
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// Muestra los pagos del usuario autenticado.
+        /// </summary>
+        /// <returns>Vista con los pagos personales del usuario.</returns>
         public async Task<ActionResult> MisPagos()
         {
             var usuario = Session["Usuario"] as LoginResponse;
-
             if (usuario == null)
             {
                 TempData["ErrorMessage"] = "Sesión expirada. Por favor, inicia sesión nuevamente.";
                 return RedirectToAction("Login", "Auth");
             }
 
-            // Log de depuración del ID
-            System.Diagnostics.Debug.WriteLine($"🟡 ID del usuario autenticado: {usuario.Id}");
-
             var pagos = new List<PagoViewModel>();
 
             using (var client = new HttpClient())
             {
-                // ✅ Elimina /api del baseAddress si ya está en la ruta del endpoint
                 var baseUri = apiUrl.Replace("/api", "").TrimEnd('/');
                 client.BaseAddress = new Uri(baseUri);
 
-                // ✅ Autenticación con Bearer token si aplica
                 if (Session["BearerToken"] != null)
                 {
                     client.DefaultRequestHeaders.Authorization =
@@ -125,8 +106,7 @@ namespace CounterTexFront.Controllers
 
                 try
                 {
-                    var endpoint = $"/api/Pagos/usuario/{usuario.Id}";
-                    var response = await client.GetAsync(endpoint);
+                    var response = await client.GetAsync($"/api/Pagos/usuario/{usuario.Id}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -147,6 +127,10 @@ namespace CounterTexFront.Controllers
             return View("MisPagos", pagos);
         }
 
+        /// <summary>
+        /// Genera un archivo PDF con los pagos del usuario actual.
+        /// </summary>
+        /// <returns>Archivo PDF generado a partir de la vista 'MisPagosPdf'.</returns>
         public async Task<ActionResult> ExportarPdf()
         {
             var usuario = Session["Usuario"] as LoginResponse;
@@ -172,8 +156,7 @@ namespace CounterTexFront.Controllers
 
                 try
                 {
-                    var endpoint = $"/api/Pagos/usuario/{usuario.Id}";
-                    var response = await client.GetAsync(endpoint);
+                    var response = await client.GetAsync($"/api/Pagos/usuario/{usuario.Id}");
 
                     if (response.IsSuccessStatusCode)
                     {

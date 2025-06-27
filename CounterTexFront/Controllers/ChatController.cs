@@ -12,31 +12,44 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador encargado de la lógica del chat entre usuarios en la aplicación.
+    /// Permite listar usuarios, obtener conversaciones y enviar mensajes.
+    /// </summary>
     public class ChatController : BaseController
     {
-
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
         private readonly HttpClient _httpClient;
 
-
+        /// <summary>
+        /// Constructor que inicializa el HttpClient con la URL base del backend.
+        /// </summary>
         public ChatController()
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(apiUrl);
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(apiUrl)
+            };
         }
-        // GET: Chat
+
+        /// <summary>
+        /// Acción que retorna la vista principal del chat.
+        /// </summary>
+        /// <returns>Vista vacía inicial del módulo de chat</returns>
         public ActionResult Index()
         {
             return View();
         }
 
+        /// <summary>
+        /// Acción que prepara y devuelve la vista del chat con los usuarios disponibles.
+        /// Excluye al usuario actual de la lista de destinatarios.
+        /// </summary>
+        /// <returns>Vista con el modelo <see cref="ChatViewModel"/> y lista de usuarios</returns>
         public async Task<ActionResult> Chat()
         {
-            // ✅ Validar que la sesión existe
             if (Session["Usuario"] == null)
-            {
                 return RedirectToAction("Login", "Auth");
-            }
 
             var remitente = (LoginResponse)Session["Usuario"];
             var remitenteId = remitente.Id;
@@ -58,22 +71,20 @@ namespace CounterTexFront.Controllers
             return View(new ChatViewModel());
         }
 
+        /// <summary>
+        /// Obtiene los mensajes entre un remitente y un destinatario.
+        /// </summary>
+        /// <param name="remitenteId">ID del usuario que envía</param>
+        /// <param name="destinatarioId">ID del usuario que recibe</param>
+        /// <returns>Lista de mensajes en formato JSON</returns>
         [HttpGet]
         public async Task<ActionResult> ObtenerMensajes(int remitenteId, int destinatarioId)
         {
             try
             {
-                string endpoint;
-
-                // Si remitenteId == 0, asumimos que queremos mensajes recibidos por el usuario actual
-                if (remitenteId == 0 && destinatarioId > 0)
-                {
-                    endpoint = $"api/MensajesChat/Conversacion?remitenteId={destinatarioId}&destinatarioId={destinatarioId}";
-                }
-                else
-                {
-                    endpoint = $"api/MensajesChat/Conversacion?remitenteId={remitenteId}&destinatarioId={destinatarioId}";
-                }
+                string endpoint = (remitenteId == 0 && destinatarioId > 0)
+                    ? $"api/MensajesChat/Conversacion?remitenteId={destinatarioId}&destinatarioId={destinatarioId}"
+                    : $"api/MensajesChat/Conversacion?remitenteId={remitenteId}&destinatarioId={destinatarioId}";
 
                 var response = await _httpClient.GetAsync(endpoint);
 
@@ -81,8 +92,8 @@ namespace CounterTexFront.Controllers
                 {
                     var contenido = await response.Content.ReadAsStringAsync();
                     var mensajes = JsonConvert.DeserializeObject<List<MensajeChatDTO>>(contenido);
-            return Json(mensajes, JsonRequestBehavior.AllowGet);
-        }
+                    return Json(mensajes, JsonRequestBehavior.AllowGet);
+                }
 
                 return new HttpStatusCodeResult((int)response.StatusCode, "Error al obtener mensajes del backend.");
             }
@@ -92,6 +103,10 @@ namespace CounterTexFront.Controllers
             }
         }
 
+        /// <summary>
+        /// Envia un mensaje desde un usuario a otro.
+        /// </summary>
+        /// <returns>Resultado en formato JSON indicando éxito o error</returns>
         [HttpPost]
         public async Task<ActionResult> EnviarMensaje()
         {
@@ -108,7 +123,7 @@ namespace CounterTexFront.Controllers
                     if (mensaje == null || string.IsNullOrWhiteSpace(mensaje.Mensaje))
                         return new HttpStatusCodeResult(400, "El mensaje no puede ser nulo.");
 
-            mensaje.FechaHora = DateTime.Now;
+                    mensaje.FechaHora = DateTime.Now;
 
                     var jsonEnviar = JsonConvert.SerializeObject(mensaje, new JsonSerializerSettings
                     {

@@ -12,10 +12,20 @@ using System.Web.Script.Serialization;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador para gestionar usuarios: CRUD, edición de perfil, etc.
+    /// </summary>
     public class UsuariosController : BaseController
     {
+        /// <summary>
+        /// URL base de la API, obtenida desde Web.config.
+        /// </summary>
         public readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
+        /// <summary>
+        /// Muestra el listado de usuarios.
+        /// </summary>
+        /// <returns>Vista con lista de usuarios.</returns>
         public async Task<ActionResult> Index()
         {
             List<UsuarioViewModel> usuarios = new List<UsuarioViewModel>();
@@ -32,6 +42,11 @@ namespace CounterTexFront.Controllers
             return View(usuarios);
         }
 
+        /// <summary>
+        /// Crea un nuevo usuario.
+        /// </summary>
+        /// <param name="model">Modelo de usuario a registrar.</param>
+        /// <returns>Redirige a Index si es exitoso.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(UsuarioViewModel model)
@@ -50,6 +65,11 @@ namespace CounterTexFront.Controllers
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// Edita un usuario existente.
+        /// </summary>
+        /// <param name="model">Modelo del usuario con los cambios.</param>
+        /// <returns>Redirige a Index.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(UsuarioViewModel model)
@@ -68,6 +88,11 @@ namespace CounterTexFront.Controllers
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// Elimina un usuario por su ID.
+        /// </summary>
+        /// <param name="id">ID del usuario a eliminar.</param>
+        /// <returns>Redirige a Index.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
@@ -80,8 +105,10 @@ namespace CounterTexFront.Controllers
             return RedirectToAction("Index");
         }
 
-
-
+        /// <summary>
+        /// Muestra el formulario de edición del perfil del usuario actual (desde sesión).
+        /// </summary>
+        /// <returns>Vista de edición de perfil.</returns>
         [HttpGet]
         public ActionResult EditarPerfil()
         {
@@ -102,6 +129,11 @@ namespace CounterTexFront.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Guarda los cambios en el perfil del usuario.
+        /// </summary>
+        /// <param name="model">Modelo con los nuevos datos del perfil.</param>
+        /// <returns>Redirige a la misma vista con mensaje de éxito o error.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditarPerfil(EditarPerfilViewModel model)
@@ -130,7 +162,7 @@ namespace CounterTexFront.Controllers
                     nombre = model.Nombres,
                     correo = model.Correo,
                     documento = model.Documento,
-                    contraseña = (string)null,   
+                    contraseña = (string)null, // No se modifica la contraseña
                     rolId = usuario.RolId,
                     edad = model.Edad,
                     telefono = model.Telefono,
@@ -142,7 +174,7 @@ namespace CounterTexFront.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Actualizar datos de sesión
+                    // Actualizar sesión
                     usuario.Nombres = model.Nombres;
                     usuario.Correo = model.Correo;
                     usuario.Telefono = model.Telefono;
@@ -154,9 +186,8 @@ namespace CounterTexFront.Controllers
                     return RedirectToAction("EditarPerfil");
                 }
 
-                // Obtener y mostrar el detalle del error
                 var errorContent = await response.Content.ReadAsStringAsync();
-                TempData["Error"] = $"Error ({(int)response.StatusCode}): {await response.Content.ReadAsStringAsync()}";
+                TempData["Error"] = $"Error ({(int)response.StatusCode}): {errorContent}";
                 return View(model);
             }
         }

@@ -7,16 +7,21 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using System.Net.Http.Headers;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador para gestionar proveedores, prendas entregadas y pagos a proveedores.
+    /// </summary>
     public class ProveedorController : BaseController
     {
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
+        /// <summary>
+        /// Muestra la lista de proveedores.
+        /// </summary>
         public async Task<ActionResult> Index()
         {
             List<ProveedorViewModel> proveedores = new List<ProveedorViewModel>();
@@ -25,17 +30,15 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.GetAsync("api/Proveedor/GetProveedor");
+                    var response = await client.GetAsync("api/Proveedor/GetProveedor");
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var jsonResponse = await response.Content.ReadAsStringAsync();
-                        proveedores = JsonConvert.DeserializeObject<List<ProveedorViewModel>>(jsonResponse);
+                        var json = await response.Content.ReadAsStringAsync();
+                        proveedores = JsonConvert.DeserializeObject<List<ProveedorViewModel>>(json);
                     }
                     else
-                    {
                         ModelState.AddModelError("", "Error al obtener los datos de proveedores.");
-                    }
                 }
             }
             catch (Exception ex)
@@ -43,30 +46,33 @@ namespace CounterTexFront.Controllers
                 ModelState.AddModelError("", "Error al conectarse con el servidor: " + ex.Message);
             }
 
-            return View(proveedores); // Cambio aquí para la vista "Index"
+            return View(proveedores);
         }
 
+        /// <summary>
+        /// Crea un nuevo proveedor.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(ProveedorViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+                return View("Proveedor", model);
 
             try
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    string json = JsonConvert.SerializeObject(model);
+                    var json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync("api/Proveedor/PostProveedor", content);
+                    var response = await client.PostAsync("api/Proveedor/PostProveedor", content);
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        ModelState.AddModelError("", "No se pudo crear el proveedor. Inténtalo nuevamente.");
-                        return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+                        ModelState.AddModelError("", "No se pudo crear el proveedor.");
+                        return View("Proveedor", model);
                     }
                 }
 
@@ -75,31 +81,34 @@ namespace CounterTexFront.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error al crear el proveedor: " + ex.Message);
-                return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+                return View("Proveedor", model);
             }
         }
 
+        /// <summary>
+        /// Edita un proveedor existente.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(ProveedorViewModel model)
         {
             if (!ModelState.IsValid)
-                return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+                return View("Proveedor", model);
 
             try
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    string json = JsonConvert.SerializeObject(model);
+                    var json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PutAsync("api/Proveedor/PutProveedor", content);
+                    var response = await client.PutAsync("api/Proveedor/PutProveedor", content);
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        ModelState.AddModelError("", "No se pudo editar el proveedor. Inténtalo nuevamente.");
-                        return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+                        ModelState.AddModelError("", "No se pudo editar el proveedor.");
+                        return View("Proveedor", model);
                     }
                 }
 
@@ -108,10 +117,13 @@ namespace CounterTexFront.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error al editar el proveedor: " + ex.Message);
-                return View("Proveedor", model); // Cambio aquí para la vista "Proveedor"
+                return View("Proveedor", model);
             }
         }
 
+        /// <summary>
+        /// Elimina un proveedor por su ID.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
@@ -121,12 +133,10 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.DeleteAsync($"api/Proveedor/DeleteProveedor/{id}");
+                    var response = await client.DeleteAsync($"api/Proveedor/DeleteProveedor/{id}");
 
                     if (!response.IsSuccessStatusCode)
-                    {
-                        ModelState.AddModelError("", "No se pudo eliminar el proveedor. Inténtalo nuevamente.");
-                    }
+                        ModelState.AddModelError("", "No se pudo eliminar el proveedor.");
                 }
 
                 return RedirectToAction("Index");
@@ -137,7 +147,14 @@ namespace CounterTexFront.Controllers
                 return RedirectToAction("Index");
             }
         }
-        // GET: Lista de entregas
+
+        // ==============================
+        // GESTIÓN DE ENTREGAS
+        // ==============================
+
+        /// <summary>
+        /// Muestra el listado de prendas entregadas.
+        /// </summary>
         public async Task<ActionResult> IndexEntregas()
         {
             List<PrendasEntregadasViewModel> entregas = new List<PrendasEntregadasViewModel>();
@@ -146,7 +163,7 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.GetAsync("api/Prendas");
+                    var response = await client.GetAsync("api/Prendas");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -162,12 +179,15 @@ namespace CounterTexFront.Controllers
 
             return View(entregas);
         }
-        public ActionResult CreateEntrega()
-        {
-            return View();
-        }
 
-        // POST: Crear entrega
+        /// <summary>
+        /// Muestra el formulario para crear una nueva entrega.
+        /// </summary>
+        public ActionResult CreateEntrega() => View();
+
+        /// <summary>
+        /// Registra una nueva entrega de prendas.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateEntrega(PrendasEntregadasViewModel model)
@@ -179,10 +199,9 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    string json = JsonConvert.SerializeObject(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync("api/Prendas", content);
+                    var response = await client.PostAsync("api/Prendas", content);
                     if (!response.IsSuccessStatusCode)
                         ModelState.AddModelError("", "No se pudo crear la entrega.");
                 }
@@ -196,11 +215,9 @@ namespace CounterTexFront.Controllers
             }
         }
 
-        public ActionResult EditEntrega()
-        {
-            return View();
-        }
-
+        /// <summary>
+        /// Muestra el formulario de edición de entrega.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult> EditEntrega(int id)
         {
@@ -209,13 +226,13 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.GetAsync($"api/Prendas/{id}");
+                    var response = await client.GetAsync($"api/Prendas/{id}");
 
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
                         var prenda = JsonConvert.DeserializeObject<PrendasEntregadasViewModel>(json);
-                        return View(prenda); // ← esto llena los campos del formulario
+                        return View(prenda);
                     }
                 }
 
@@ -229,8 +246,9 @@ namespace CounterTexFront.Controllers
             }
         }
 
-
-        //POST: Editar entrega
+        /// <summary>
+        /// Guarda la edición de una entrega.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditEntrega(PrendasEntregadasViewModel model)
@@ -242,10 +260,9 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    string json = JsonConvert.SerializeObject(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PutAsync($"api/Prendas/{model.Id}", content);
+                    var response = await client.PutAsync($"api/Prendas/{model.Id}", content);
                     if (!response.IsSuccessStatusCode)
                         ModelState.AddModelError("", "No se pudo editar la entrega.");
                 }
@@ -259,12 +276,9 @@ namespace CounterTexFront.Controllers
             }
         }
 
-        public ActionResult DeleteEntrega()
-        {
-            return View();
-        }
-
-
+        /// <summary>
+        /// Elimina una entrega.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteEntrega(int id)
@@ -274,7 +288,7 @@ namespace CounterTexFront.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.DeleteAsync($"api/Prendas/{id}");
+                    var response = await client.DeleteAsync($"api/Prendas/{id}");
 
                     if (!response.IsSuccessStatusCode)
                         return new HttpStatusCodeResult(500, "No se pudo eliminar la prenda");
@@ -288,16 +302,24 @@ namespace CounterTexFront.Controllers
             }
         }
 
+        // ==============================
+        // REGISTRO DE PAGOS
+        // ==============================
+
+        /// <summary>
+        /// Muestra formulario para registrar un pago a proveedor.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult> RegistrarPago()
         {
             var model = new PagoProveedorViewModel();
+
             try
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
-                    HttpResponseMessage response = await client.GetAsync("api/Prendas");
+                    var response = await client.GetAsync("api/Prendas");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -323,7 +345,9 @@ namespace CounterTexFront.Controllers
             return View(model);
         }
 
-
+        /// <summary>
+        /// Registra el pago de prendas a un proveedor.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult> RegistrarPago(PagoProveedorViewModel model)
         {
@@ -339,7 +363,7 @@ namespace CounterTexFront.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(ConfigurationManager.AppSettings["Api"]);
+                client.BaseAddress = new Uri(apiUrl);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 var dto = new
@@ -364,6 +388,5 @@ namespace CounterTexFront.Controllers
                 return View(model);
             }
         }
-
     }
 }

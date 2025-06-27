@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using CounterTexFront.Models;
+using CounterTexFront.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,14 +10,20 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using CounterTexFront.Models.DTOs;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador responsable de gestionar la creación, edición y consulta de la Producción Diaria.
+    /// </summary>
     public class ProduccionDiariaController : BaseController
     {
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
+        /// <summary>
+        /// Muestra el formulario inicial para registrar producción diaria.
+        /// </summary>
+        /// <returns>Vista con modelo inicializado</returns>
         public async Task<ActionResult> Index()
         {
             ProduccionDiariaViewModel model = new ProduccionDiariaViewModel();
@@ -27,10 +34,7 @@ namespace CounterTexFront.Controllers
                 model.Usuarios = await ObtenerUsuarios();
                 model.Prendas = await ObtenerPrendas();
                 model.Operaciones = await ObtenerOperaciones();
-                model.ProduccionDetalles = new List<ProduccionDiariaDetalleViewModel>
-                {
-                    new ProduccionDiariaDetalleViewModel()
-                };
+                model.ProduccionDetalles = new List<ProduccionDiariaDetalleViewModel> { new ProduccionDiariaDetalleViewModel() };
             }
             catch (Exception ex)
             {
@@ -40,8 +44,11 @@ namespace CounterTexFront.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Recibe y guarda el registro de una producción diaria enviada desde la vista.
+        /// </summary>
+        /// <param name="model">ProduccionDiariaViewModel enviado desde el formulario</param>
         [HttpPost]
-        // [ValidateAntiForgeryToken] // Puedes dejarlo comentado si aún no usas el token
         public async Task<ActionResult> Index(ProduccionDiariaViewModel model)
         {
             if (!ModelState.IsValid)
@@ -88,9 +95,9 @@ namespace CounterTexFront.Controllers
             }
         }
 
-
-        // --- Métodos auxiliares para obtener listas desde la API ---
-
+        /// <summary>
+        /// Obtiene la lista de usuarios para el dropdown del formulario.
+        /// </summary>
         private async Task<IEnumerable<SelectListItem>> ObtenerUsuarios()
         {
             try
@@ -121,6 +128,9 @@ namespace CounterTexFront.Controllers
             return new List<SelectListItem>();
         }
 
+        /// <summary>
+        /// Obtiene la lista de prendas desde la API.
+        /// </summary>
         private async Task<IEnumerable<SelectListItem>> ObtenerPrendas()
         {
             try
@@ -151,6 +161,9 @@ namespace CounterTexFront.Controllers
             return new List<SelectListItem>();
         }
 
+        /// <summary>
+        /// Obtiene la lista de operaciones desde la API.
+        /// </summary>
         private async Task<IEnumerable<SelectListItem>> ObtenerOperaciones()
         {
             try
@@ -181,12 +194,13 @@ namespace CounterTexFront.Controllers
             return new List<SelectListItem>();
         }
 
-
-
+        /// <summary>
+        /// Obtiene las producciones diarias registradas por un usuario específico.
+        /// </summary>
+        /// <param name="usuarioId">ID del usuario</param>
         public async Task<ActionResult> ObtenerRegistrosPorUsuario(int usuarioId)
         {
             string endpoint = $"{apiUrl.Replace("/api", "")}/api/produccion/empleado/{usuarioId}";
-
 
             using (var client = new HttpClient())
             {
@@ -198,13 +212,12 @@ namespace CounterTexFront.Controllers
                         return Json(new List<object>(), JsonRequestBehavior.AllowGet);
 
                     var json = await response.Content.ReadAsStringAsync();
-
                     var producciones = JsonConvert.DeserializeObject<List<ProduccionApiDto>>(json);
 
                     var resultado = producciones.Select(p => new
                     {
                         Id = p.Id,
-                        Fecha = p.Fecha.ToString("yyyy-MM-dd"), // ✅ esto es correcto si Fecha es DateTime
+                        Fecha = p.Fecha.ToString("yyyy-MM-dd"),
                         PrendaNombre = p.PrendaNombre ?? "N/A",
                         TotalCantidad = p.ProduccionDetalles?.Sum(d => d.Cantidad) ?? 0,
                         TotalValor = p.TotalValor ?? 0
@@ -219,8 +232,10 @@ namespace CounterTexFront.Controllers
             }
         }
 
-
-
+        /// <summary>
+        /// Carga los datos de una producción diaria para su edición.
+        /// </summary>
+        /// <param name="id">ID de la producción</param>
         [HttpGet]
         public async Task<ActionResult> Editar(int id)
         {
@@ -242,10 +257,14 @@ namespace CounterTexFront.Controllers
                 produccion.Prendas = await ObtenerPrendas();
                 produccion.Operaciones = await ObtenerOperaciones();
 
-                return View("Editar", produccion); // Vista Razor llamada Editar.cshtml
+                return View("Editar", produccion);
             }
         }
 
+        /// <summary>
+        /// Guarda los cambios realizados a una producción existente.
+        /// </summary>
+        /// <param name="model">ProduccionDiariaViewModel editado</param>
         [HttpPost]
         public async Task<ActionResult> Editar(ProduccionDiariaViewModel model)
         {

@@ -9,20 +9,29 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador base que proporciona funcionalidad común para todos los controladores, 
+    /// incluyendo verificación de sesión, selección de layout y utilidades de consumo de API.
+    /// </summary>
     public class BaseController : Controller
     {
+        /// <summary>
+        /// Método que se ejecuta antes de cada acción. 
+        /// Verifica si el usuario tiene sesión activa y aplica el layout según el rol.
+        /// </summary>
+        /// <param name="filterContext">Contexto de la acción actual</param>
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var controller = filterContext.RouteData.Values["controller"].ToString().ToLower();
             var action = filterContext.RouteData.Values["action"].ToString().ToLower();
 
-            // Excluir acciones públicas
+            // Acciones que no requieren autenticación
             bool esAccionPublica =
                 (controller == "auth" &&
                     (action == "login" || action == "registro" || action == "recuperar" || action == "confirmarcodigo")) ||
                 (controller == "home" && action == "welcome");
 
-            // ⚠️ Verificar que haya token
+            // ⚠️ Redirigir al login si no hay token y la acción no es pública
             if (!esAccionPublica && Session["Bearertoken"] == null)
             {
                 filterContext.Result = new RedirectToRouteResult(
@@ -35,7 +44,7 @@ namespace CounterTexFront.Controllers
                 return;
             }
 
-            // Layout según rol
+            // Selección del layout según el rol del usuario
             var rol = Session["UserRole"]?.ToString();
             if (rol == "Administrador")
                 ViewBag.Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -44,10 +53,19 @@ namespace CounterTexFront.Controllers
             else if (rol == "Proveedor")
                 ViewBag.Layout = "~/Views/Shared/_LayoutProveedor.cshtml";
 
+            // Pasar el nombre del usuario a la vista
             ViewBag.NombreUsuario = Session["NombreUsuario"]?.ToString();
 
             base.OnActionExecuting(filterContext);
         }
+
+        /// <summary>
+        /// Realiza una solicitud GET a una API externa y deserializa la respuesta en un tipo genérico.
+        /// </summary>
+        /// <typeparam name="T">Tipo de dato esperado como respuesta</typeparam>
+        /// <param name="client">Instancia de HttpClient ya configurada</param>
+        /// <param name="endpoint">Ruta relativa o absoluta de la API</param>
+        /// <returns>Instancia del tipo T si la respuesta es exitosa; de lo contrario, default(T)</returns>
         protected async Task<T> GetFromApi<T>(HttpClient client, string endpoint)
         {
             HttpResponseMessage response = await client.GetAsync(endpoint);

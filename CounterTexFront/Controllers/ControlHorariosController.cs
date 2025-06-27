@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -13,22 +12,36 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador que gestiona el control de horarios de empleados.
+    /// Permite visualizar y registrar entradas y salidas del día actual.
+    /// </summary>
     public class ControlHorariosController : BaseController
     {
-        string apiUrl = ConfigurationManager.AppSettings["Api"];
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
+        /// <summary>
+        /// Constructor que valida la configuración de la URL de la API.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Si la configuración 'Api' no está definida.</exception>
         public ControlHorariosController()
         {
             if (string.IsNullOrEmpty(apiUrl))
                 throw new InvalidOperationException("No se encontró la configuración 'Api' en Web.config.");
         }
+
+        /// <summary>
+        /// Muestra la vista principal con los horarios del empleado logeado.
+        /// También calcula estadísticas del día (presentes, ausentes, atrasos).
+        /// </summary>
+        /// <returns>Vista con la lista de registros <see cref="HorarioViewModel"/></returns>
         public async Task<ActionResult> Index()
         {
             try
             {
                 string fechaActual = DateTime.Today.ToString("yyyy-MM-dd");
-
                 var empleadoActual = await ObtenerEmpleadoLogeado();
+
                 if (empleadoActual == null)
                 {
                     ViewBag.MensajeError = "No se pudo obtener la información del empleado.";
@@ -47,12 +60,10 @@ namespace CounterTexFront.Controllers
                         var json = await response.Content.ReadAsStringAsync();
                         var todosLosRegistros = JsonConvert.DeserializeObject<List<HorarioViewModel>>(json);
 
-                        // Filtrar solo los del empleado logeado
                         var registros = todosLosRegistros
                             .Where(r => r.EmpleadoId == empleadoActual.Id)
                             .ToList();
 
-                        // ✅ Asignar el nombre del empleado manualmente
                         foreach (var r in registros)
                         {
                             r.EmpleadoNombre = empleadoActual.Nombre;
@@ -78,6 +89,11 @@ namespace CounterTexFront.Controllers
             }
         }
 
+        /// <summary>
+        /// Permite registrar manualmente un horario mediante un POST desde formulario.
+        /// </summary>
+        /// <param name="model">Datos del horario a registrar</param>
+        /// <returns>Redirección a la vista Index</returns>
         [HttpPost]
         public async Task<ActionResult> RegistrarHorarioManual(HorarioViewModel model)
         {
@@ -104,6 +120,10 @@ namespace CounterTexFront.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene los datos del empleado actualmente logeado a través de una cookie.
+        /// </summary>
+        /// <returns>Instancia de <see cref="PerfilEmpleadoViewModel"/> o null</returns>
         private async Task<PerfilEmpleadoViewModel> ObtenerEmpleadoLogeado()
         {
             var empleadoIdCookie = Request.Cookies["EmpleadoId"]?.Value;
@@ -128,14 +148,21 @@ namespace CounterTexFront.Controllers
             return null;
         }
 
-
+        /// <summary>
+        /// Devuelve la vista vacía para crear un nuevo registro de horario.
+        /// </summary>
+        /// <returns>Vista vacía para nuevo horario</returns>
         [HttpGet]
         public ActionResult Create()
         {
             return View();
         }
-        
 
+        /// <summary>
+        /// Crea un nuevo registro de horario a través de una petición AJAX POST.
+        /// </summary>
+        /// <param name="model">Horario a registrar</param>
+        /// <returns>Resultado en formato JSON indicando éxito o error</returns>
         [HttpPost]
         public async Task<ActionResult> Create(HorarioViewModel model)
         {

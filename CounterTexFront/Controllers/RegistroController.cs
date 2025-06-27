@@ -10,38 +10,53 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador para la gestión de usuarios registrados.
+    /// </summary>
     public class RegistroController : BaseController
     {
-        string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
+        private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
+        /// <summary>
+        /// Vista para registrar un nuevo usuario (GET).
+        /// </summary>
         public ActionResult Registro()
         {
             return View();
         }
 
+        /// <summary>
+        /// Muestra el listado de usuarios registrados (GET).
+        /// </summary>
         public async Task<ActionResult> Index()
         {
-            List<RegistroViewModel> registros = new List<RegistroViewModel>();
+            var registros = new List<RegistroViewModel>();
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
+
                 HttpResponseMessage response = await client.GetAsync("api/Registro/GetRegistro");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
                     registros = JsonConvert.DeserializeObject<List<RegistroViewModel>>(jsonResponse);
                 }
             }
+
             return View(registros);
         }
-        
+
+        /// <summary>
+        /// Crea un nuevo registro de usuario (POST).
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(RegistroViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                // Si el modelo no es válido, mostramos un mensaje de error
                 ModelState.AddModelError("", "Por favor verifica los campos del formulario.");
                 return View(model);
             }
@@ -53,41 +68,37 @@ namespace CounterTexFront.Controllers
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Clear();
 
-                    // Serializamos el modelo a JSON
                     string json = JsonConvert.SerializeObject(model);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    // Enviar la solicitud POST
                     HttpResponseMessage response = await client.PostAsync("api/Auth/Registro", content);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // Si la respuesta es exitosa, mostramos un mensaje de éxito
-                        ViewBag.Message = "¡Registro exitoso! Ahora puedes iniciar sesión.";
+                        ViewBag.Message = "✅ ¡Registro exitoso! Ahora puedes iniciar sesión.";
                     }
                     else
                     {
-                        // Si la respuesta no es exitosa, mostramos el mensaje de error
                         var errorResponse = await response.Content.ReadAsStringAsync();
-                        ViewBag.Message = "Error al registrar el usuario: " + errorResponse;
+                        ViewBag.Message = "❌ Error al registrar el usuario: " + errorResponse;
                     }
                 }
             }
             catch (HttpRequestException httpEx)
             {
-                // Manejo de excepciones de conexión
-                ViewBag.Message = "Error de conexión con el servidor: " + httpEx.Message;
+                ViewBag.Message = "⚠️ Error de conexión con el servidor: " + httpEx.Message;
             }
             catch (Exception ex)
             {
-                // Captura de errores inesperados
-                ViewBag.Message = "Error inesperado: " + ex.Message;
+                ViewBag.Message = "⚠️ Error inesperado: " + ex.Message;
             }
 
-            // Devolvemos la vista con el mensaje (sin redirección)
             return View(model);
         }
 
+        /// <summary>
+        /// Edita la información de un usuario registrado (POST).
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(RegistroViewModel model)
@@ -95,26 +106,50 @@ namespace CounterTexFront.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                string json = JsonConvert.SerializeObject(model);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                await client.PutAsync("api/Registro/PutRegistro", content);
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+
+                    string json = JsonConvert.SerializeObject(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    await client.PutAsync("api/Registro/PutRegistro", content);
+                }
+
+                TempData["SuccessMessage"] = "✅ Usuario actualizado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "❌ Error al actualizar usuario: " + ex.Message;
             }
 
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// Elimina un usuario registrado por su ID (POST).
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
         {
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                await client.DeleteAsync($"api/Registro/DeleteRegistro/{id}");
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    await client.DeleteAsync($"api/Registro/DeleteRegistro/{id}");
+                }
+
+                TempData["SuccessMessage"] = "✅ Usuario eliminado correctamente.";
             }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "❌ Error al eliminar usuario: " + ex.Message;
+            }
+
             return RedirectToAction("Index");
         }
     }

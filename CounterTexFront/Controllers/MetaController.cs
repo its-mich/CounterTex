@@ -4,26 +4,35 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador encargado de manejar la visualización de metas y horarios del usuario.
+    /// </summary>
     public class MetaController : BaseController
     {
+        /// <summary>
+        /// URL base de la API, leída desde Web.config.
+        /// </summary>
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"];
 
-        // GET: Meta/Index
+        /// <summary>
+        /// Acción principal que carga las metas y horarios asignados al usuario actual.
+        /// </summary>
+        /// <returns>Vista con el ViewModel que contiene metas y horarios del usuario.</returns>
         public async Task<ActionResult> Index()
         {
+            // ✅ Verifica si hay un usuario autenticado
             var usuario = Session["Usuario"] as LoginResponse;
             if (usuario == null)
                 return RedirectToAction("Login", "Auth");
 
             int usuarioId = usuario.Id;
 
+            // 🧾 Inicializa el ViewModel
             var viewModel = new MetaYHorarioViewModel
             {
                 Metas = new List<MetaViewModel>(),
@@ -32,20 +41,17 @@ namespace CounterTexFront.Controllers
 
             using (var client = new HttpClient())
             {
-                // Establece la URL base y el encabezado de autorización con el token
                 client.BaseAddress = new Uri(apiUrl);
 
-                // Solicita todos los productos a la API
+                // 📥 Obtener metas del usuario
                 HttpResponseMessage response = await client.GetAsync($"api/Metas/GetMeta/{usuarioId}");
-
-                // Lee y deserializa el contenido de la respuesta
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     viewModel.Metas = JsonConvert.DeserializeObject<List<MetaViewModel>>(json) ?? new List<MetaViewModel>();
                 }
 
-                // Cargar horarios
+                // 📥 Obtener horarios del usuario
                 HttpResponseMessage responsHorarios = await client.GetAsync($"api/Horarios/GetHorario/{usuarioId}");
                 if (responsHorarios.IsSuccessStatusCode)
                 {
@@ -56,9 +62,5 @@ namespace CounterTexFront.Controllers
                 return View(viewModel);
             }
         }
-        
-
-
-  
     }
 }
