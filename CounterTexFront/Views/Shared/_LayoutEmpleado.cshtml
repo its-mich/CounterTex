@@ -237,16 +237,17 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUserMenu">
                     <li>
-                        <a class="dropdown-item" href="@Url.Action("EditarNombre", "Usuarios")">
+                        <a class="dropdown-item" href="@Url.Action("Editar", "Usuarios")">
                             <i class="fas fa-user-edit me-2"></i> Editar Perfil
                         </a>
+
 
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit();">
+                        @*<a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit();">
                             <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
-                        </a>
+                        </a>*@
                     </li>
                 </ul>
             </div>

@@ -83,7 +83,7 @@ namespace CounterTexFront.Controllers
 
 
         [HttpGet]
-        public ActionResult EditarNombre()
+        public ActionResult Editar()
         {
             var usuario = Session["Usuario"] as LoginResponse;
             if (usuario == null)
@@ -92,57 +92,68 @@ namespace CounterTexFront.Controllers
             var model = new EditarNombreViewModel
             {
                 Id = usuario.Id,
-                Nombres = usuario.Nombres
+                Nombre = usuario.Nombres
             };
 
-            return View(model);
+            return View(model); // Buscará Views/Usuarios/Editar.cshtml
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditarNombre(EditarNombreViewModel model)
+        public async Task<ActionResult> Editar(EditarNombreViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            var usuario = Session["Usuario"] as LoginResponse;
-            if (usuario == null)
-                return RedirectToAction("Login", "Auth");
+            string apiUrl = ConfigurationManager.AppSettings["Api"];
+            string urlGet = $"{apiUrl}/usuarios/GetUsuariosId/{model.Id}";
+            string urlPut = $"{apiUrl}/usuarios/{model.Id}";
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(ConfigurationManager.AppSettings["Api"]);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                var dto = new { Nombre = model.Nombres };
-
-                var content = new StringContent(
-                    new JavaScriptSerializer().Serialize(dto),
-                    Encoding.UTF8,
-                    "application/json"
-                );
-
-                var response = await client.PutAsync($"api/Usuarios/ActualizarNombre/{usuario.Id}", content);
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    usuario.Nombres = model.Nombres;
-                    Session["Usuario"] = usuario;
-                    TempData["Success"] = "Nombre actualizado correctamente.";
-                    return RedirectToAction("EditarNombre");
+                    var responseGet = await client.GetAsync(urlGet);
+                    if (!responseGet.IsSuccessStatusCode)
+                    {
+                        TempData["Error"] = "No se pudo obtener el usuario.";
+                        return View(model);
+                    }
+
+                    var usuarioJson = await responseGet.Content.ReadAsStringAsync();
+                    var usuarioActual = JsonConvert.DeserializeObject<UsuarioApiDto>(usuarioJson);
+
+                    if (usuarioActual == null)
+                    {
+                        TempData["Error"] = "Usuario no encontrado.";
+                        return View(model);
+                    }
+
+                    // ✅ Modificamos solo los campos necesarios
+                    usuarioActual.Correo = model.Correo;
+                    usuarioActual.Telefono = model.Telefono;
+                    usuarioActual.Edad = model.Edad;
+
+                    // ✅ Enviamos el objeto completo requerido por el backend
+                    var content = new StringContent(JsonConvert.SerializeObject(usuarioActual), Encoding.UTF8, "application/json");
+                    var responsePut = await client.PutAsync(urlPut, content);
+
+                    if (responsePut.IsSuccessStatusCode)
+                    {
+                        TempData["Success"] = "Usuario actualizado correctamente.";
+                        return RedirectToAction("Editar", new { id = model.Id }); // se mantiene como Editar
+                    }
+
+                    TempData["Error"] = $"Error al actualizar el usuario ({(int)responsePut.StatusCode}).";
+                    return View(model);
                 }
-                else
+                catch (Exception ex)
                 {
-                    var error = await response.Content.ReadAsStringAsync();
-                    TempData["Error"] = "Error al actualizar el nombre. Detalle: " + error;
+                    TempData["Error"] = "Excepción: " + ex.Message;
                     return View(model);
                 }
             }
         }
-
-
-
 
     }
 }

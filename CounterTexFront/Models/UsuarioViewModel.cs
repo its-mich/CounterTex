@@ -38,5 +38,8 @@ namespace CounterTexFront.Models
 
         [JsonProperty("telefono")]
         public string Telefono { get; set; }
+
+
+
     }
 }

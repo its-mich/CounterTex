@@ -202,6 +202,7 @@
     <Compile Include="Models\RolViewModel.cs" />
     <Compile Include="Models\SateliteViewModel.cs" />
     <Compile Include="Models\Tokens.cs" />
+    <Compile Include="Models\UsuarioApiDto.cs" />
     <Compile Include="Models\UsuarioViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -304,7 +305,7 @@
     <Content Include="Views\ProduccionDiaria\Editar.cshtml" />
     <Content Include="Views\Meta\Index.cshtml" />
     <Content Include="Views\Meta\Crear.cshtml" />
-    <Content Include="Views\Usuarios\EditarNombre.cshtml" />
+    <Content Include="Views\Usuarios\Editar.cshtml" />
     <Content Include="Views\Administrador\Crear.cshtml" />
     <Content Include="Views\Administrador\ProduccionDiaria.cshtml" />
   </ItemGroup>

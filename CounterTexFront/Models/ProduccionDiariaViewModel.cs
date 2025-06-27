@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CounterTexFront.Models.DTOs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
@@ -52,9 +53,23 @@ namespace CounterTexFront.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "El nombre del usuario es obligatorio.")]
-        [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
         public string Nombre { get; set; }
+
+        [Required(ErrorMessage = "El correo es obligatorio.")]
+        [EmailAddress(ErrorMessage = "El correo no es válido.")]
+        public string Correo { get; set; }
+
+        public string Contraseña { get; set; }
+
+        public string Documento { get; set; }
+
+        public int RolId { get; set; }
+
+        public int? Edad { get; set; }
+
+        [StringLength(15, ErrorMessage = "Máximo 15 caracteres.")]
+        public string Telefono { get; set; }
     }
 
     public class Prenda
@@ -74,4 +89,14 @@ namespace CounterTexFront.Models
         [StringLength(100, ErrorMessage = "El nombre no debe superar los 100 caracteres.")]
         public string Nombre { get; set; }
     }
+
+
+    //public class ProduccionApiDto
+    //{
+    //    public int Id { get; set; }
+    //    public string Fecha { get; set; }
+    //    public string PrendaNombre { get; set; }  // <-- Esto es lo que necesitabas
+    //    public decimal? TotalValor { get; set; }
+    //    public List<ProduccionDetalleDto> ProduccionDetalles { get; set; }
+    //}
 }
