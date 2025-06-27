@@ -8,18 +8,27 @@ using System.Web;
 
 namespace CounterTexFront.Models
 {
+    /// <summary>
+    /// Modelo para capturar las credenciales del usuario durante el inicio de sesión.
+    /// </summary>
     public class LoginViewModel
     {
+        /// <summary>
+        /// Correo electrónico del usuario (usado como nombre de usuario).
+        /// </summary>
         [DisplayName("Correo")]
         [Required(ErrorMessage = "El campo {0} es requerido", AllowEmptyStrings = false)]
-        [EmailAddress]
-        [JsonProperty("Correo")]  // Esto es lo que hace la magia
+        [EmailAddress(ErrorMessage = "Debe ingresar un correo válido.")]
+        [JsonProperty("Correo")]
         public string UserName { get; set; }
 
+        /// <summary>
+        /// Contraseña del usuario.
+        /// </summary>
         [DisplayName("Contraseña")]
         [Required(ErrorMessage = "El campo {0} es requerido", AllowEmptyStrings = false)]
         [DataType(DataType.Password)]
-        [JsonProperty("Contraseña")]  // Esto lo cambia de "Password" a "Clave" en el JSON
+        [JsonProperty("Contraseña")]
         public string Password { get; set; }
     }
 }

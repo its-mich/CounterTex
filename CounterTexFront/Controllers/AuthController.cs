@@ -12,10 +12,17 @@ using System.Web;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador encargado del manejo de autenticación de usuarios: login, registro y cierre de sesión.
+    /// </summary>
     public class AuthController : BaseController
     {
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
+
+        /// <summary>
+        /// Muestra la vista del formulario de inicio de sesión.
+        /// </summary>
         public ActionResult Login()
         {
             if (TempData["MensajeRegistro"] != null)
@@ -26,12 +33,19 @@ namespace CounterTexFront.Controllers
             return View();
         }
 
+
+        /// <summary>
+        /// Muestra la vista del formulario de registro de nuevos usuarios.
+        /// </summary>
         public ActionResult Registro()
         {
             return View();
         }
 
-        // REGISTRO DE USUARIO
+        /// <summary>
+        /// Registra un nuevo usuario mediante una solicitud POST a la API.
+        /// </summary>
+        /// <param name="model">Datos del usuario a registrar</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Registro(RegistroViewModel model)
@@ -89,6 +103,12 @@ namespace CounterTexFront.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Obtiene el ID de rol correspondiente según el nombre del rol.
+        /// </summary>
+        /// <param name="rol">Nombre del rol (Administrador, Empleado, Proveedor)</param>
+        /// <returns>ID numérico del rol</returns>
         private int ObtenerRolId(string rol)
         {
             switch (rol)
@@ -104,7 +124,10 @@ namespace CounterTexFront.Controllers
             }
         }
 
-        // LOGIN
+        /// <summary>
+        /// Inicia sesión del usuario validando credenciales y asignando tokens y cookies.
+        /// </summary>
+        /// <param name="model">Modelo con los datos de inicio de sesión</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model)
@@ -220,6 +243,9 @@ namespace CounterTexFront.Controllers
             }
         }
 
+        /// <summary>
+        /// Cierra la sesión del usuario, eliminando cookies y datos de sesión.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()

@@ -199,7 +199,6 @@
     <Compile Include="Models\ProduccionDtoViewModel.cs" />
     <Compile Include="Models\ProduccionListViewModel.cs" />
     <Compile Include="Models\OperacionViewModel.cs" />
-    <Compile Include="Models\PerfilAdministradorViewModel.cs" />
     <Compile Include="Models\PerfilEmpleadoViewModel.cs" />
     <Compile Include="Models\PrendasEntregadasViewModel.cs" />
     <Compile Include="Models\ProduccionViewModel.cs" />

@@ -12,11 +12,18 @@ using System.Web.Mvc;
 
 namespace CounterTexFront.Controllers
 {
+    /// <summary>
+    /// Controlador para funcionalidades administrativas como gestión de usuarios, roles, metas, producción y horarios.
+    /// </summary>
     [Authorize]
     public class AdministradorController : BaseController
     {
         private readonly string apiUrl = ConfigurationManager.AppSettings["Api"].ToString();
 
+
+        /// <summary>
+        /// Crea una instancia de HttpClient configurado con la URL base y token de autorización.
+        /// </summary>
         private HttpClient GetClient()
         {
             var client = new HttpClient { BaseAddress = new Uri(apiUrl) };
@@ -29,7 +36,9 @@ namespace CounterTexFront.Controllers
             return client;
         }
 
-        // LISTAR USUARIOS
+        /// <summary>
+        /// Obtiene y muestra la lista de usuarios desde la API.
+        /// </summary>
         public async Task<ActionResult> Index()
         {
             List<UsuarioViewModel> usuarios = new List<UsuarioViewModel>();
@@ -49,7 +58,10 @@ namespace CounterTexFront.Controllers
             return View(usuarios);
         }
 
-        // EDITAR ROL - GET
+        /// <summary>
+        /// Muestra la vista de edición de rol para un usuario específico.
+        /// </summary>
+        /// <param name="id">ID del usuario a editar</param>
         public async Task<ActionResult> EditarRol(int id)
         {
             using (var client = GetClient())
@@ -95,7 +107,10 @@ namespace CounterTexFront.Controllers
             }
         }
 
-        // EDITAR ROL - POST
+        /// <summary>
+        /// Procesa el cambio de rol de un usuario.
+        /// </summary>
+        /// <param name="model">Modelo con los datos del cambio de rol</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditarRol(CambiarRolViewModel model)
@@ -128,7 +143,10 @@ namespace CounterTexFront.Controllers
             return RedirectToAction("Index", new { id = model.Id });
         }
 
-        // ELIMINAR - POST
+        /// <summary>
+        /// Elimina un usuario por su ID.
+        /// </summary>
+        /// <param name="id">ID del usuario a eliminar</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Eliminar(int id)
@@ -158,13 +176,18 @@ namespace CounterTexFront.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Meta/Crear
+        /// <summary>
+        /// Muestra el formulario para crear una meta.
+        /// </summary>
         public ActionResult Crear()
         {
             return View();
         }
 
-        // POST: Meta/Crear
+        /// <summary>
+        /// Procesa el envío del formulario de creación de meta.
+        /// </summary>
+        /// <param name="model">Modelo de la meta a registrar</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Crear(MetaViewModel model)
@@ -215,6 +238,9 @@ namespace CounterTexFront.Controllers
             }
         }
 
+        /// <summary>
+        /// Muestra la vista de producciones diarias con sus detalles, usuarios, prendas y operaciones.
+        /// </summary>
         public async Task<ActionResult> ProduccionDiaria()
         {
 
@@ -300,7 +326,9 @@ namespace CounterTexFront.Controllers
         }
 
 
-        // GET: Vista de control de horarios
+        // <summary>
+        /// Muestra la vista de control de horarios de empleados.
+        /// </summary>
         public async Task<ActionResult> ControlHorarios()
         {
             List<HorarioViewModel> horarios = new List<HorarioViewModel>();
@@ -335,7 +363,10 @@ namespace CounterTexFront.Controllers
             }
         }
 
-        // POST: Crear horario
+        /// <summary>
+        /// Registra un nuevo horario para un empleado.
+        /// </summary>
+        /// <param name="model">Datos del nuevo horario</param>
         [HttpPost]
         public async Task<ActionResult> CreateHorario(HorarioViewModel model)
         {
