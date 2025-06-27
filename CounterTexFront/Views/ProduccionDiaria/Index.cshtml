@@ -3,6 +3,9 @@
 @{
     ViewBag.Title = "Registrar Producción Diaria";
     Layout = "~/Views/Shared/_LayoutEmpleado.cshtml";
+    var usuario = Session["Usuario"] as CounterTexFront.Models.LoginResponse;
+    var usuarioId = usuario?.Id ?? 0;
+    var usuarioNombre = usuario?.Nombres;
 }
 
 @section Styles {
@@ -32,7 +35,6 @@
             color: white;
         }
 
-
         .dropdown-records {
             background-color: #1c1c1c;
             padding: 20px;
@@ -47,12 +49,13 @@
             font-size: 14px;
         }
 
-        .btn-toggle-records {
-            margin-top: 30px;
-        }
-
         .accordion-button {
             background-color: #343a40;
+            color: white;
+        }
+
+        .form-control[readonly] {
+            background-color: #3b3b3b;
             color: white;
         }
     </style>
@@ -60,47 +63,30 @@
 
 <div class="container mt-4">
     <div class="form-section mb-5">
-       
-
         @if (TempData["SuccessMessage"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                @TempData["SuccessMessage"]
-                <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
         }
 
         @if (TempData["ErrorMessage"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                @TempData["ErrorMessage"]
-                <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
         }
-
-        @{
-            var usuario = Session["Usuario"] as CounterTexFront.Models.LoginResponse;
-            var usuariosFiltrados = Model.Usuarios.Where(u => u.Value == usuario?.Id.ToString()).ToList();
-        }
-
 
         @using (Html.BeginForm("Index", "ProduccionDiaria", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
         {
             @Html.AntiForgeryToken()
 
+            @Html.HiddenFor(m => m.UsuarioId, new { Value = usuarioId })
+
             <div class="form-group">
-                @Html.LabelFor(m => m.Fecha)
-                @Html.TextBoxFor(m => m.Fecha, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                @Html.Label("Empleado")
+                <input type="text" class="form-control" value="@usuarioNombre" readonly />
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(m => m.UsuarioId)
-                @Html.DropDownListFor(m => m.UsuarioId, usuariosFiltrados, "-- Seleccione Usuario --", new { @class = "form-control", required = "required", id = "usuarioDropdown" })
-
+                @Html.LabelFor(m => m.Fecha)
+                @Html.TextBoxFor(m => m.Fecha, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
             </div>
 
             <div class="form-group">
@@ -118,7 +104,16 @@
 
                         <div class="form-group">
                             @Html.LabelFor(m => m.ProduccionDetalles[i].Cantidad)
-                            @Html.TextBoxFor(m => m.ProduccionDetalles[i].Cantidad, new { @class = "form-control", type = "number", min = 0, required = "required" })
+                            @Html.TextBoxFor(m => m.ProduccionDetalles[i].Cantidad, new
+                       {
+                           @class = "form-control cantidad-input",
+                           type = "text",
+                           maxlength = 4,
+                           pattern = "\\d{1,4}",
+                           placeholder = "Digite un valor valido mayor a 0",
+                           required = "required",
+                           inputmode = "numeric"
+                       })
                         </div>
 
                         <div class="form-group">
@@ -127,17 +122,6 @@
                         </div>
                     </div>
                 }
-            </div>
-
-            <!-- CAMPO DE TOTAL VALOR (solo lectura) -->
-            <div class="form-group mt-4">
-                @Html.LabelFor(m => m.TotalValor)
-                @Html.TextBoxFor(m => m.TotalValor, new
-                {
-                    @class = "form-control font-weight-bold",
-                    @readonly = "readonly",
-                    style = "background-color: #e0e0e0; color: black;"
-                })
             </div>
 
             <div class="text-center mt-4">
@@ -158,7 +142,7 @@
 
             <div id="collapseRegistros" class="collapse" aria-labelledby="headingOne" data-parent="#accordionRegistros">
                 <div class="card-body">
-                    <div class="dropdown-records" id="registrosPrevios" style="display:none;">
+                    <div class="dropdown-records" id="registrosPrevios">
                         <strong class="text-secondary">📋 Registros anteriores del usuario:</strong>
                         <div id="lista-registros"></div>
                     </div>
@@ -170,22 +154,16 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById("usuarioDropdown").addEventListener("change", function () {
-            const usuarioId = this.value;
-            const registrosDiv = document.getElementById("registrosPrevios");
-            const listaDiv = document.getElementById("lista-registros");
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            if (!usuarioId || usuarioId === "0") {
-                registrosDiv.style.display = "none";
-                listaDiv.innerHTML = "";
-                return;
-            }
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            const usuarioId = "@usuarioId";
+            const listaDiv = document.getElementById("lista-registros");
 
             fetch(`/ProduccionDiaria/ObtenerRegistrosPorUsuario?usuarioId=${usuarioId}`)
                 .then(response => response.json())
                 .then(data => {
-                    registrosDiv.style.display = "block";
                     listaDiv.innerHTML = "";
 
                     if (data && data.length > 0) {
@@ -193,12 +171,11 @@
                             const record = document.createElement("div");
                             record.className = "record-item";
                             record.innerHTML = `
-                                    <strong>Fecha:</strong> ${item.Fecha} |
-                                    <strong>Prenda:</strong> ${item.PrendaNombre} |
-                                    <strong>Cant:</strong> ${item.TotalCantidad}
-                                    <strong>Total:</strong> $${item.TotalValor.toFixed(2)}
-                                    ${item.Id ? `| <a class="btn btn-sm btn-outline-light ml-2" href="/ProduccionDiaria/Editar/${item.Id}">Editar</a>` : ""}
-                                `;
+                                <i class="fas fa-calendar-alt me-1"></i><strong> ${item.Fecha}</strong> |
+                                <i class="fas fa-tshirt me-1"></i><strong> ${item.PrendaNombre}</strong> |
+                                <strong>Cant:</strong> ${item.TotalCantidad} |
+                                <strong>Total:</strong> $${item.TotalValor.toFixed(2)}
+                            `;
                             listaDiv.appendChild(record);
                         });
                     } else {
@@ -206,10 +183,76 @@
                     }
                 })
                 .catch(error => {
-                    registrosDiv.style.display = "block";
                     listaDiv.innerHTML = "<em>Error al cargar registros.</em>";
                     console.error("Error al obtener registros:", error);
                 });
+
+            document.querySelectorAll(".cantidad-input").forEach(input => {
+                input.addEventListener("input", function () {
+                    let valor = this.value.replace(/[^\d]/g, '');
+                    if (valor.length > 4) valor = valor.slice(0, 4);
+                    if (parseInt(valor) > 1000) valor = "1000";
+                    this.value = valor;
+                });
+            });
+        });
+
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const cantidades = document.querySelectorAll(".cantidad-input");
+            let tieneAlMenosUnaValida = false;
+
+            for (let input of cantidades) {
+                const valor = input.value.trim();
+                const numero = parseInt(valor);
+
+                if (!/^\d{1,4}$/.test(valor)) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cantidad inválida',
+                        text: 'Solo puedes ingresar números de hasta 4 cifras.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    input.focus();
+                    return;
+                }
+
+                if (numero <= 0) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cantidad requerida',
+                        text: 'La cantidad debe ser mayor a 0.',
+                        confirmButtonColor: '#d33'
+                    });
+                    input.focus();
+                    return;
+                }
+
+                if (numero > 1000) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cantidad excedida',
+                        text: 'La cantidad máxima permitida es 1000.',
+                        confirmButtonColor: '#f39c12'
+                    });
+                    input.focus();
+                    return;
+                }
+
+                tieneAlMenosUnaValida = true;
+            }
+
+            if (!tieneAlMenosUnaValida) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sin detalles válidos',
+                    text: 'Debes ingresar al menos un detalle de producción con cantidad válida.',
+                    confirmButtonColor: '#d33'
+                });
+            }
         });
     </script>
 }
